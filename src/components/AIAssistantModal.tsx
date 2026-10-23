@@ -162,27 +162,27 @@ export const AIAssistantModal: React.FC<Props> = ({ isOpen, onClose, onTriggerSO
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#0E2720]/80 backdrop-blur-md animate-in fade-in duration-200"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#0E2721]/80 backdrop-blur-md animate-in fade-in duration-200"
       role="dialog"
       aria-modal="true"
       aria-labelledby="assistant-modal-title"
     >
-      <div className="relative w-full max-w-2xl clinic-panel-elevated rounded-3xl flex flex-col h-[660px] border border-[#C7AE7B]/40 overflow-hidden shadow-2xl">
+      <div className="relative w-full max-w-2xl clinic-panel-elevated rounded-3xl flex flex-col h-[660px] border border-[#C4A66B]/40 overflow-hidden shadow-2xl">
         
         {/* Header Bar */}
-        <div className="p-4 sm:p-5 border-b border-[#F4F0E6]/10 bg-[#0E2720]/90 flex items-center justify-between">
+        <div className="p-4 sm:p-5 border-b border-[#F1F0E9]/10 bg-[#0E2721]/90 flex items-center justify-between">
           <div className="flex items-center space-x-3.5">
-            <div className="w-10 h-10 rounded-2xl bg-[#163C32] border border-[#C7AE7B]/40 flex items-center justify-center">
+            <div className="w-10 h-10 rounded-2xl bg-[#173E35] border border-[#C4A66B]/40 flex items-center justify-center">
               <PulseCareEmblem size={30} />
             </div>
             <div>
-              <h3 id="assistant-modal-title" className="text-sm font-bold text-[#F4F0E6] flex items-center gap-2">
+              <h3 id="assistant-modal-title" className="text-sm font-bold text-[#F1F0E9] flex items-center gap-2">
                 PulseCare Health Information Assistant
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-[#163C32] text-[#C7AE7B] border border-[#C7AE7B]/30 font-semibold">
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-[#173E35] text-[#C4A66B] border border-[#C4A66B]/30 font-semibold">
                   Offline Decision Engine
                 </span>
               </h3>
-              <p className="text-[11px] text-[#F4F0E6]/70">
+              <p className="text-[11px] text-[#F1F0E9]/70">
                 General health information & verified first-aid guidance • Not a clinical diagnosis
               </p>
             </div>
@@ -190,7 +190,7 @@ export const AIAssistantModal: React.FC<Props> = ({ isOpen, onClose, onTriggerSO
 
           <button
             onClick={onClose}
-            className="text-[#F4F0E6]/60 hover:text-[#F4F0E6] p-2 rounded-xl hover:bg-[#163C32] transition-colors"
+            className="text-[#F1F0E9]/60 hover:text-[#F1F0E9] p-2 rounded-xl hover:bg-[#173E35] transition-colors"
             aria-label="Close Assistant"
           >
             <X className="w-5 h-5" />
@@ -198,8 +198,8 @@ export const AIAssistantModal: React.FC<Props> = ({ isOpen, onClose, onTriggerSO
         </div>
 
         {/* Safety Disclaimer Banner */}
-        <div className="px-5 py-2.5 bg-[#163C32]/80 border-b border-[#C7AE7B]/25 flex items-center space-x-2 text-xs text-[#F4F0E6]/90">
-          <AlertTriangle className="w-4 h-4 text-[#C7AE7B] shrink-0" />
+        <div className="px-5 py-2.5 bg-[#173E35]/80 border-b border-[#C4A66B]/25 flex items-center space-x-2 text-xs text-[#F1F0E9]/90">
+          <AlertTriangle className="w-4 h-4 text-[#C4A66B] shrink-0" />
           <p className="text-[11px] leading-tight">
             <strong>Medical Disclaimer:</strong> Provides general health education and first-aid protocols. Not a medical doctor or diagnostic device. In life-threatening emergencies, call 112 immediately.
           </p>
@@ -215,16 +215,16 @@ export const AIAssistantModal: React.FC<Props> = ({ isOpen, onClose, onTriggerSO
               <div
                 className={`max-w-[88%] rounded-2xl p-4 text-xs leading-relaxed ${
                   m.sender === 'user'
-                    ? 'bg-[#F4F0E6] text-[#1D2521] font-medium rounded-br-xs shadow-md'
+                    ? 'bg-[#F1F0E9] text-[#18231F] font-medium rounded-br-xs shadow-md'
                     : m.isEmergencyAlert
-                    ? 'bg-[#0E2720] border-2 border-[#D94736] text-[#F4F0E6] rounded-bl-xs shadow-lg'
-                    : 'bg-[#163C32]/90 text-[#F4F0E6] border border-[#C7AE7B]/25 rounded-bl-xs'
+                    ? 'bg-[#0E2721] border-2 border-[#D44A3C] text-[#F1F0E9] rounded-bl-xs shadow-lg'
+                    : 'bg-[#173E35]/90 text-[#F1F0E9] border border-[#C4A66B]/25 rounded-bl-xs'
                 }`}
               >
                 {/* Emergency Red Flag Header */}
                 {m.isEmergencyAlert && (
-                  <div className="flex items-center gap-2 text-[#FF8A7A] font-bold text-xs uppercase tracking-wide mb-2 pb-1.5 border-b border-[#D94736]/40">
-                    <ShieldAlert className="w-4 h-4 shrink-0 text-[#FF8A7A]" />
+                  <div className="flex items-center gap-2 text-[#F79488] font-bold text-xs uppercase tracking-wide mb-2 pb-1.5 border-b border-[#D44A3C]/40">
+                    <ShieldAlert className="w-4 h-4 shrink-0 text-[#F79488]" />
                     <span>Priority Emergency Red Flag Detected</span>
                   </div>
                 )}
@@ -233,11 +233,11 @@ export const AIAssistantModal: React.FC<Props> = ({ isOpen, onClose, onTriggerSO
 
                 {/* Targeted Follow-up Questions for non-emergencies like cough */}
                 {m.followUpQuestions && m.followUpQuestions.length > 0 && (
-                  <div className="mt-3 p-3 rounded-xl bg-[#0E2720]/80 border border-[#C7AE7B]/25 space-y-1.5">
-                    <span className="text-[10px] font-mono font-bold uppercase text-[#C7AE7B] block">
+                  <div className="mt-3 p-3 rounded-xl bg-[#0E2721]/80 border border-[#C4A66B]/25 space-y-1.5">
+                    <span className="text-[10px] font-mono font-bold uppercase text-[#C4A66B] block">
                       Key Clinical Context Factors:
                     </span>
-                    <ul className="list-disc pl-4 space-y-1 text-[11px] text-[#F4F0E6]/90">
+                    <ul className="list-disc pl-4 space-y-1 text-[11px] text-[#F1F0E9]/90">
                       {m.followUpQuestions.map((q, qIdx) => (
                         <li key={qIdx}>{q}</li>
                       ))}
@@ -247,24 +247,24 @@ export const AIAssistantModal: React.FC<Props> = ({ isOpen, onClose, onTriggerSO
 
                 {/* Immediate Clinical / First-aid action */}
                 {m.recommendedStep && (
-                  <div className="mt-3 p-3 rounded-xl bg-[#0E2720]/80 border border-[#C7AE7B]/30 space-y-1">
-                    <span className="text-[10px] font-mono font-bold uppercase text-[#C7AE7B] block">
+                  <div className="mt-3 p-3 rounded-xl bg-[#0E2721]/80 border border-[#C4A66B]/30 space-y-1">
+                    <span className="text-[10px] font-mono font-bold uppercase text-[#C4A66B] block">
                       Recommended Action:
                     </span>
-                    <p className="text-[11px] text-[#F4F0E6]/90">{m.recommendedStep}</p>
+                    <p className="text-[11px] text-[#F1F0E9]/90">{m.recommendedStep}</p>
                   </div>
                 )}
 
                 {/* Emergency Call Button if Red Flag */}
                 {m.actionHint && (
-                  <div className="mt-3 pt-2.5 border-t border-[#F4F0E6]/15 flex items-center justify-between gap-3 flex-wrap">
-                    <span className="text-[10px] font-mono text-[#FF8A7A] font-bold uppercase">
+                  <div className="mt-3 pt-2.5 border-t border-[#F1F0E9]/15 flex items-center justify-between gap-3 flex-wrap">
+                    <span className="text-[10px] font-mono text-[#F79488] font-bold uppercase">
                       {m.actionHint}
                     </span>
                     <div className="flex items-center space-x-2">
                       <a
                         href="tel:112"
-                        className="px-3.5 py-1.5 rounded-xl bg-[#B82E1E] hover:bg-[#9E2517] text-white font-bold text-[11px] flex items-center space-x-1.5 shadow"
+                        className="px-3.5 py-1.5 rounded-xl bg-[#BA3B2E] hover:bg-[#9C2A1E] text-white font-bold text-[11px] flex items-center space-x-1.5 shadow"
                       >
                         <Phone className="w-3.5 h-3.5" />
                         <span>Call 112</span>
@@ -274,7 +274,7 @@ export const AIAssistantModal: React.FC<Props> = ({ isOpen, onClose, onTriggerSO
                           onClose();
                           onTriggerSOS();
                         }}
-                        className="px-3 py-1.5 rounded-xl bg-[#163C32] border border-[#C7AE7B]/40 hover:border-[#C7AE7B] text-[#C7AE7B] font-mono text-[11px]"
+                        className="px-3 py-1.5 rounded-xl bg-[#173E35] border border-[#C4A66B]/40 hover:border-[#C4A66B] text-[#C4A66B] font-mono text-[11px]"
                       >
                         SOS Pass
                       </button>
@@ -284,7 +284,7 @@ export const AIAssistantModal: React.FC<Props> = ({ isOpen, onClose, onTriggerSO
 
                 {/* Sourced Medical Reference Citation */}
                 {m.sourceCitation && (
-                  <div className="mt-3 pt-2 border-t border-[#F4F0E6]/10 flex items-center space-x-1.5 text-[10px] font-mono text-[#C7AE7B]/80">
+                  <div className="mt-3 pt-2 border-t border-[#F1F0E9]/10 flex items-center space-x-1.5 text-[10px] font-mono text-[#C4A66B]/80">
                     <BookOpen className="w-3 h-3 shrink-0" />
                     <span>Source: {m.sourceCitation}</span>
                   </div>
@@ -294,7 +294,7 @@ export const AIAssistantModal: React.FC<Props> = ({ isOpen, onClose, onTriggerSO
           ))}
 
           {isTyping && (
-            <div className="flex items-center space-x-2 text-xs text-[#C7AE7B] bg-[#163C32] p-3 rounded-2xl w-36 border border-[#C7AE7B]/30 animate-pulse font-mono">
+            <div className="flex items-center space-x-2 text-xs text-[#C4A66B] bg-[#173E35] p-3 rounded-2xl w-36 border border-[#C4A66B]/30 animate-pulse font-mono">
               <RotateCcw className="w-3.5 h-3.5 animate-spin" />
               <span>Analyzing...</span>
             </div>
@@ -302,13 +302,13 @@ export const AIAssistantModal: React.FC<Props> = ({ isOpen, onClose, onTriggerSO
         </div>
 
         {/* Suggestion Chips (Wrapped with no clipping, accessible keyboard navigation) */}
-        <div className="p-3 border-t border-[#F4F0E6]/10 bg-[#0E2720]/80">
+        <div className="p-3 border-t border-[#F1F0E9]/10 bg-[#0E2721]/80">
           <div className="flex flex-wrap gap-1.5 max-h-24 overflow-y-auto">
             {COMMON_QUERIES.map((query, idx) => (
               <button
                 key={idx}
                 onClick={() => handleSend(query)}
-                className="px-2.5 py-1 rounded-xl bg-[#163C32] hover:bg-[#1D4A3E] border border-[#C7AE7B]/30 text-[11px] text-[#F4F0E6] transition-colors font-mono text-left focus:outline-none focus:ring-1 focus:ring-[#C7AE7B]"
+                className="px-2.5 py-1 rounded-xl bg-[#173E35] hover:bg-[#1F4D43] border border-[#C4A66B]/30 text-[11px] text-[#F1F0E9] transition-colors font-mono text-left focus:outline-none focus:ring-1 focus:ring-[#C4A66B]"
               >
                 {query}
               </button>
@@ -317,18 +317,18 @@ export const AIAssistantModal: React.FC<Props> = ({ isOpen, onClose, onTriggerSO
         </div>
 
         {/* Input Bar */}
-        <div className="p-4 bg-[#0E2720] border-t border-[#F4F0E6]/15 flex items-center space-x-2.5">
+        <div className="p-4 bg-[#0E2721] border-t border-[#F1F0E9]/15 flex items-center space-x-2.5">
           <input
             type="text"
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleSend()}
             placeholder="Describe symptoms, duration, or first-aid query..."
-            className="flex-1 bg-[#163C32] border border-[#C7AE7B]/30 rounded-2xl px-4 py-3 text-xs text-[#F4F0E6] placeholder-[#F4F0E6]/50 focus:outline-none focus:border-[#C7AE7B] transition-colors"
+            className="flex-1 bg-[#173E35] border border-[#C4A66B]/30 rounded-2xl px-4 py-3 text-xs text-[#F1F0E9] placeholder-[#F1F0E9]/50 focus:outline-none focus:border-[#C4A66B] transition-colors"
           />
           <button
             onClick={() => handleSend()}
-            className="p-3 rounded-2xl bg-[#F4F0E6] hover:bg-white text-[#1D2521] transition-all font-bold shadow-md"
+            className="p-3 rounded-2xl bg-[#F1F0E9] hover:bg-white text-[#18231F] transition-all font-bold shadow-md"
             aria-label="Send Query"
           >
             <Send className="w-4 h-4" />

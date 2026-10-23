@@ -1,20 +1,29 @@
 @import "tailwindcss";
 
+@theme {
+  --color-ivory: #F1F0E9;
+  --color-forest-deep: #0E2721;
+  --color-forest-surface: #173E35;
+  --color-forest-elevated: #1F4D43;
+  --color-vermilion: #D44A3C;
+  --color-champagne: #C4A66B;
+}
+
 @layer base {
   :root {
-    --ivory: #F4F0E6;
-    --forest-deep: #0E2720;
-    --forest-surface: #163C32;
-    --forest-elevated: #1D4A3E;
-    --vermilion: #D94736;
-    --champagne: #C7AE7B;
-    --ink: #1D2521;
-    --stone-warm: #23443B;
+    --ivory: #F1F0E9;
+    --forest-deep: #0E2721;
+    --forest-surface: #173E35;
+    --forest-elevated: #1F4D43;
+    --vermilion: #D44A3C;
+    --champagne: #C4A66B;
+    --ink: #173E35;
+    --stone-warm: #254E44;
   }
 
   body {
-    background-color: #0E2720;
-    color: #F4F0E6;
+    background-color: #0E2721;
+    color: #F1F0E9;
   }
 
   /* Custom subtle scrollbar */
@@ -23,55 +32,55 @@
     height: 6px;
   }
   ::-webkit-scrollbar-track {
-    background: #0E2720;
+    background: #0E2721;
   }
   ::-webkit-scrollbar-thumb {
-    background: #23493E;
+    background: #254E44;
     border-radius: 9999px;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: #C7AE7B;
+    background: #C4A66B;
   }
 }
 
 /* Future Clinic Architectural Panels */
 .clinic-panel {
-  background: rgba(22, 60, 50, 0.72);
+  background: rgba(23, 62, 53, 0.74);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(244, 240, 230, 0.08);
+  border: 1px solid rgba(241, 240, 233, 0.08);
   box-shadow: 0 10px 30px -10px rgba(10, 25, 20, 0.5), 0 2px 6px rgba(0, 0, 0, 0.2);
 }
 
 .clinic-panel-elevated {
-  background: rgba(29, 74, 62, 0.88);
+  background: rgba(31, 77, 67, 0.90);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(199, 174, 123, 0.25);
+  border: 1px solid rgba(196, 166, 107, 0.28);
   box-shadow: 0 16px 36px -12px rgba(10, 25, 20, 0.6), 0 4px 12px rgba(0, 0, 0, 0.25);
 }
 
 .clinic-panel-ivory {
-  background: #F4F0E6;
-  color: #1D2521;
-  border: 1px solid rgba(199, 174, 123, 0.35);
+  background: #F1F0E9;
+  color: #173E35;
+  border: 1px solid rgba(196, 166, 107, 0.35);
   box-shadow: 0 12px 32px -8px rgba(10, 25, 20, 0.4);
 }
 
-/* Restrained emergency vermilion - WCAG AA compliant contrast (> 5.5:1) */
+/* Swatch Vermilion - emergency action with full WCAG AA contrast (> 5.2:1) */
 .btn-vermilion {
-  background-color: #B82E1E;
+  background-color: #CC3B2D;
   color: #FFFFFF;
-  box-shadow: 0 8px 24px -4px rgba(184, 46, 30, 0.45);
+  box-shadow: 0 8px 24px -4px rgba(204, 59, 45, 0.45);
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .btn-vermilion:hover {
-  background-color: #9E2517;
-  box-shadow: 0 12px 28px -4px rgba(184, 46, 30, 0.6);
+  background-color: #B53225;
+  box-shadow: 0 12px 28px -4px rgba(181, 50, 37, 0.6);
 }
 
 .champagne-border {
-  border-color: rgba(199, 174, 123, 0.3);
+  border-color: rgba(196, 166, 107, 0.3);
 }
 
 .font-editorial {

@@ -50,15 +50,15 @@ function createEarthCanvasTexture(): THREE.CanvasTexture {
 
   if (!ctx) return new THREE.CanvasTexture(canvas);
 
-  // 1. Deep Forest Green Ocean Base (#163C32)
-  ctx.fillStyle = '#163C32';
+  // 1. Deep Forest Green Ocean Base (#173E35)
+  ctx.fillStyle = '#173E35';
   ctx.fillRect(0, 0, width, height);
 
   // Subtle ocean bathymetry
   const oceanGrad = ctx.createLinearGradient(0, 0, 0, height);
-  oceanGrad.addColorStop(0, '#0E2720');
-  oceanGrad.addColorStop(0.5, '#163C32');
-  oceanGrad.addColorStop(1, '#0E2720');
+  oceanGrad.addColorStop(0, '#0E2721');
+  oceanGrad.addColorStop(0.5, '#173E35');
+  oceanGrad.addColorStop(1, '#0E2721');
   ctx.fillStyle = oceanGrad;
   ctx.fillRect(0, 0, width, height);
 
@@ -87,9 +87,9 @@ function createEarthCanvasTexture(): THREE.CanvasTexture {
   ctx.lineTo(width, height / 2);
   ctx.stroke();
 
-  // 3. Continent Polygons in Warm Ivory (#F4F0E6) with Champagne Outlines (#C7AE7B)
-  ctx.fillStyle = '#F4F0E6';
-  ctx.strokeStyle = '#C7AE7B';
+  // 3. Continent Polygons in Warm Ivory (#F1F0E9) with Champagne Outlines (#C4A66B)
+  ctx.fillStyle = '#F1F0E9';
+  ctx.strokeStyle = '#C4A66B';
   ctx.lineWidth = 2;
   ctx.lineJoin = 'round';
 
@@ -276,7 +276,7 @@ export const SpatialHealthGlobe: React.FC<Props> = ({
       globeGroupRef.current = globeGroup;
 
       // 5. Lighting
-      const ambientLight = new THREE.AmbientLight(0xF4F0E6, 1.2);
+      const ambientLight = new THREE.AmbientLight(0xF1F0E9, 1.2);
       scene.add(ambientLight);
 
       const sunLight = new THREE.DirectionalLight(0xFFF9E8, 1.8);
@@ -298,7 +298,7 @@ export const SpatialHealthGlobe: React.FC<Props> = ({
       // 7. Atmosphere Ethereal Halo
       const atmosphereGeo = new THREE.SphereGeometry(radius * 1.025, 32, 32);
       const atmosphereMat = new THREE.MeshBasicMaterial({
-        color: 0xC7AE7B,
+        color: 0xC4A66B,
         transparent: true,
         opacity: 0.12,
         side: THREE.BackSide
@@ -317,9 +317,9 @@ export const SpatialHealthGlobe: React.FC<Props> = ({
       const crossVertGeo = new THREE.BoxGeometry(0.04, 0.12, 0.04);
       const diamondGeo = new THREE.OctahedronGeometry(0.06, 0);
 
-      const vermilionMat = new THREE.MeshBasicMaterial({ color: 0xD94736 });
-      const champagneMat = new THREE.MeshBasicMaterial({ color: 0xC7AE7B });
-      const ivoryMat = new THREE.MeshBasicMaterial({ color: 0xF4F0E6 });
+      const vermilionMat = new THREE.MeshBasicMaterial({ color: 0xD44A3C });
+      const champagneMat = new THREE.MeshBasicMaterial({ color: 0xC4A66B });
+      const ivoryMat = new THREE.MeshBasicMaterial({ color: 0xF1F0E9 });
 
       // Populate Delhi Hospital Markers
       HOSPITALS.forEach((hosp) => {
@@ -351,7 +351,7 @@ export const SpatialHealthGlobe: React.FC<Props> = ({
         // Ring
         const ringGeo = new THREE.RingGeometry(0.04, 0.07, 16);
         const ringMat = new THREE.MeshBasicMaterial({
-          color: hosp.category === 'Trauma Center Level 1' ? 0xD94736 : 0xC7AE7B,
+          color: hosp.category === 'Trauma Center Level 1' ? 0xD44A3C : 0xC4A66B,
           transparent: true,
           opacity: 0.8,
           side: THREE.DoubleSide
@@ -377,7 +377,7 @@ export const SpatialHealthGlobe: React.FC<Props> = ({
 
         const hubRing = new THREE.Mesh(
           new THREE.RingGeometry(0.04, 0.06, 12),
-          new THREE.MeshBasicMaterial({ color: 0xC7AE7B, transparent: true, opacity: 0.5, side: THREE.DoubleSide })
+          new THREE.MeshBasicMaterial({ color: 0xC4A66B, transparent: true, opacity: 0.5, side: THREE.DoubleSide })
         );
         hubRing.position.z = 0.01;
         hubRoot.add(hubRing);
@@ -551,24 +551,24 @@ export const SpatialHealthGlobe: React.FC<Props> = ({
   };
 
   return (
-    <div className="relative w-full rounded-3xl clinic-panel border border-[#C7AE7B]/25 overflow-hidden shadow-2xl transition-all duration-300">
+    <div className="relative w-full rounded-3xl clinic-panel border border-[#C4A66B]/25 overflow-hidden shadow-2xl transition-all duration-300">
       
       {/* Top Header Bar */}
-      <div className="p-4 border-b border-[#F4F0E6]/10 flex items-center justify-between bg-[#0E2720]/80 backdrop-blur-md z-10 relative">
+      <div className="p-4 border-b border-[#F1F0E9]/10 flex items-center justify-between bg-[#0E2721]/80 backdrop-blur-md z-10 relative">
         <div className="flex items-center space-x-2.5">
-          <div className="w-8 h-8 rounded-xl bg-[#163C32] border border-[#C7AE7B]/40 flex items-center justify-center text-[#C7AE7B]">
+          <div className="w-8 h-8 rounded-xl bg-[#173E35] border border-[#C4A66B]/40 flex items-center justify-center text-[#C4A66B]">
             <MapPin className="w-4 h-4" />
           </div>
           <div>
             <div className="flex items-center space-x-2">
-              <h3 className="text-xs font-bold tracking-wide uppercase font-mono text-[#F4F0E6]">
+              <h3 className="text-xs font-bold tracking-wide uppercase font-mono text-[#F1F0E9]">
                 Spatial Health Globe
               </h3>
-              <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-mono bg-[#1D4A3E] text-[#C7AE7B] border border-[#C7AE7B]/30">
+              <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-mono bg-[#0E2721] text-[#D6B77C] border border-[#C4A66B]/30">
                 Live Telemetry
               </span>
             </div>
-            <p className="text-[11px] text-[#F4F0E6]/70">
+            <p className="text-[11px] text-[#F1F0E9]/70">
               Spherical triage coordinates · Delhi Capital Region & International Care Hubs
             </p>
           </div>
@@ -580,8 +580,8 @@ export const SpatialHealthGlobe: React.FC<Props> = ({
             onClick={() => setIs2DMode(!is2DMode)}
             className={`px-3 py-1.5 rounded-xl text-xs font-mono font-semibold flex items-center space-x-1.5 transition-all ${
               is2DMode
-                ? 'bg-[#F4F0E6] text-[#1D2521] shadow-md'
-                : 'bg-[#163C32] text-[#F4F0E6] border border-[#C7AE7B]/30 hover:border-[#C7AE7B]'
+                ? 'bg-[#F1F0E9] text-[#18231F] shadow-md'
+                : 'bg-[#173E35] text-[#F1F0E9] border border-[#C4A66B]/30 hover:border-[#C4A66B]'
             }`}
             title="Toggle between 3D WebGL sphere and accessible 2D projection"
           >
@@ -598,19 +598,19 @@ export const SpatialHealthGlobe: React.FC<Props> = ({
           onPointerDown={handlePointerDown}
           onPointerMove={handlePointerMove}
           onPointerUp={handlePointerUp}
-          className="relative w-full h-[400px] sm:h-[460px] bg-gradient-to-b from-[#0E2720] via-[#163C32] to-[#0E2720] select-none touch-none cursor-grab active:cursor-grabbing"
+          className="relative w-full h-[400px] sm:h-[460px] bg-gradient-to-b from-[#0E2721] via-[#173E35] to-[#0E2721] select-none touch-none cursor-grab active:cursor-grabbing"
           role="region"
           aria-label="Interactive 3D Spatial Health Globe showing hospitals and medical centers"
         >
           {sosActive && (
-            <div className="absolute inset-0 border-2 border-[#D94736] animate-pulse pointer-events-none rounded-3xl" />
+            <div className="absolute inset-0 border-2 border-[#D44A3C] animate-pulse pointer-events-none rounded-3xl" />
           )}
 
           {/* Floated Camera Controls */}
-          <div className="absolute left-4 bottom-4 z-10 flex items-center space-x-1.5 p-1.5 rounded-2xl bg-[#0E2720]/85 backdrop-blur-md border border-[#C7AE7B]/30 shadow-xl">
+          <div className="absolute left-4 bottom-4 z-10 flex items-center space-x-1.5 p-1.5 rounded-2xl bg-[#0E2721]/85 backdrop-blur-md border border-[#C4A66B]/30 shadow-xl">
             <button
               onClick={() => setIsPlaying(!isPlaying)}
-              className="p-2 rounded-xl text-[#F4F0E6] hover:bg-[#163C32] hover:text-[#C7AE7B] transition-colors"
+              className="p-2 rounded-xl text-[#F1F0E9] hover:bg-[#173E35] hover:text-[#C4A66B] transition-colors"
               title={isPlaying ? 'Pause Auto-Rotation' : 'Resume Auto-Rotation'}
               aria-label={isPlaying ? 'Pause Auto-Rotation' : 'Resume Auto-Rotation'}
             >
@@ -618,7 +618,7 @@ export const SpatialHealthGlobe: React.FC<Props> = ({
             </button>
             <button
               onClick={handleZoomIn}
-              className="p-2 rounded-xl text-[#F4F0E6] hover:bg-[#163C32] hover:text-[#C7AE7B] transition-colors"
+              className="p-2 rounded-xl text-[#F1F0E9] hover:bg-[#173E35] hover:text-[#C4A66B] transition-colors"
               title="Zoom In"
               aria-label="Zoom In"
             >
@@ -626,16 +626,16 @@ export const SpatialHealthGlobe: React.FC<Props> = ({
             </button>
             <button
               onClick={handleZoomOut}
-              className="p-2 rounded-xl text-[#F4F0E6] hover:bg-[#163C32] hover:text-[#C7AE7B] transition-colors"
+              className="p-2 rounded-xl text-[#F1F0E9] hover:bg-[#173E35] hover:text-[#C4A66B] transition-colors"
               title="Zoom Out"
               aria-label="Zoom Out"
             >
               <ZoomOut className="w-4 h-4" />
             </button>
-            <div className="h-4 w-[1px] bg-[#C7AE7B]/30 mx-1" />
+            <div className="h-4 w-[1px] bg-[#C4A66B]/30 mx-1" />
             <button
               onClick={handleReset}
-              className="px-2.5 py-1.5 rounded-xl text-xs font-mono text-[#C7AE7B] hover:bg-[#163C32] transition-colors flex items-center space-x-1"
+              className="px-2.5 py-1.5 rounded-xl text-xs font-mono text-[#C4A66B] hover:bg-[#173E35] transition-colors flex items-center space-x-1"
               title="Center on Delhi Capital Region"
               aria-label="Center on Delhi Capital Region"
             >
@@ -645,25 +645,25 @@ export const SpatialHealthGlobe: React.FC<Props> = ({
           </div>
 
           {/* Legend Overlay */}
-          <div className="absolute right-4 bottom-4 z-10 hidden sm:flex flex-col space-y-1.5 p-3 rounded-2xl bg-[#0E2720]/85 backdrop-blur-md border border-[#C7AE7B]/25 text-[11px] font-mono shadow-xl">
-            <div className="text-[10px] text-[#C7AE7B] font-bold uppercase tracking-wider mb-1">
+          <div className="absolute right-4 bottom-4 z-10 hidden sm:flex flex-col space-y-1.5 p-3 rounded-2xl bg-[#0E2721]/85 backdrop-blur-md border border-[#C4A66B]/25 text-[11px] font-mono shadow-xl">
+            <div className="text-[10px] text-[#C4A66B] font-bold uppercase tracking-wider mb-1">
               Beacon Geometry
             </div>
-            <div className="flex items-center space-x-2 text-[#F4F0E6]">
-              <div className="w-3 h-3 bg-[#D94736] rounded-xs flex items-center justify-center text-white text-[8px] font-black">
+            <div className="flex items-center space-x-2 text-[#F1F0E9]">
+              <div className="w-3 h-3 bg-[#D44A3C] rounded-xs flex items-center justify-center text-white text-[8px] font-black">
                 +
               </div>
               <span>Level 1 Trauma (AIIMS)</span>
             </div>
-            <div className="flex items-center space-x-2 text-[#F4F0E6]">
-              <div className="w-2.5 h-2.5 bg-[#D94736] rotate-45" />
+            <div className="flex items-center space-x-2 text-[#F1F0E9]">
+              <div className="w-2.5 h-2.5 bg-[#D44A3C] rotate-45" />
               <span>Cardiac Emergency (Max/Fortis)</span>
             </div>
-            <div className="flex items-center space-x-2 text-[#F4F0E6]">
-              <div className="w-2.5 h-2.5 rounded-full bg-[#C7AE7B]" />
+            <div className="flex items-center space-x-2 text-[#F1F0E9]">
+              <div className="w-2.5 h-2.5 rounded-full bg-[#C4A66B]" />
               <span>General Hospital (Safdarjung)</span>
             </div>
-            <div className="text-[9px] text-[#C7AE7B]/70 pt-1 border-t border-[#C7AE7B]/20">
+            <div className="text-[9px] text-[#C4A66B]/70 pt-1 border-t border-[#C4A66B]/20">
               * Bed wait-times tagged as Demo data
             </div>
           </div>
@@ -671,31 +671,31 @@ export const SpatialHealthGlobe: React.FC<Props> = ({
           {/* Interactive Tooltip */}
           {hoveredHospital && tooltipPos && (
             <div
-              className="absolute z-20 pointer-events-none p-3.5 rounded-2xl bg-[#0E2720]/95 backdrop-blur-lg border border-[#C7AE7B] shadow-2xl text-left min-w-[220px]"
+              className="absolute z-20 pointer-events-none p-3.5 rounded-2xl bg-[#0E2721]/95 backdrop-blur-lg border border-[#C4A66B] shadow-2xl text-left min-w-[220px]"
               style={{
                 left: Math.min(tooltipPos.x + 16, (mountRef.current?.clientWidth || 600) - 240),
                 top: Math.max(tooltipPos.y - 70, 16)
               }}
             >
-              <div className="flex items-center justify-between pb-1.5 border-b border-[#F4F0E6]/10">
-                <span className="text-[10px] font-mono uppercase font-bold text-[#C7AE7B]">
+              <div className="flex items-center justify-between pb-1.5 border-b border-[#F1F0E9]/10">
+                <span className="text-[10px] font-mono uppercase font-bold text-[#C4A66B]">
                   {hoveredHospital.category}
                 </span>
-                <span className="text-[10px] font-mono text-[#FF8A7A] font-bold">
+                <span className="text-[10px] font-mono text-[#F79488] font-bold">
                   {hoveredHospital.distance}
                 </span>
               </div>
-              <h4 className="text-xs font-bold text-[#F4F0E6] mt-1.5 leading-snug">
+              <h4 className="text-xs font-bold text-[#F1F0E9] mt-1.5 leading-snug">
                 {hoveredHospital.name}
               </h4>
-              <p className="text-[10px] text-[#F4F0E6]/80 mt-0.5 line-clamp-1">
+              <p className="text-[10px] text-[#F1F0E9]/80 mt-0.5 line-clamp-1">
                 {hoveredHospital.address}
               </p>
-              <div className="mt-2.5 pt-2 border-t border-[#F4F0E6]/10 flex items-center justify-between text-[11px] font-mono">
+              <div className="mt-2.5 pt-2 border-t border-[#F1F0E9]/10 flex items-center justify-between text-[11px] font-mono">
                 <span className="text-emerald-400 font-bold">
                   {hoveredHospital.icuBedsAvailable} ICU Beds Avail.
                 </span>
-                <span className="text-[#C7AE7B]">
+                <span className="text-[#C4A66B]">
                   ER: {hoveredHospital.erWaitTime}
                 </span>
               </div>
@@ -704,13 +704,13 @@ export const SpatialHealthGlobe: React.FC<Props> = ({
         </div>
       ) : (
         /* Accessible 2D Planar Map Projection Fallback */
-        <div className="p-6 bg-[#0E2720] min-h-[420px] flex flex-col justify-between space-y-4">
+        <div className="p-6 bg-[#0E2721] min-h-[420px] flex flex-col justify-between space-y-4">
           <div>
-            <div className="flex items-center justify-between pb-3 border-b border-[#F4F0E6]/15">
-              <h4 className="text-sm font-bold font-editorial italic text-[#F4F0E6]">
+            <div className="flex items-center justify-between pb-3 border-b border-[#F1F0E9]/15">
+              <h4 className="text-sm font-bold font-editorial italic text-[#F1F0E9]">
                 Planar Care Grid — Delhi NCR Emergency Facilities
               </h4>
-              <span className="text-xs font-mono text-[#C7AE7B]">
+              <span className="text-xs font-mono text-[#C4A66B]">
                 High-Contrast Accessible View
               </span>
             </div>
@@ -723,25 +723,25 @@ export const SpatialHealthGlobe: React.FC<Props> = ({
                     onClick={() => onSelectHospital(hosp)}
                     className={`p-4 rounded-2xl text-left transition-all border ${
                       isSelected
-                        ? 'bg-[#163C32] border-[#C7AE7B] shadow-lg ring-1 ring-[#C7AE7B]'
-                        : 'bg-[#0E2720]/80 border-[#F4F0E6]/15 hover:border-[#C7AE7B]/60'
+                        ? 'bg-[#173E35] border-[#C4A66B] shadow-lg ring-1 ring-[#C4A66B]'
+                        : 'bg-[#0E2721]/80 border-[#F1F0E9]/15 hover:border-[#C4A66B]/60'
                     }`}
                   >
                     <div className="flex items-center justify-between mb-1.5">
-                      <span className="text-[11px] font-mono font-bold text-[#C7AE7B] uppercase">
+                      <span className="text-[11px] font-mono font-bold text-[#C4A66B] uppercase">
                         {hosp.category}
                       </span>
-                      <span className="text-xs font-mono font-bold text-[#FF8A7A]">
+                      <span className="text-xs font-mono font-bold text-[#F79488]">
                         {hosp.distance} ({hosp.driveTime})
                       </span>
                     </div>
-                    <h5 className="text-sm font-bold text-[#F4F0E6]">{hosp.name}</h5>
-                    <p className="text-xs text-[#F4F0E6]/75 mt-0.5">{hosp.address}</p>
-                    <div className="mt-3 pt-2 border-t border-[#F4F0E6]/10 flex items-center justify-between text-xs font-mono">
+                    <h5 className="text-sm font-bold text-[#F1F0E9]">{hosp.name}</h5>
+                    <p className="text-xs text-[#F1F0E9]/75 mt-0.5">{hosp.address}</p>
+                    <div className="mt-3 pt-2 border-t border-[#F1F0E9]/10 flex items-center justify-between text-xs font-mono">
                       <span className="text-emerald-400 font-semibold">
                         {hosp.icuBedsAvailable} ICU Beds Available
                       </span>
-                      <span className="text-[#F4F0E6]/80 font-bold">
+                      <span className="text-[#F1F0E9]/80 font-bold">
                         Wait: {hosp.erWaitTime}
                       </span>
                     </div>
@@ -751,16 +751,16 @@ export const SpatialHealthGlobe: React.FC<Props> = ({
             </div>
           </div>
 
-          <div className="p-3 rounded-xl bg-[#163C32]/60 border border-[#C7AE7B]/30 text-xs text-[#F4F0E6]/80 flex items-center justify-between">
+          <div className="p-3 rounded-xl bg-[#173E35]/60 border border-[#C4A66B]/30 text-xs text-[#F1F0E9]/80 flex items-center justify-between">
             <div className="flex items-center space-x-2">
-              <Info className="w-4 h-4 text-[#C7AE7B] shrink-0" />
+              <Info className="w-4 h-4 text-[#C4A66B] shrink-0" />
               <span>
                 Coordinates calibrated for Delhi Trauma Centers. Screen-reader and keyboard navigable.
               </span>
             </div>
             <button
               onClick={() => setIs2DMode(false)}
-              className="text-xs font-mono text-[#C7AE7B] hover:underline shrink-0 ml-2"
+              className="text-xs font-mono text-[#C4A66B] hover:underline shrink-0 ml-2"
             >
               Back to 3D Globe &rarr;
             </button>
@@ -770,19 +770,19 @@ export const SpatialHealthGlobe: React.FC<Props> = ({
 
       {/* Bottom Selected Facility Summary Strip */}
       {selectedHospital && (
-        <div className="p-4 bg-[#163C32]/95 border-t border-[#C7AE7B]/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+        <div className="p-4 bg-[#173E35]/95 border-t border-[#C4A66B]/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
           <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 rounded-2xl bg-[#0E2720] border border-[#C7AE7B]/40 flex items-center justify-center text-[#FF8A7A] shrink-0 font-bold">
+            <div className="w-10 h-10 rounded-2xl bg-[#0E2721] border border-[#C4A66B]/40 flex items-center justify-center text-[#F79488] shrink-0 font-bold">
               {selectedHospital.category === 'Trauma Center Level 1' ? '+' : 'H'}
             </div>
             <div>
               <div className="flex items-center space-x-2">
-                <span className="text-xs font-bold text-[#F4F0E6]">{selectedHospital.name}</span>
-                <span className="text-[10px] font-mono text-[#C7AE7B] px-2 py-0.5 rounded-full bg-[#0E2720] border border-[#C7AE7B]/30">
+                <span className="text-xs font-bold text-[#F1F0E9]">{selectedHospital.name}</span>
+                <span className="text-[10px] font-mono text-[#C4A66B] px-2 py-0.5 rounded-full bg-[#0E2721] border border-[#C4A66B]/30">
                   Focused Target
                 </span>
               </div>
-              <p className="text-xs text-[#F4F0E6]/75">
+              <p className="text-xs text-[#F1F0E9]/75">
                 {selectedHospital.specialties.slice(0, 3).join(' • ')}
               </p>
             </div>
@@ -791,7 +791,7 @@ export const SpatialHealthGlobe: React.FC<Props> = ({
           <div className="flex items-center space-x-2.5 w-full sm:w-auto">
             <a
               href={`tel:${selectedHospital.phone.replace(/[^0-9+]/g, '')}`}
-              className="flex-1 sm:flex-none px-4 py-2 rounded-xl bg-[#F4F0E6] text-[#1D2521] text-xs font-bold font-mono hover:bg-white transition-colors text-center"
+              className="flex-1 sm:flex-none px-4 py-2 rounded-xl bg-[#F1F0E9] text-[#18231F] text-xs font-bold font-mono hover:bg-white transition-colors text-center"
             >
               Call {selectedHospital.phone}
             </a>
@@ -799,7 +799,7 @@ export const SpatialHealthGlobe: React.FC<Props> = ({
               href={`https://maps.google.com/?q=${encodeURIComponent(selectedHospital.name + ' ' + selectedHospital.address)}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="px-3.5 py-2 rounded-xl bg-[#0E2720] text-[#C7AE7B] border border-[#C7AE7B]/30 hover:border-[#C7AE7B] text-xs font-mono transition-colors flex items-center space-x-1.5"
+              className="px-3.5 py-2 rounded-xl bg-[#0E2721] text-[#C4A66B] border border-[#C4A66B]/30 hover:border-[#C4A66B] text-xs font-mono transition-colors flex items-center space-x-1.5"
             >
               <span>Map Route</span>
               <ExternalLink className="w-3.5 h-3.5" />

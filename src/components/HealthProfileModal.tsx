@@ -100,31 +100,31 @@ export const HealthProfileModal: React.FC<Props> = ({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#0E2720]/80 backdrop-blur-md animate-in fade-in duration-200"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#0E2721]/80 backdrop-blur-md animate-in fade-in duration-200"
       role="dialog"
       aria-modal="true"
       aria-labelledby="profile-modal-title"
     >
-      <div className="relative w-full max-w-2xl clinic-panel-elevated rounded-3xl p-6 md:p-8 border border-[#C7AE7B]/40 max-h-[88vh] overflow-y-auto shadow-2xl">
+      <div className="relative w-full max-w-2xl clinic-panel-elevated rounded-3xl p-6 md:p-8 border border-[#C4A66B]/40 max-h-[88vh] overflow-y-auto shadow-2xl">
         
         {/* Header */}
-        <div className="flex items-center justify-between pb-4 border-b border-[#F4F0E6]/10">
+        <div className="flex items-center justify-between pb-4 border-b border-[#F1F0E9]/10">
           <div className="flex items-center space-x-3.5">
-            <div className="w-10 h-10 rounded-2xl bg-[#163C32] border border-[#C7AE7B]/40 flex items-center justify-center text-[#C7AE7B]">
+            <div className="w-10 h-10 rounded-2xl bg-[#173E35] border border-[#C4A66B]/40 flex items-center justify-center text-[#C4A66B]">
               <FileText className="w-5 h-5" />
             </div>
             <div>
-              <h3 id="profile-modal-title" className="text-base font-bold text-[#F4F0E6]">
+              <h3 id="profile-modal-title" className="text-base font-bold text-[#F1F0E9]">
                 Emergency Health Profile & Directives
               </h3>
-              <p className="text-xs text-[#C7AE7B] font-mono">
+              <p className="text-xs text-[#C4A66B] font-mono">
                 Stored in Local IndexedDB on this Device
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-2 rounded-xl text-[#F4F0E6]/60 hover:text-[#F4F0E6] hover:bg-[#163C32] transition-colors"
+            className="p-2 rounded-xl text-[#F1F0E9]/60 hover:text-[#F1F0E9] hover:bg-[#173E35] transition-colors"
             aria-label="Close"
           >
             <X className="w-5 h-5" />
@@ -132,13 +132,13 @@ export const HealthProfileModal: React.FC<Props> = ({
         </div>
 
         {/* Truthful Device Integration Notice (No false ECG/SpO2 claims) */}
-        <div className="my-4 p-4 rounded-2xl bg-[#163C32]/70 border border-[#C7AE7B]/25 flex items-start space-x-3 text-xs text-[#F4F0E6]/90">
-          <Cpu className="w-5 h-5 text-[#C7AE7B] shrink-0 mt-0.5" />
+        <div className="my-4 p-4 rounded-2xl bg-[#173E35]/70 border border-[#C4A66B]/25 flex items-start space-x-3 text-xs text-[#F1F0E9]/90">
+          <Cpu className="w-5 h-5 text-[#C4A66B] shrink-0 mt-0.5" />
           <div className="space-y-1">
-            <span className="font-bold text-[#C7AE7B] block font-mono">
+            <span className="font-bold text-[#C4A66B] block font-mono">
               Hardware Sensor Policy Notice
             </span>
-            <p className="text-[11px] leading-relaxed text-[#F4F0E6]/80">
+            <p className="text-[11px] leading-relaxed text-[#F1F0E9]/80">
               PulseCare+ does not estimate, simulate, or fabricate vital signs (ECG, SpO2, heart rate) using software alone. Clinical biometrics require authorized external medical sensors. Direct Bluetooth Health Device Profile (HDP) synchronization is supported in native medical client builds.
             </p>
           </div>
@@ -149,47 +149,47 @@ export const HealthProfileModal: React.FC<Props> = ({
           
           {/* Blood Type & Donor Status */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="p-4 rounded-2xl bg-[#0E2720]/80 border border-[#F4F0E6]/10 space-y-1">
-              <label className="text-[10px] font-mono font-bold uppercase text-[#C7AE7B] block">
+            <div className="p-4 rounded-2xl bg-[#0E2721]/80 border border-[#F1F0E9]/10 space-y-1">
+              <label className="text-[10px] font-mono font-bold uppercase text-[#C4A66B] block">
                 Blood Group (Verified)
               </label>
               <select
                 value={profile.bloodType}
                 onChange={(e) => setProfile({ ...profile, bloodType: e.target.value })}
-                className="w-full bg-[#163C32] border border-[#C7AE7B]/30 rounded-xl p-2.5 text-xs text-[#F4F0E6] focus:outline-none focus:border-[#C7AE7B]"
+                className="w-full bg-[#173E35] border border-[#C4A66B]/30 rounded-xl p-2.5 text-xs text-[#F1F0E9] focus:outline-none focus:border-[#C4A66B]"
               >
                 {['O+ Positive', 'O- Negative', 'A+ Positive', 'A- Negative', 'B+ Positive', 'B- Negative', 'AB+ Positive', 'AB- Negative'].map((bt) => (
-                  <option key={bt} value={bt} className="bg-[#0E2720]">
+                  <option key={bt} value={bt} className="bg-[#0E2721]">
                     {bt}
                   </option>
                 ))}
               </select>
             </div>
 
-            <div className="p-4 rounded-2xl bg-[#0E2720]/80 border border-[#F4F0E6]/10 flex items-center justify-between">
+            <div className="p-4 rounded-2xl bg-[#0E2721]/80 border border-[#F1F0E9]/10 flex items-center justify-between">
               <div>
-                <label className="text-[10px] font-mono font-bold uppercase text-[#C7AE7B] block">
+                <label className="text-[10px] font-mono font-bold uppercase text-[#C4A66B] block">
                   Organ Donor Directive
                 </label>
-                <p className="text-xs text-[#F4F0E6]">Registered on National Registry</p>
+                <p className="text-xs text-[#F1F0E9]">Registered on National Registry</p>
               </div>
               <input
                 type="checkbox"
                 checked={profile.organDonor}
                 onChange={(e) => setProfile({ ...profile, organDonor: e.target.checked })}
-                className="w-5 h-5 accent-[#C7AE7B] rounded"
+                className="w-5 h-5 accent-[#C4A66B] rounded"
               />
             </div>
           </div>
 
           {/* Critical Allergies */}
-          <div className="p-4 rounded-2xl bg-[#0E2720]/80 border border-[#F4F0E6]/10 space-y-3">
+          <div className="p-4 rounded-2xl bg-[#0E2721]/80 border border-[#F1F0E9]/10 space-y-3">
             <div className="flex items-center justify-between">
-              <label className="text-[10px] font-mono font-bold uppercase text-[#FF8A7A] flex items-center gap-1.5">
+              <label className="text-[10px] font-mono font-bold uppercase text-[#F79488] flex items-center gap-1.5">
                 <AlertTriangle className="w-3.5 h-3.5" />
                 Critical Allergies (Anaphylaxis Risk)
               </label>
-              <span className="text-[10px] text-[#C7AE7B] font-mono">
+              <span className="text-[10px] text-[#C4A66B] font-mono">
                 {profile.criticalAllergies.length} Listed
               </span>
             </div>
@@ -198,12 +198,12 @@ export const HealthProfileModal: React.FC<Props> = ({
               {profile.criticalAllergies.map((allergy, idx) => (
                 <span
                   key={idx}
-                  className="px-3 py-1 rounded-xl bg-[#163C32] border border-[#D94736]/40 text-[#F4F0E6] text-xs flex items-center gap-2"
+                  className="px-3 py-1 rounded-xl bg-[#173E35] border border-[#D44A3C]/40 text-[#F1F0E9] text-xs flex items-center gap-2"
                 >
                   <span>{allergy}</span>
                   <button
                     onClick={() => removeAllergy(idx)}
-                    className="text-[#FF8A7A] hover:text-white"
+                    className="text-[#F79488] hover:text-white"
                     title="Remove"
                   >
                     <X className="w-3.5 h-3.5" />
@@ -219,11 +219,11 @@ export const HealthProfileModal: React.FC<Props> = ({
                 onChange={(e) => setNewAllergy(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && addAllergy()}
                 placeholder="Add allergen (e.g. Latex, Penicillin)..."
-                className="flex-1 bg-[#163C32] border border-[#C7AE7B]/30 rounded-xl px-3 py-2 text-xs text-[#F4F0E6] placeholder-[#F4F0E6]/50 focus:outline-none focus:border-[#C7AE7B]"
+                className="flex-1 bg-[#173E35] border border-[#C4A66B]/30 rounded-xl px-3 py-2 text-xs text-[#F1F0E9] placeholder-[#F1F0E9]/50 focus:outline-none focus:border-[#C4A66B]"
               />
               <button
                 onClick={addAllergy}
-                className="px-3 py-2 rounded-xl bg-[#163C32] border border-[#C7AE7B]/40 hover:border-[#C7AE7B] text-[#C7AE7B] text-xs font-mono flex items-center gap-1"
+                className="px-3 py-2 rounded-xl bg-[#173E35] border border-[#C4A66B]/40 hover:border-[#C4A66B] text-[#C4A66B] text-xs font-mono flex items-center gap-1"
               >
                 <Plus className="w-3.5 h-3.5" />
                 <span>Add</span>
@@ -232,13 +232,13 @@ export const HealthProfileModal: React.FC<Props> = ({
           </div>
 
           {/* Active Medications */}
-          <div className="p-4 rounded-2xl bg-[#0E2720]/80 border border-[#F4F0E6]/10 space-y-3">
+          <div className="p-4 rounded-2xl bg-[#0E2721]/80 border border-[#F1F0E9]/10 space-y-3">
             <div className="flex items-center justify-between">
-              <label className="text-[10px] font-mono font-bold uppercase text-[#C7AE7B] flex items-center gap-1.5">
+              <label className="text-[10px] font-mono font-bold uppercase text-[#C4A66B] flex items-center gap-1.5">
                 <Pill className="w-3.5 h-3.5" />
                 Active Prescriptions & Dosages
               </label>
-              <span className="text-[10px] text-[#C7AE7B] font-mono">
+              <span className="text-[10px] text-[#C4A66B] font-mono">
                 {profile.currentMedications.length} Prescriptions
               </span>
             </div>
@@ -247,12 +247,12 @@ export const HealthProfileModal: React.FC<Props> = ({
               {profile.currentMedications.map((med, idx) => (
                 <span
                   key={idx}
-                  className="px-3 py-1 rounded-xl bg-[#163C32] border border-[#C7AE7B]/30 text-[#F4F0E6] text-xs flex items-center gap-2"
+                  className="px-3 py-1 rounded-xl bg-[#173E35] border border-[#C4A66B]/30 text-[#F1F0E9] text-xs flex items-center gap-2"
                 >
                   <span>{med}</span>
                   <button
                     onClick={() => removeMed(idx)}
-                    className="text-[#C7AE7B] hover:text-white"
+                    className="text-[#C4A66B] hover:text-white"
                     title="Remove"
                   >
                     <X className="w-3.5 h-3.5" />
@@ -268,11 +268,11 @@ export const HealthProfileModal: React.FC<Props> = ({
                 onChange={(e) => setNewMed(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && addMed()}
                 placeholder="Add medication (e.g. Albuterol 90mcg PRN)..."
-                className="flex-1 bg-[#163C32] border border-[#C7AE7B]/30 rounded-xl px-3 py-2 text-xs text-[#F4F0E6] placeholder-[#F4F0E6]/50 focus:outline-none focus:border-[#C7AE7B]"
+                className="flex-1 bg-[#173E35] border border-[#C4A66B]/30 rounded-xl px-3 py-2 text-xs text-[#F1F0E9] placeholder-[#F1F0E9]/50 focus:outline-none focus:border-[#C4A66B]"
               />
               <button
                 onClick={addMed}
-                className="px-3 py-2 rounded-xl bg-[#163C32] border border-[#C7AE7B]/40 hover:border-[#C7AE7B] text-[#C7AE7B] text-xs font-mono flex items-center gap-1"
+                className="px-3 py-2 rounded-xl bg-[#173E35] border border-[#C4A66B]/40 hover:border-[#C4A66B] text-[#C4A66B] text-xs font-mono flex items-center gap-1"
               >
                 <Plus className="w-3.5 h-3.5" />
                 <span>Add</span>
@@ -281,22 +281,22 @@ export const HealthProfileModal: React.FC<Props> = ({
           </div>
 
           {/* Emergency Medical Notes */}
-          <div className="p-4 rounded-2xl bg-[#0E2720]/80 border border-[#F4F0E6]/10 space-y-2">
-            <label className="text-[10px] font-mono font-bold uppercase text-[#C7AE7B] block">
+          <div className="p-4 rounded-2xl bg-[#0E2721]/80 border border-[#F1F0E9]/10 space-y-2">
+            <label className="text-[10px] font-mono font-bold uppercase text-[#C4A66B] block">
               Emergency Directives & Physician Notes
             </label>
             <textarea
               rows={3}
               value={profile.emergencyNotes}
               onChange={(e) => setProfile({ ...profile, emergencyNotes: e.target.value })}
-              className="w-full bg-[#163C32] border border-[#C7AE7B]/30 rounded-xl p-3 text-xs text-[#F4F0E6] placeholder-[#F4F0E6]/50 focus:outline-none focus:border-[#C7AE7B] resize-none"
+              className="w-full bg-[#173E35] border border-[#C4A66B]/30 rounded-xl p-3 text-xs text-[#F1F0E9] placeholder-[#F1F0E9]/50 focus:outline-none focus:border-[#C4A66B] resize-none"
             />
           </div>
         </div>
 
         {/* Footer Actions */}
-        <div className="mt-6 pt-4 border-t border-[#F4F0E6]/10 flex items-center justify-between">
-          <div className="text-[10px] font-mono text-[#C7AE7B]">
+        <div className="mt-6 pt-4 border-t border-[#F1F0E9]/10 flex items-center justify-between">
+          <div className="text-[10px] font-mono text-[#C4A66B]">
             {savedSuccess ? (
               <span className="text-emerald-400 font-bold flex items-center gap-1">
                 <CheckCircle2 className="w-3.5 h-3.5" /> Saved to IndexedDB
@@ -309,13 +309,13 @@ export const HealthProfileModal: React.FC<Props> = ({
           <div className="flex items-center space-x-2.5">
             <button
               onClick={onClose}
-              className="px-4 py-2 rounded-xl bg-[#163C32] border border-[#C7AE7B]/30 hover:border-[#C7AE7B] text-xs text-[#F4F0E6]"
+              className="px-4 py-2 rounded-xl bg-[#173E35] border border-[#C4A66B]/30 hover:border-[#C4A66B] text-xs text-[#F1F0E9]"
             >
               Close
             </button>
             <button
               onClick={handleSave}
-              className="px-4 py-2 rounded-xl bg-[#F4F0E6] hover:bg-white text-[#1D2521] font-bold text-xs flex items-center gap-1.5 shadow"
+              className="px-4 py-2 rounded-xl bg-[#F1F0E9] hover:bg-white text-[#18231F] font-bold text-xs flex items-center gap-1.5 shadow"
             >
               <Save className="w-3.5 h-3.5" />
               <span>Save Changes</span>

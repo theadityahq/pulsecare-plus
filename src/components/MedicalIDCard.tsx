@@ -60,8 +60,8 @@ export const MedicalIDCard: React.FC<Props> = ({ isOpen, onClose, accountId = 'l
         width: 200,
         margin: 2,
         color: {
-          dark: '#1D2521',
-          light: '#F4F0E6'
+          dark: '#18231F',
+          light: '#F1F0E9'
         }
       },
       (err, url) => {
@@ -148,31 +148,31 @@ export const MedicalIDCard: React.FC<Props> = ({ isOpen, onClose, accountId = 'l
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#0E2720]/80 backdrop-blur-md animate-in fade-in duration-200"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#0E2721]/80 backdrop-blur-md animate-in fade-in duration-200"
       role="dialog"
       aria-modal="true"
       aria-labelledby="medical-id-title"
     >
-      <div className="relative w-full max-w-2xl clinic-panel-elevated rounded-3xl p-6 md:p-8 border border-[#C7AE7B]/40 max-h-[90vh] overflow-y-auto shadow-2xl">
+      <div className="relative w-full max-w-2xl clinic-panel-elevated rounded-3xl p-6 md:p-8 border border-[#C4A66B]/40 max-h-[90vh] overflow-y-auto shadow-2xl">
         
         {/* Header with Dual-Tier Tab Switcher */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[#F4F0E6]/10">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[#F1F0E9]/10">
           <div>
-            <span className="text-[10px] font-mono font-bold text-[#C7AE7B] uppercase tracking-wider block">
+            <span className="text-[10px] font-mono font-bold text-[#C4A66B] uppercase tracking-wider block">
               Dual-Tier Health Passport
             </span>
-            <h2 id="medical-id-title" className="text-lg font-bold text-[#F4F0E6]">
+            <h2 id="medical-id-title" className="text-lg font-bold text-[#F1F0E9]">
               Emergency Medical ID & Encrypted Vault
             </h2>
           </div>
 
-          <div className="flex bg-[#0E2720] p-1 rounded-2xl border border-[#C7AE7B]/30 shrink-0">
+          <div className="flex bg-[#0E2721] p-1 rounded-2xl border border-[#C4A66B]/30 shrink-0">
             <button
               onClick={() => setActiveTab('triage')}
               className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
                 activeTab === 'triage'
-                  ? 'bg-[#163C32] text-[#F4F0E6] font-bold border border-[#C7AE7B]/40 shadow-sm'
-                  : 'text-[#F4F0E6]/70 hover:text-[#F4F0E6]'
+                  ? 'bg-[#173E35] text-[#F1F0E9] font-bold border border-[#C4A66B]/40 shadow-sm'
+                  : 'text-[#F1F0E9]/70 hover:text-[#F1F0E9]'
               }`}
             >
               Public Triage
@@ -181,22 +181,22 @@ export const MedicalIDCard: React.FC<Props> = ({ isOpen, onClose, accountId = 'l
               onClick={() => setActiveTab('vault')}
               className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-1.5 ${
                 activeTab === 'vault'
-                  ? 'bg-[#163C32] text-[#F4F0E6] font-bold border border-[#C7AE7B]/40 shadow-sm'
-                  : 'text-[#F4F0E6]/70 hover:text-[#F4F0E6]'
+                  ? 'bg-[#173E35] text-[#F1F0E9] font-bold border border-[#C4A66B]/40 shadow-sm'
+                  : 'text-[#F1F0E9]/70 hover:text-[#F1F0E9]'
               }`}
             >
-              {vaultUnlocked ? <Unlock className="w-3.5 h-3.5 text-emerald-400" /> : <Lock className="w-3.5 h-3.5 text-[#C7AE7B]" />}
+              {vaultUnlocked ? <Unlock className="w-3.5 h-3.5 text-emerald-400" /> : <Lock className="w-3.5 h-3.5 text-[#C4A66B]" />}
               <span>Encrypted Vault</span>
             </button>
             <button
               onClick={() => setActiveTab('storage')}
               className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-1.5 ${
                 activeTab === 'storage'
-                  ? 'bg-[#163C32] text-[#F4F0E6] font-bold border border-[#C7AE7B]/40 shadow-sm'
-                  : 'text-[#F4F0E6]/70 hover:text-[#F4F0E6]'
+                  ? 'bg-[#173E35] text-[#F1F0E9] font-bold border border-[#C4A66B]/40 shadow-sm'
+                  : 'text-[#F1F0E9]/70 hover:text-[#F1F0E9]'
               }`}
             >
-              <HardDrive className="w-3.5 h-3.5 text-[#C7AE7B]" />
+              <HardDrive className="w-3.5 h-3.5 text-[#C4A66B]" />
               <span>Storage</span>
             </button>
           </div>
@@ -204,7 +204,7 @@ export const MedicalIDCard: React.FC<Props> = ({ isOpen, onClose, accountId = 'l
 
         {/* Global Action feedback notice */}
         {backupNotice && (
-          <div className="my-3 p-3 rounded-xl bg-[#163C32] border border-[#C7AE7B] text-xs font-mono text-emerald-400">
+          <div className="my-3 p-3 rounded-xl bg-[#173E35] border border-[#C4A66B] text-xs font-mono text-emerald-400">
             {backupNotice}
           </div>
         )}
@@ -212,31 +212,31 @@ export const MedicalIDCard: React.FC<Props> = ({ isOpen, onClose, accountId = 'l
         {/* TAB 1: Public Emergency Triage Card */}
         {activeTab === 'triage' && (
           <div className="py-4 space-y-5">
-            <div className="p-3.5 rounded-2xl bg-[#163C32]/70 border border-[#C7AE7B]/25 flex items-center space-x-2.5 text-xs text-[#F4F0E6]/90">
-              <ShieldCheck className="w-5 h-5 text-[#C7AE7B] shrink-0" />
+            <div className="p-3.5 rounded-2xl bg-[#173E35]/70 border border-[#C4A66B]/25 flex items-center space-x-2.5 text-xs text-[#F1F0E9]/90">
+              <ShieldCheck className="w-5 h-5 text-[#C4A66B] shrink-0" />
               <p className="text-[11px] leading-relaxed">
                 <strong>Zero-Auth Emergency Access:</strong> Paramedics and bystanders can scan this QR code without passwords to read life-critical allergies and emergency contacts immediately.
               </p>
             </div>
 
             {/* Printable Emergency Passport Card */}
-            <div className="rounded-3xl p-6 bg-[#F4F0E6] text-[#1D2521] border-2 border-[#C7AE7B] shadow-xl space-y-4">
-              <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pb-4 border-b border-[#1D2521]/15">
+            <div className="rounded-3xl p-6 bg-[#F1F0E9] text-[#18231F] border-2 border-[#C4A66B] shadow-xl space-y-4">
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pb-4 border-b border-[#18231F]/15">
                 <div className="text-center sm:text-left">
-                  <span className="text-[10px] font-mono uppercase tracking-widest text-[#B82E1E] font-bold block">
+                  <span className="text-[10px] font-mono uppercase tracking-widest text-[#BA3B2E] font-bold block">
                     EMERGENCY MEDICAL IDENTIFICATION
                   </span>
-                  <h3 className="text-xl font-black text-[#1D2521] mt-0.5">{SIMULATED_USER.name}</h3>
-                  <p className="text-xs text-[#1D2521]/75">
+                  <h3 className="text-xl font-black text-[#18231F] mt-0.5">{SIMULATED_USER.name}</h3>
+                  <p className="text-xs text-[#18231F]/75">
                     DOB: {SIMULATED_USER.dob} (Age {SIMULATED_USER.age})
                   </p>
                 </div>
 
                 {/* QR Code in Warm Ivory / Charcoal */}
                 {qrDataUrl && (
-                  <div className="p-2 rounded-2xl bg-white border border-[#C7AE7B]/40 shadow-inner flex flex-col items-center shrink-0">
+                  <div className="p-2 rounded-2xl bg-white border border-[#C4A66B]/40 shadow-inner flex flex-col items-center shrink-0">
                     <img src={qrDataUrl} alt="Emergency Medical Triage QR Code" className="w-28 h-28 rounded-lg" />
-                    <span className="text-[9px] font-mono text-[#1D2521]/70 mt-1 uppercase font-bold">
+                    <span className="text-[9px] font-mono text-[#18231F]/70 mt-1 uppercase font-bold">
                       Scan in Emergency
                     </span>
                   </div>
@@ -245,15 +245,15 @@ export const MedicalIDCard: React.FC<Props> = ({ isOpen, onClose, accountId = 'l
 
               {/* Critical Triage Highlights */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-                <div className="p-3 rounded-xl bg-white/70 border border-[#1D2521]/10">
-                  <span className="text-[10px] font-mono text-[#B82E1E] font-bold uppercase block mb-1">
+                <div className="p-3 rounded-xl bg-white/70 border border-[#18231F]/10">
+                  <span className="text-[10px] font-mono text-[#BA3B2E] font-bold uppercase block mb-1">
                     BLOOD GROUP
                   </span>
-                  <span className="text-base font-black text-[#1D2521]">{SIMULATED_USER.bloodType}</span>
+                  <span className="text-base font-black text-[#18231F]">{SIMULATED_USER.bloodType}</span>
                 </div>
 
-                <div className="p-3 rounded-xl bg-white/70 border border-[#1D2521]/10">
-                  <span className="text-[10px] font-mono text-[#1D2521]/70 font-bold uppercase block mb-1">
+                <div className="p-3 rounded-xl bg-white/70 border border-[#18231F]/10">
+                  <span className="text-[10px] font-mono text-[#18231F]/70 font-bold uppercase block mb-1">
                     ORGAN DONOR STATUS
                   </span>
                   <span className="text-sm font-bold text-emerald-800">
@@ -264,7 +264,7 @@ export const MedicalIDCard: React.FC<Props> = ({ isOpen, onClose, accountId = 'l
 
               {/* Lethal Allergies Warning */}
               <div className="p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-xs">
-                <span className="text-[10px] font-mono text-[#B82E1E] font-bold uppercase block mb-1">
+                <span className="text-[10px] font-mono text-[#BA3B2E] font-bold uppercase block mb-1">
                   CRITICAL ALLERGIES (ANAPHYLAXIS RISK)
                 </span>
                 <p className="font-bold text-rose-950">
@@ -274,18 +274,18 @@ export const MedicalIDCard: React.FC<Props> = ({ isOpen, onClose, accountId = 'l
 
               {/* Emergency Contacts */}
               <div className="space-y-1.5 text-xs">
-                <span className="text-[10px] font-mono text-[#1D2521]/70 font-bold uppercase block">
+                <span className="text-[10px] font-mono text-[#18231F]/70 font-bold uppercase block">
                   EMERGENCY CONTACTS
                 </span>
                 {EMERGENCY_CONTACTS.slice(0, 2).map((c) => (
                   <div key={c.id} className="p-2.5 rounded-xl bg-white/60 flex items-center justify-between">
                     <div>
-                      <span className="font-bold text-[#1D2521]">{c.name}</span>
-                      <span className="text-[10px] text-[#1D2521]/60 block">{c.relationship}</span>
+                      <span className="font-bold text-[#18231F]">{c.name}</span>
+                      <span className="text-[10px] text-[#18231F]/60 block">{c.relationship}</span>
                     </div>
                     <a
                       href={`tel:${c.phone}`}
-                      className="px-2.5 py-1 rounded-lg bg-[#163C32] text-[#F4F0E6] text-xs font-mono font-bold"
+                      className="px-2.5 py-1 rounded-lg bg-[#173E35] text-[#F1F0E9] text-xs font-mono font-bold"
                     >
                       {c.phone}
                     </a>
@@ -296,12 +296,12 @@ export const MedicalIDCard: React.FC<Props> = ({ isOpen, onClose, accountId = 'l
 
             {/* Print & Download Action */}
             <div className="flex items-center justify-between pt-2">
-              <span className="text-[11px] text-[#C7AE7B] font-mono">
+              <span className="text-[11px] text-[#C4A66B] font-mono">
                 Store as Lockscreen or Print for Wallet
               </span>
               <button
                 onClick={() => window.print()}
-                className="px-4 py-2 rounded-xl bg-[#F4F0E6] hover:bg-white text-[#1D2521] text-xs font-bold font-mono flex items-center gap-1.5 shadow"
+                className="px-4 py-2 rounded-xl bg-[#F1F0E9] hover:bg-white text-[#18231F] text-xs font-bold font-mono flex items-center gap-1.5 shadow"
               >
                 <Download className="w-3.5 h-3.5" />
                 <span>Print Wallet Pass</span>
@@ -314,13 +314,13 @@ export const MedicalIDCard: React.FC<Props> = ({ isOpen, onClose, accountId = 'l
         {activeTab === 'vault' && (
           <div className="py-4 space-y-5">
             {!vaultUnlocked ? (
-              <form onSubmit={handleUnlockVault} className="p-6 rounded-2xl bg-[#0E2720]/80 border border-[#C7AE7B]/30 text-center max-w-md mx-auto space-y-4">
-                <div className="w-12 h-12 rounded-2xl bg-[#163C32] border border-[#C7AE7B]/40 text-[#C7AE7B] flex items-center justify-center mx-auto">
+              <form onSubmit={handleUnlockVault} className="p-6 rounded-2xl bg-[#0E2721]/80 border border-[#C4A66B]/30 text-center max-w-md mx-auto space-y-4">
+                <div className="w-12 h-12 rounded-2xl bg-[#173E35] border border-[#C4A66B]/40 text-[#C4A66B] flex items-center justify-center mx-auto">
                   <Lock className="w-6 h-6" />
                 </div>
                 <div>
-                  <h4 className="text-base font-bold text-[#F4F0E6]">Unlock Encrypted Health Records</h4>
-                  <p className="text-xs text-[#F4F0E6]/70 mt-1">
+                  <h4 className="text-base font-bold text-[#F1F0E9]">Unlock Encrypted Health Records</h4>
+                  <p className="text-xs text-[#F1F0E9]/70 mt-1">
                     Client-side Web Crypto AES-GCM decryption with PBKDF2 key derivation.
                   </p>
                 </div>
@@ -330,28 +330,28 @@ export const MedicalIDCard: React.FC<Props> = ({ isOpen, onClose, accountId = 'l
                     value={passphrase}
                     onChange={(e) => setPassphrase(e.target.value)}
                     placeholder="Enter vault passphrase (min 4 chars)..."
-                    className="w-full bg-[#163C32] border border-[#C7AE7B]/30 rounded-xl p-2.5 text-xs text-[#F4F0E6] focus:outline-none focus:border-[#C7AE7B] text-center"
+                    className="w-full bg-[#173E35] border border-[#C4A66B]/30 rounded-xl p-2.5 text-xs text-[#F1F0E9] focus:outline-none focus:border-[#C4A66B] text-center"
                   />
                   {passphraseError && (
-                    <p className="text-xs text-[#FF8A7A]">{passphraseError}</p>
+                    <p className="text-xs text-[#F79488]">{passphraseError}</p>
                   )}
                 </div>
                 <button
                   type="submit"
-                  className="w-full py-2.5 rounded-xl bg-[#F4F0E6] hover:bg-white text-[#1D2521] font-bold text-xs shadow"
+                  className="w-full py-2.5 rounded-xl bg-[#F1F0E9] hover:bg-white text-[#18231F] font-bold text-xs shadow"
                 >
                   Decrypt & Unlock Vault
                 </button>
               </form>
             ) : (
               <div className="space-y-4">
-                <div className="flex items-center justify-between pb-2 border-b border-[#F4F0E6]/10">
+                <div className="flex items-center justify-between pb-2 border-b border-[#F1F0E9]/10">
                   <span className="text-xs font-mono text-emerald-400 font-bold flex items-center gap-1">
                     <Unlock className="w-3.5 h-3.5" /> Vault Decrypted (AES-GCM 256)
                   </span>
                   <button
                     onClick={() => setVaultUnlocked(false)}
-                    className="text-xs text-[#C7AE7B] hover:underline font-mono"
+                    className="text-xs text-[#C4A66B] hover:underline font-mono"
                   >
                     Lock Vault
                   </button>
@@ -359,16 +359,16 @@ export const MedicalIDCard: React.FC<Props> = ({ isOpen, onClose, accountId = 'l
 
                 <div className="space-y-3">
                   {MEDICAL_RECORDS.map((rec) => (
-                    <div key={rec.id} className="p-4 rounded-2xl bg-[#0E2720]/80 border border-[#C7AE7B]/25 space-y-1.5">
+                    <div key={rec.id} className="p-4 rounded-2xl bg-[#0E2721]/80 border border-[#C4A66B]/25 space-y-1.5">
                       <div className="flex items-center justify-between">
-                        <span className="text-[10px] font-mono text-[#C7AE7B] font-bold uppercase">
+                        <span className="text-[10px] font-mono text-[#C4A66B] font-bold uppercase">
                           {rec.category} • {rec.date}
                         </span>
                         <span className="text-[10px] font-mono text-emerald-400">Zero-Knowledge Validated</span>
                       </div>
-                      <h4 className="text-sm font-bold text-[#F4F0E6]">{rec.title}</h4>
-                      <p className="text-xs text-[#F4F0E6]/80">{rec.summary}</p>
-                      <p className="text-[10px] text-[#C7AE7B] font-mono pt-1">Physician: {rec.doctor}</p>
+                      <h4 className="text-sm font-bold text-[#F1F0E9]">{rec.title}</h4>
+                      <p className="text-xs text-[#F1F0E9]/80">{rec.summary}</p>
+                      <p className="text-[10px] text-[#C4A66B] font-mono pt-1">Physician: {rec.doctor}</p>
                     </div>
                   ))}
                 </div>
@@ -380,26 +380,26 @@ export const MedicalIDCard: React.FC<Props> = ({ isOpen, onClose, accountId = 'l
         {/* TAB 3: Local Storage & Backup Management */}
         {activeTab === 'storage' && (
           <div className="py-4 space-y-5">
-            <div className="p-4 rounded-2xl bg-[#0E2720]/80 border border-[#C7AE7B]/30 space-y-3">
-              <h4 className="text-xs font-mono font-bold uppercase text-[#C7AE7B] tracking-wider">
+            <div className="p-4 rounded-2xl bg-[#0E2721]/80 border border-[#C4A66B]/30 space-y-3">
+              <h4 className="text-xs font-mono font-bold uppercase text-[#C4A66B] tracking-wider">
                 What is stored on this device?
               </h4>
-              <p className="text-xs text-[#F4F0E6]/80 leading-relaxed">
-                PulseCare+ is a local-first application. Your health records and emergency contacts are stored in your browser's IndexedDB database (<code className="text-[#C7AE7B]">pulsecare_local_db</code>). Browser storage is local to this computer and browser profile; clearing site data in browser settings will remove local records unless exported to an encrypted backup.
+              <p className="text-xs text-[#F1F0E9]/80 leading-relaxed">
+                PulseCare+ is a local-first application. Your health records and emergency contacts are stored in your browser's IndexedDB database (<code className="text-[#C4A66B]">pulsecare_local_db</code>). Browser storage is local to this computer and browser profile; clearing site data in browser settings will remove local records unless exported to an encrypted backup.
               </p>
               {storageInfo && (
                 <div className="grid grid-cols-3 gap-2 pt-2 text-center text-xs">
-                  <div className="p-2.5 rounded-xl bg-[#163C32]">
-                    <span className="text-[10px] text-[#C7AE7B] block font-mono">RECORDS</span>
-                    <span className="font-bold text-[#F4F0E6] text-sm">{storageInfo.recordsCount}</span>
+                  <div className="p-2.5 rounded-xl bg-[#173E35]">
+                    <span className="text-[10px] text-[#C4A66B] block font-mono">RECORDS</span>
+                    <span className="font-bold text-[#F1F0E9] text-sm">{storageInfo.recordsCount}</span>
                   </div>
-                  <div className="p-2.5 rounded-xl bg-[#163C32]">
-                    <span className="text-[10px] text-[#C7AE7B] block font-mono">CONTACTS</span>
-                    <span className="font-bold text-[#F4F0E6] text-sm">{storageInfo.contactsCount}</span>
+                  <div className="p-2.5 rounded-xl bg-[#173E35]">
+                    <span className="text-[10px] text-[#C4A66B] block font-mono">CONTACTS</span>
+                    <span className="font-bold text-[#F1F0E9] text-sm">{storageInfo.contactsCount}</span>
                   </div>
-                  <div className="p-2.5 rounded-xl bg-[#163C32]">
-                    <span className="text-[10px] text-[#C7AE7B] block font-mono">DATA SIZE</span>
-                    <span className="font-bold text-[#F4F0E6] text-sm">~{Math.round(storageInfo.estimatedBytes / 1024)} KB</span>
+                  <div className="p-2.5 rounded-xl bg-[#173E35]">
+                    <span className="text-[10px] text-[#C4A66B] block font-mono">DATA SIZE</span>
+                    <span className="font-bold text-[#F1F0E9] text-sm">~{Math.round(storageInfo.estimatedBytes / 1024)} KB</span>
                   </div>
                 </div>
               )}
@@ -409,40 +409,40 @@ export const MedicalIDCard: React.FC<Props> = ({ isOpen, onClose, accountId = 'l
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <button
                 onClick={handleExportBackup}
-                className="p-3.5 rounded-2xl bg-[#163C32] hover:bg-[#1D4A3E] border border-[#C7AE7B]/40 text-left transition-colors flex items-center space-x-3"
+                className="p-3.5 rounded-2xl bg-[#173E35] hover:bg-[#1F4D43] border border-[#C4A66B]/40 text-left transition-colors flex items-center space-x-3"
               >
-                <Download className="w-5 h-5 text-[#C7AE7B] shrink-0" />
+                <Download className="w-5 h-5 text-[#C4A66B] shrink-0" />
                 <div>
-                  <h5 className="text-xs font-bold text-[#F4F0E6]">Export Encrypted Backup</h5>
-                  <p className="text-[10px] text-[#F4F0E6]/70">Password-protected .pcpass file</p>
+                  <h5 className="text-xs font-bold text-[#F1F0E9]">Export Encrypted Backup</h5>
+                  <p className="text-[10px] text-[#F1F0E9]/70">Password-protected .pcpass file</p>
                 </div>
               </button>
 
               <button
                 onClick={handleImportBackup}
-                className="p-3.5 rounded-2xl bg-[#163C32] hover:bg-[#1D4A3E] border border-[#C7AE7B]/40 text-left transition-colors flex items-center space-x-3"
+                className="p-3.5 rounded-2xl bg-[#173E35] hover:bg-[#1F4D43] border border-[#C4A66B]/40 text-left transition-colors flex items-center space-x-3"
               >
-                <Upload className="w-5 h-5 text-[#C7AE7B] shrink-0" />
+                <Upload className="w-5 h-5 text-[#C4A66B] shrink-0" />
                 <div>
-                  <h5 className="text-xs font-bold text-[#F4F0E6]">Restore from Backup</h5>
-                  <p className="text-[10px] text-[#F4F0E6]/70">Decrypt & restore into IndexedDB</p>
+                  <h5 className="text-xs font-bold text-[#F1F0E9]">Restore from Backup</h5>
+                  <p className="text-[10px] text-[#F1F0E9]/70">Decrypt & restore into IndexedDB</p>
                 </div>
               </button>
             </div>
 
             {/* Confirmed Delete Local Data */}
-            <div className="p-4 rounded-2xl bg-[#0E2720]/80 border border-[#D94736]/30 space-y-2">
+            <div className="p-4 rounded-2xl bg-[#0E2721]/80 border border-[#D44A3C]/30 space-y-2">
               <div className="flex items-center justify-between">
                 <div>
-                  <h5 className="text-xs font-bold text-[#FF8A7A]">Delete All Local Health Data</h5>
-                  <p className="text-[10px] text-[#F4F0E6]/70">
+                  <h5 className="text-xs font-bold text-[#F79488]">Delete All Local Health Data</h5>
+                  <p className="text-[10px] text-[#F1F0E9]/70">
                     Irrevocably deletes profile, vault, and contacts from this browser.
                   </p>
                 </div>
                 {!confirmDelete ? (
                   <button
                     onClick={() => setConfirmDelete(true)}
-                    className="px-3 py-1.5 rounded-xl bg-[#0E2720] border border-[#D94736]/60 text-[#FF8A7A] hover:bg-[#B82E1E] hover:text-white text-xs font-mono transition-colors"
+                    className="px-3 py-1.5 rounded-xl bg-[#0E2721] border border-[#D44A3C]/60 text-[#F79488] hover:bg-[#BA3B2E] hover:text-white text-xs font-mono transition-colors"
                   >
                     Delete Data
                   </button>
@@ -450,13 +450,13 @@ export const MedicalIDCard: React.FC<Props> = ({ isOpen, onClose, accountId = 'l
                   <div className="flex items-center space-x-2">
                     <button
                       onClick={() => setConfirmDelete(false)}
-                      className="px-2.5 py-1 rounded-xl bg-[#163C32] text-xs text-[#F4F0E6]"
+                      className="px-2.5 py-1 rounded-xl bg-[#173E35] text-xs text-[#F1F0E9]"
                     >
                       Cancel
                     </button>
                     <button
                       onClick={handleDeleteAll}
-                      className="px-3 py-1 rounded-xl bg-[#B82E1E] text-white text-xs font-bold font-mono"
+                      className="px-3 py-1 rounded-xl bg-[#BA3B2E] text-white text-xs font-bold font-mono"
                     >
                       Confirm Delete
                     </button>
@@ -468,13 +468,13 @@ export const MedicalIDCard: React.FC<Props> = ({ isOpen, onClose, accountId = 'l
         )}
 
         {/* Footer */}
-        <div className="mt-6 pt-4 border-t border-[#F4F0E6]/10 flex items-center justify-between">
-          <span className="text-[10px] font-mono text-[#C7AE7B]">
+        <div className="mt-6 pt-4 border-t border-[#F1F0E9]/10 flex items-center justify-between">
+          <span className="text-[10px] font-mono text-[#C4A66B]">
             Local-First Zero-Knowledge Architecture
           </span>
           <button
             onClick={onClose}
-            className="px-4 py-2 rounded-xl bg-[#163C32] border border-[#C7AE7B]/30 hover:border-[#C7AE7B] text-[#F4F0E6] text-xs font-mono"
+            className="px-4 py-2 rounded-xl bg-[#173E35] border border-[#C4A66B]/30 hover:border-[#C4A66B] text-[#F1F0E9] text-xs font-mono"
           >
             Close
           </button>
