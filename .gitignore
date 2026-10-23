@@ -1,0 +1,28 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Build output
+dist/
+dist-ssr/
+build/
+*.local
+
+# Environment variables & secrets
+.env
+.env.*
+!.env.example
+
+# Local backups & patient exports
+*.pcpass
+*.bak
+*.log
+
+# Editor & OS files
+.DS_Store
+Thumbs.db
+.vscode/
+# Test reports
+lighthouse-report.json
+*.report.json

@@ -1,4 +1,4 @@
-import React, { useState, lazy, Suspense } from 'react';
+import React, { useState, useEffect, lazy, Suspense } from 'react';
 import {
   Home,
   Bell,
@@ -30,7 +30,9 @@ import {
   ChevronRight,
   ExternalLink,
   Clock,
-  Compass
+  Compass,
+  Lock,
+  Download
 } from 'lucide-react';
 
 // Code-split dynamic chunks
@@ -46,8 +48,8 @@ const MedicalIDCard = lazy(() =>
 const AIAssistantModal = lazy(() =>
   import('./components/AIAssistantModal').then((m) => ({ default: m.AIAssistantModal }))
 );
-const VitalsMonitorModal = lazy(() =>
-  import('./components/VitalsMonitorModal').then((m) => ({ default: m.VitalsMonitorModal }))
+const HealthProfileModal = lazy(() =>
+  import('./components/HealthProfileModal').then((m) => ({ default: m.HealthProfileModal }))
 );
 const PharmaciesModal = lazy(() =>
   import('./components/PharmaciesModal').then((m) => ({ default: m.PharmaciesModal }))
@@ -67,6 +69,12 @@ const HospitalLocator = lazy(() =>
 const CommunityAndContacts = lazy(() =>
   import('./components/CommunityAndContacts').then((m) => ({ default: m.CommunityAndContacts }))
 );
+const LocationPermissionModal = lazy(() =>
+  import('./components/LocationPermissionModal').then((m) => ({ default: m.LocationPermissionModal }))
+);
+const NotificationSettingsModal = lazy(() =>
+  import('./components/NotificationSettingsModal').then((m) => ({ default: m.NotificationSettingsModal }))
+);
 
 import {
   HolographicHeart,
@@ -77,8 +85,47 @@ import {
 import { PulseCareEmblem } from './components/PulseCareEmblem';
 import { Hospital } from './types';
 import { HOSPITALS, SIMULATED_USER } from './data/mockData';
+import {
+  LocationTelemetry,
+  LocationPermissionState,
+  DEFAULT_FALLBACK_LOCATION,
+  queryLocationPermission,
+  calculateDistanceKm,
+  formatDistance,
+  estimateDriveTime
+} from './services/locationService';
+import {
+  NotificationPermissionStatus,
+  getNotificationPermissionStatus
+} from './services/notificationService';
+import { getLocalProfile, UserProfile } from './services/db';
 
 export function App() {
+  const [activeAccount, setActiveAccount] = useState<string>('local-default');
+  const [userProfile, setUserProfile] = useState<UserProfile>({
+    accountId: 'local-default',
+    name: SIMULATED_USER.name,
+    age: SIMULATED_USER.age,
+    dob: SIMULATED_USER.dob,
+    bloodType: SIMULATED_USER.bloodType,
+    organDonor: SIMULATED_USER.organDonor,
+    criticalAllergies: [...SIMULATED_USER.criticalAllergies],
+    chronicConditions: [...SIMULATED_USER.chronicConditions],
+    currentMedications: [...SIMULATED_USER.currentMedications],
+    emergencyNotes: SIMULATED_USER.emergencyNotes,
+    insurance: { ...SIMULATED_USER.insurance },
+    lastUpdated: new Date().toISOString()
+  });
+
+  // Location Telemetry State (Truthful browser state)
+  const [locationPermission, setLocationPermission] = useState<LocationPermissionState>('prompt');
+  const [currentLocation, setCurrentLocation] = useState<LocationTelemetry>(DEFAULT_FALLBACK_LOCATION);
+  const [isLocationModalOpen, setIsLocationModalOpen] = useState<boolean>(false);
+
+  // Notification Permission State (Separated from location)
+  const [notificationStatus, setNotificationStatus] = useState<NotificationPermissionStatus>('default');
+  const [isNotificationModalOpen, setIsNotificationModalOpen] = useState<boolean>(false);
+
   const [selectedHospital, setSelectedHospital] = useState<Hospital | null>(HOSPITALS[0]);
   const [sosActive, setSosActive] = useState<boolean>(false);
   const [activeNav, setActiveNav] = useState<string>('Home');
@@ -88,10 +135,34 @@ export function App() {
   const [isSosModalOpen, setIsSosModalOpen] = useState<boolean>(false);
   const [isMedicalIdOpen, setIsMedicalIdOpen] = useState<boolean>(false);
   const [isAiModalOpen, setIsAiModalOpen] = useState<boolean>(false);
-  const [isVitalsOpen, setIsVitalsOpen] = useState<boolean>(false);
+  const [isHealthProfileOpen, setIsHealthProfileOpen] = useState<boolean>(false);
   const [isPharmaciesOpen, setIsPharmaciesOpen] = useState<boolean>(false);
   const [isPrepOpen, setIsPrepOpen] = useState<boolean>(false);
   const [liveTrackerService, setLiveTrackerService] = useState<string | null>(null);
+
+  // Initial load: Query permissions and local profile
+  useEffect(() => {
+    queryLocationPermission().then(setLocationPermission);
+    setNotificationStatus(getNotificationPermissionStatus());
+    getLocalProfile(activeAccount).then((stored) => {
+      if (stored) setUserProfile(stored);
+    });
+  }, [activeAccount]);
+
+  // Compute dynamic hospital distances from active coordinates
+  const hospitalsWithDynamicDistances = HOSPITALS.map((hosp) => {
+    const distKm = calculateDistanceKm(
+      currentLocation.lat,
+      currentLocation.lng,
+      hosp.latLong.lat,
+      hosp.latLong.lng
+    );
+    return {
+      ...hosp,
+      dynamicDistance: formatDistance(distKm),
+      dynamicDriveTime: estimateDriveTime(distKm)
+    };
+  });
 
   const handleNavClick = (label: string) => {
     setActiveNav(label);
@@ -106,7 +177,7 @@ export function App() {
       {/* 1. LEFT NAVIGATION RAIL (Future Clinic Architecture) */}
       <aside className="w-64 shrink-0 bg-[#0E2720]/95 backdrop-blur-xl border-r border-[#C7AE7B]/20 p-5 flex flex-col justify-between hidden lg:flex h-screen sticky top-0 z-30 shadow-2xl">
         <div className="space-y-6">
-          {/* Logo & Clinical Brand Mark */}
+          {/* Logo & Brand Mark */}
           <div className="flex items-center space-x-3 px-2">
             <div className="w-9 h-9 rounded-xl bg-[#163C32] border border-[#C7AE7B]/40 flex items-center justify-center">
               <PulseCareEmblem size={26} />
@@ -152,37 +223,52 @@ export function App() {
           </nav>
         </div>
 
-        {/* Bottom User Profile & Telemetry Indicator */}
+        {/* Bottom User Profile & Honest Telemetry Indicator */}
         <div className="space-y-3 pt-4 border-t border-[#C7AE7B]/20">
-          {/* Objective Status Badge (Honest status, no false safety claims) */}
-          <div className="clinic-panel p-3 rounded-2xl flex items-center justify-between border-[#C7AE7B]/20">
-            <div className="space-y-0.5">
+          
+          {/* Honest Location Status Badge (Click to open permission/selection modal) */}
+          <button
+            onClick={() => setIsLocationModalOpen(true)}
+            className="w-full clinic-panel p-3 rounded-2xl flex items-center justify-between border-[#C7AE7B]/20 text-left hover:border-[#C7AE7B]/50 transition-colors"
+            title="Configure Location Source"
+          >
+            <div className="space-y-0.5 min-w-0 pr-2">
               <div className="flex items-center space-x-2">
-                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                <span className="text-xs font-bold text-[#F4F0E6]">Location Active</span>
+                <span
+                  className={`w-2 h-2 rounded-full ${
+                    currentLocation.source === 'gps'
+                      ? 'bg-emerald-400 animate-pulse'
+                      : 'bg-[#C7AE7B]'
+                  }`}
+                />
+                <span className="text-xs font-bold text-[#F4F0E6] truncate">
+                  {currentLocation.source === 'gps' ? 'GPS Active' : 'Manual Location'}
+                </span>
               </div>
-              <p className="text-[10px] text-[#C7AE7B] font-mono">Delhi Capital Region</p>
+              <p className="text-[10px] text-[#C7AE7B] font-mono truncate">
+                {currentLocation.locationName}
+              </p>
             </div>
-            <div className="p-2 rounded-xl bg-[#163C32] text-[#C7AE7B] border border-[#C7AE7B]/30">
+            <div className="p-2 rounded-xl bg-[#163C32] text-[#C7AE7B] border border-[#C7AE7B]/30 shrink-0">
               <Compass className="w-4 h-4" />
             </div>
-          </div>
+          </button>
 
-          {/* User Profile Card */}
+          {/* User Profile Card (Click to open Health Profile) */}
           <div
-            onClick={() => setIsMedicalIdOpen(true)}
+            onClick={() => setIsHealthProfileOpen(true)}
             className="flex items-center space-x-3 p-2.5 rounded-2xl hover:bg-[#163C32]/60 cursor-pointer transition-colors border border-transparent hover:border-[#C7AE7B]/30"
             role="button"
             tabIndex={0}
-            onKeyDown={(e) => e.key === 'Enter' && setIsMedicalIdOpen(true)}
-            title="Open Medical ID Pass"
+            onKeyDown={(e) => e.key === 'Enter' && setIsHealthProfileOpen(true)}
+            title="Open Health Profile & Care Directives"
           >
             <div className="w-10 h-10 rounded-full bg-[#163C32] border border-[#C7AE7B]/50 p-0.5 shrink-0 flex items-center justify-center text-[#C7AE7B] font-bold text-xs shadow-inner">
               AS
             </div>
             <div className="min-w-0 flex-1">
-              <h4 className="text-xs font-bold text-[#F4F0E6] truncate">{SIMULATED_USER.name}</h4>
-              <p className="text-[10px] text-[#C7AE7B] font-mono">{SIMULATED_USER.bloodType} • Medical Pass</p>
+              <h4 className="text-xs font-bold text-[#F4F0E6] truncate">{userProfile.name}</h4>
+              <p className="text-[10px] text-[#C7AE7B] font-mono">{userProfile.bloodType} • Profile</p>
             </div>
             <ChevronRight className="w-4 h-4 text-[#C7AE7B]/60" />
           </div>
@@ -210,12 +296,26 @@ export function App() {
             </span>
           </div>
 
-          {/* Environmental Health Widget */}
+          {/* Environmental Health & Notification Control Widget */}
           <div className="flex items-center space-x-3 shrink-0">
+            {/* Separate Notification Setting Button */}
+            <button
+              onClick={() => setIsNotificationModalOpen(true)}
+              className="p-2.5 rounded-2xl clinic-panel border-[#C7AE7B]/30 text-[#C7AE7B] hover:text-[#F4F0E6] hover:border-[#C7AE7B] transition-colors relative"
+              title="Notification Settings (Opt-in)"
+              aria-label="Notification Settings"
+            >
+              <Bell className="w-4 h-4" />
+              {notificationStatus === 'granted' && (
+                <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-emerald-400" />
+              )}
+            </button>
+
+            {/* Environmental Health Widget */}
             <div className="hidden sm:flex items-center space-x-3 clinic-panel px-4 py-2 rounded-2xl border-[#C7AE7B]/25">
               <div>
                 <div className="flex items-center space-x-1.5 text-[11px] text-[#F4F0E6]/75 font-medium">
-                  <span>New Delhi</span>
+                  <span className="truncate max-w-[100px]">{currentLocation.locationName.split(' ')[0]}</span>
                   <MapPin className="w-3 h-3 text-[#C7AE7B]" />
                 </div>
                 <div className="flex items-center space-x-1.5">
@@ -234,7 +334,7 @@ export function App() {
             {/* Mobile Emergency SOS Button */}
             <button
               onClick={() => setIsSosModalOpen(true)}
-              className="lg:hidden p-2.5 rounded-xl bg-[#D94736] text-white shadow-lg active:scale-95 transition-transform"
+              className="lg:hidden p-2.5 rounded-xl bg-[#B82E1E] text-white shadow-lg active:scale-95 transition-transform"
               title="Emergency SOS"
               aria-label="Emergency SOS"
             >
@@ -248,7 +348,7 @@ export function App() {
           
           {/* Active SOS Urgent Banner if triggered */}
           {sosActive && (
-            <div className="bg-[#D94736] text-white p-4 rounded-2xl flex items-center justify-between font-bold text-xs animate-pulse shadow-2xl border border-white/20">
+            <div className="bg-[#B82E1E] text-white p-4 rounded-2xl flex items-center justify-between font-bold text-xs animate-pulse shadow-2xl border border-white/20">
               <div className="flex items-center space-x-2.5">
                 <Radio className="w-5 h-5 animate-ping shrink-0" />
                 <span>[SIMULATION] EMERGENCY SOS ACTIVE • LOCAL RESCUE CIRCLE NOTIFIED WITH GPS COORDINATES</span>
@@ -333,7 +433,7 @@ export function App() {
                   onClick={() => setActiveNav('First Aid')}
                   className="clinic-panel p-3 rounded-2xl flex flex-col items-center text-center space-y-2 hover:border-[#C7AE7B] hover:scale-105 transition-all shadow-sm group"
                 >
-                  <div className="p-2 rounded-xl bg-[#163C32] text-[#D94736] border border-[#D94736]/30 group-hover:bg-[#D94736] group-hover:text-white transition-colors">
+                  <div className="p-2 rounded-xl bg-[#163C32] text-[#FF8A7A] border border-[#B82E1E]/40 group-hover:bg-[#B82E1E] group-hover:text-white transition-colors">
                     <PlusSquare className="w-4 h-4" />
                   </div>
                   <span className="text-[11px] font-bold text-[#F4F0E6]">First Aid Guide</span>
@@ -378,11 +478,11 @@ export function App() {
                 >
                   <div className="space-y-0.5">
                     <p className="text-xs font-bold text-[#F4F0E6] flex items-center gap-1.5">
-                      PulseCare Triage
+                      PulseCare Assistant
                       <span className="w-1.5 h-1.5 rounded-full bg-[#C7AE7B] animate-ping" />
                     </p>
                     <p className="text-[10px] text-[#F4F0E6]/80 leading-tight">
-                      Instant clinical triage, symptom analysis & first-aid steps.
+                      Evidence-based symptom guidance & rapid first-aid steps.
                     </p>
                   </div>
                   <div className="p-1.5 rounded-xl bg-[#F4F0E6] text-[#1D2521] shrink-0 shadow">
@@ -421,13 +521,15 @@ export function App() {
                   </div>
                   <div>
                     <h3 className="text-xs font-bold text-[#F4F0E6]">Nearby Facilities</h3>
-                    <p className="text-[10px] text-[#C7AE7B] font-mono">Syncs with 3D Globe</p>
+                    <p className="text-[10px] text-[#C7AE7B] font-mono">
+                      Calculated from {currentLocation.source === 'gps' ? 'GPS' : 'Active Region'}
+                    </p>
                   </div>
                 </div>
 
-                {/* Filterable / Selectable Hospital Cards */}
+                {/* Filterable / Selectable Hospital Cards with Real Dynamic Distances */}
                 <div className="space-y-2.5" role="list">
-                  {HOSPITALS.slice(0, 4).map((hosp) => {
+                  {hospitalsWithDynamicDistances.slice(0, 4).map((hosp) => {
                     const isSelected = selectedHospital?.id === hosp.id;
                     return (
                       <div
@@ -448,7 +550,7 @@ export function App() {
                               {hosp.category === 'Trauma Center Level 1' ? 'Trauma L1' : hosp.category}
                             </span>
                             {isSelected && (
-                              <span className="w-1.5 h-1.5 rounded-full bg-[#D94736] animate-pulse" />
+                              <span className="w-1.5 h-1.5 rounded-full bg-[#B82E1E] animate-pulse" />
                             )}
                           </div>
                           <h4 className="text-xs font-bold text-[#F4F0E6] truncate">{hosp.name}</h4>
@@ -458,10 +560,10 @@ export function App() {
                         </div>
                         <div className="text-right shrink-0">
                           <span className="text-xs font-mono font-bold text-[#FF8A7A] block">
-                            {hosp.driveTime}
+                            {hosp.dynamicDriveTime}
                           </span>
                           <span className="text-[10px] text-[#F4F0E6]/80 font-mono">
-                            {hosp.distance}
+                            {hosp.dynamicDistance}
                           </span>
                         </div>
                       </div>
@@ -477,7 +579,7 @@ export function App() {
             </div>
           </section>
 
-          {/* 3. BOTTOM SPATIAL FEATURE DECK (Purposeful Asymmetry) */}
+          {/* 3. BOTTOM SPATIAL FEATURE DECK (Truthful, non-fabricated modules) */}
           <section className="space-y-4 pt-2">
             <div className="flex items-center justify-between px-1">
               <h3 className="text-xs font-mono uppercase tracking-widest text-[#C7AE7B] font-bold">
@@ -490,30 +592,30 @@ export function App() {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
               
-              {/* CARD 1: Health Check (Vitals & Biometrics) */}
+              {/* CARD 1: Emergency Health Profile & Care Directives (Truthful feature replacing fake ECG) */}
               <div
-                onClick={() => setIsVitalsOpen(true)}
-                className="clinic-panel p-5 rounded-3xl border border-[#D94736]/30 hover:border-[#D94736] hover:scale-[1.02] cursor-pointer transition-all duration-300 shadow-xl flex flex-col justify-between group"
+                onClick={() => setIsHealthProfileOpen(true)}
+                className="clinic-panel p-5 rounded-3xl border border-[#C7AE7B]/30 hover:border-[#C7AE7B] hover:scale-[1.02] cursor-pointer transition-all duration-300 shadow-xl flex flex-col justify-between group"
                 role="button"
                 tabIndex={0}
-                onKeyDown={(e) => e.key === 'Enter' && setIsVitalsOpen(true)}
+                onKeyDown={(e) => e.key === 'Enter' && setIsHealthProfileOpen(true)}
               >
                 <div>
                   <HolographicHeart />
                   <div className="mt-3">
-                    <h4 className="text-sm font-bold text-[#F4F0E6]">Vitals & Telemetry</h4>
-                    <p className="text-xs text-[#F4F0E6]/75 mt-0.5">Biometric monitoring & heart rhythm</p>
+                    <h4 className="text-sm font-bold text-[#F4F0E6]">Health Profile</h4>
+                    <p className="text-xs text-[#F4F0E6]/75 mt-0.5">Critical allergies, blood type & directives</p>
                   </div>
                 </div>
                 <div className="mt-4 pt-3 border-t border-[#F4F0E6]/10 flex items-center justify-between">
-                  <span className="text-[11px] font-mono text-[#FF8A7A] font-semibold">ECG & SpO2 Sync</span>
+                  <span className="text-[11px] font-mono text-[#C7AE7B] font-semibold">IndexedDB Encrypted</span>
                   <div className="w-7 h-7 rounded-full bg-[#163C32] text-[#F4F0E6] flex items-center justify-center group-hover:translate-x-1 transition-transform border border-[#C7AE7B]/30">
                     <ArrowRight className="w-3.5 h-3.5" />
                   </div>
                 </div>
               </div>
 
-              {/* CARD 2: AI Symptom Checker */}
+              {/* CARD 2: AI Health Information Assistant */}
               <div
                 onClick={() => setIsAiModalOpen(true)}
                 className="clinic-panel p-5 rounded-3xl border border-[#C7AE7B]/30 hover:border-[#C7AE7B] hover:scale-[1.02] cursor-pointer transition-all duration-300 shadow-xl flex flex-col justify-between group"
@@ -524,12 +626,12 @@ export function App() {
                 <div>
                   <HolographicBrain />
                   <div className="mt-3">
-                    <h4 className="text-sm font-bold text-[#F4F0E6]">Symptom Checker</h4>
-                    <p className="text-xs text-[#F4F0E6]/75 mt-0.5">Conversational emergency triage</p>
+                    <h4 className="text-sm font-bold text-[#F4F0E6]">Symptom Guidance</h4>
+                    <p className="text-xs text-[#F4F0E6]/75 mt-0.5">Evidence-based triage support</p>
                   </div>
                 </div>
                 <div className="mt-4 pt-3 border-t border-[#F4F0E6]/10 flex items-center justify-between">
-                  <span className="text-[11px] font-mono text-[#C7AE7B] font-semibold">Evidence-Based</span>
+                  <span className="text-[11px] font-mono text-[#C7AE7B] font-semibold">WHO Protocols</span>
                   <div className="w-7 h-7 rounded-full bg-[#163C32] text-[#F4F0E6] flex items-center justify-center group-hover:translate-x-1 transition-transform border border-[#C7AE7B]/30">
                     <ArrowRight className="w-3.5 h-3.5" />
                   </div>
@@ -548,7 +650,7 @@ export function App() {
                   <HolographicShield />
                   <div className="mt-3">
                     <h4 className="text-sm font-bold text-[#F4F0E6]">Crisis Preparation</h4>
-                    <p className="text-xs text-[#F4F0E6]/75 mt-0.5">Go-bag checklists & trauma readiness</p>
+                    <p className="text-xs text-[#F4F0E6]/75 mt-0.5">72-hour survival checklist & plan</p>
                   </div>
                 </div>
                 <div className="mt-4 pt-3 border-t border-[#F4F0E6]/10 flex items-center justify-between">
@@ -571,7 +673,7 @@ export function App() {
                   <HolographicCommunity />
                   <div className="mt-3">
                     <h4 className="text-sm font-bold text-[#F4F0E6]">Community Help</h4>
-                    <p className="text-xs text-[#F4F0E6]/75 mt-0.5">Public AED beacons & volunteer responders</p>
+                    <p className="text-xs text-[#F4F0E6]/75 mt-0.5">Public AED beacons & volunteer circle</p>
                   </div>
                 </div>
                 <div className="mt-4 pt-3 border-t border-[#F4F0E6]/10 flex items-center justify-between">
@@ -614,7 +716,7 @@ export function App() {
           <div className="space-y-0.5 text-center sm:text-left">
             <p className="font-bold text-[#F4F0E6]">PulseCare+ Emergency Health Platform</p>
             <p className="font-mono text-[11px] text-[#C7AE7B]">
-              Dual-Tier Zero-Knowledge Architecture • 3D Spatial Health Globe • Offline Emergency Passes
+              Dual-Tier Zero-Knowledge Architecture • 3D Spatial Health Globe • Local-First IndexedDB
             </p>
           </div>
           <div className="flex items-center space-x-3 font-mono text-[11px] text-[#F4F0E6]/80">
@@ -622,8 +724,12 @@ export function App() {
               Medical ID Pass
             </button>
             <span>•</span>
+            <button onClick={() => setIsHealthProfileOpen(true)} className="hover:text-[#C7AE7B] transition-colors">
+              Health Profile
+            </button>
+            <span>•</span>
             <button onClick={() => setIsAiModalOpen(true)} className="hover:text-[#C7AE7B] transition-colors">
-              AI Triage
+              Assistant
             </button>
             <span>•</span>
             <button onClick={() => setIsSosModalOpen(true)} className="text-[#FF8A7A] hover:underline font-bold">
@@ -646,6 +752,14 @@ export function App() {
         <MedicalIDCard
           isOpen={isMedicalIdOpen}
           onClose={() => setIsMedicalIdOpen(false)}
+          accountId={activeAccount}
+        />
+
+        <HealthProfileModal
+          isOpen={isHealthProfileOpen}
+          onClose={() => setIsHealthProfileOpen(false)}
+          accountId={activeAccount}
+          onProfileUpdated={(p) => setUserProfile(p)}
         />
 
         <AIAssistantModal
@@ -654,11 +768,6 @@ export function App() {
           onTriggerSOS={() => {
             setIsSosModalOpen(true);
           }}
-        />
-
-        <VitalsMonitorModal
-          isOpen={isVitalsOpen}
-          onClose={() => setIsVitalsOpen(false)}
         />
 
         <PharmaciesModal
@@ -670,6 +779,19 @@ export function App() {
           isOpen={isPrepOpen}
           onClose={() => setIsPrepOpen(false)}
           onOpenMedicalId={() => setIsMedicalIdOpen(true)}
+        />
+
+        <LocationPermissionModal
+          isOpen={isLocationModalOpen}
+          onClose={() => setIsLocationModalOpen(false)}
+          permissionState={locationPermission}
+          currentLocation={currentLocation}
+          onLocationUpdated={(loc) => setCurrentLocation(loc)}
+        />
+
+        <NotificationSettingsModal
+          isOpen={isNotificationModalOpen}
+          onClose={() => setIsNotificationModalOpen(false)}
         />
 
         <LiveServicesTrackerModal

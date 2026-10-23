@@ -1,86 +1,37 @@
 import React from 'react';
 import { PulseCareEmblem } from './PulseCareEmblem';
 
-// 1. Future Clinic Anatomical Heart with ECG Telemetry
+// 1. Future Clinic Emergency Medical Profile Crest (Truthful, non-fabricated)
 export const HolographicHeart: React.FC = () => {
   return (
     <div className="relative w-full h-36 flex items-center justify-center overflow-hidden">
       {/* Background warm radial glow */}
-      <div className="absolute inset-0 bg-radial from-[#D94736]/20 via-[#163C32]/10 to-transparent blur-xl pointer-events-none" />
+      <div className="absolute inset-0 bg-radial from-[#C7AE7B]/20 via-[#163C32]/10 to-transparent blur-xl pointer-events-none" />
 
-      {/* SVG Heart Art with restrained editorial linework */}
+      {/* SVG Clinical Crest Art */}
       <svg
         viewBox="0 0 200 160"
-        className="w-32 h-28 drop-shadow-[0_4px_16px_rgba(217,71,54,0.35)]"
+        className="w-32 h-28 drop-shadow-[0_4px_16px_rgba(199,174,123,0.35)]"
       >
         <defs>
-          <linearGradient id="clinicHeartGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#EF5A48" />
-            <stop offset="60%" stopColor="#D94736" />
-            <stop offset="100%" stopColor="#9E271B" />
-          </linearGradient>
-          <linearGradient id="clinicVesselsGrad" x1="0%" y1="100%" x2="0%" y2="0%">
-            <stop offset="0%" stopColor="#D94736" />
+          <linearGradient id="clinicCrestGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#FFFFFF" />
+            <stop offset="50%" stopColor="#F4F0E6" />
             <stop offset="100%" stopColor="#C7AE7B" />
           </linearGradient>
         </defs>
 
-        {/* Aorta & Pulmonary Arteries in Champagne & Vermilion */}
-        <path
-          d="M85 35 Q85 15 105 15 Q120 15 125 35"
-          fill="none"
-          stroke="url(#clinicVesselsGrad)"
-          strokeWidth="8"
-          strokeLinecap="round"
-        />
-        <path
-          d="M72 40 L72 20"
-          fill="none"
-          stroke="#C7AE7B"
-          strokeWidth="6"
-          strokeLinecap="round"
-        />
+        {/* Outer Circular Geodesic Ring */}
+        <circle cx="100" cy="80" r="54" fill="none" stroke="#C7AE7B" strokeWidth="1" strokeDasharray="3 5" opacity="0.6" />
+        <circle cx="100" cy="80" r="46" fill="#163C32" stroke="#C7AE7B" strokeWidth="1.5" />
 
-        {/* Cardiac Ventricle Silhouette */}
-        <path
-          d="M100 45 C80 20 40 25 40 65 C40 100 85 130 100 145 C115 130 160 100 160 65 C160 25 120 20 100 45 Z"
-          fill="url(#clinicHeartGrad)"
-          stroke="#F4F0E6"
-          strokeWidth="1.5"
-          opacity="0.95"
-        />
+        {/* Central Anatomical Shield Cross */}
+        <rect x="91" y="55" width="18" height="50" rx="4" fill="url(#clinicCrestGrad)" stroke="#163C32" strokeWidth="1.5" />
+        <rect x="75" y="71" width="50" height="18" rx="4" fill="url(#clinicCrestGrad)" stroke="#163C32" strokeWidth="1.5" />
 
-        {/* Coronary Perfusion Vectors */}
-        <path
-          d="M100 45 Q90 85 70 115"
-          fill="none"
-          stroke="#F4F0E6"
-          strokeWidth="2"
-          strokeLinecap="round"
-          opacity="0.75"
-        />
-        <path
-          d="M105 55 Q120 85 130 105"
-          fill="none"
-          stroke="#C7AE7B"
-          strokeWidth="1.75"
-          strokeLinecap="round"
-          opacity="0.8"
-        />
+        {/* Center Vermilion Core Indicator */}
+        <circle cx="100" cy="80" r="4" fill="#B82E1E" />
       </svg>
-
-      {/* Live ECG Waveform Overlay in Vermilion & Champagne */}
-      <div className="absolute inset-x-0 bottom-2 h-7 flex items-center justify-center opacity-90">
-        <svg viewBox="0 0 300 40" className="w-full h-full">
-          <path
-            d="M0 20 L70 20 L80 20 L85 12 L90 28 L95 2 L102 36 L108 16 L114 20 L125 20 L200 20 L210 20 L215 12 L220 28 L225 2 L232 36 L238 16 L244 20 L300 20"
-            fill="none"
-            stroke="#D94736"
-            strokeWidth="2"
-            strokeLinecap="round"
-          />
-        </svg>
-      </div>
     </div>
   );
 };
@@ -123,8 +74,8 @@ export const HolographicBrain: React.FC = () => {
         />
 
         {/* Synaptic Geometric Care Nodes */}
-        <circle cx="95" cy="80" r="4" fill="#D94736" />
-        <circle cx="105" cy="80" r="4" fill="#D94736" />
+        <circle cx="95" cy="80" r="3.5" fill="#B82E1E" />
+        <circle cx="105" cy="80" r="3.5" fill="#B82E1E" />
         <circle cx="75" cy="65" r="3" fill="#C7AE7B" />
         <circle cx="125" cy="65" r="3" fill="#C7AE7B" />
         <circle cx="80" cy="100" r="3" fill="#F4F0E6" />
@@ -164,7 +115,7 @@ export const HolographicShield: React.FC = () => {
         {/* Center Cross / Caduceus Symbol */}
         <rect x="94" y="55" width="12" height="40" rx="3" fill="#F4F0E6" />
         <rect x="80" y="69" width="40" height="12" rx="3" fill="#F4F0E6" />
-        <circle cx="100" cy="75" r="4" fill="#D94736" />
+        <circle cx="100" cy="75" r="4" fill="#B82E1E" />
       </svg>
     </div>
   );
@@ -193,13 +144,13 @@ export const HolographicCommunity: React.FC = () => {
           <path d="M10 20 L10 46 M10 30 L1 40 M10 30 L19 40 M10 46 L3 66 M10 46 L17 66" stroke="#C7AE7B" strokeWidth="2.5" strokeLinecap="round" />
         </g>
         {/* Telemetric Sync Arc */}
-        <path d="M62 90 Q100 80 138 90" fill="none" stroke="#D94736" strokeWidth="1.5" strokeDasharray="4 4" />
+        <path d="M62 90 Q100 80 138 90" fill="none" stroke="#C7AE7B" strokeWidth="1.5" strokeDasharray="4 4" />
       </svg>
     </div>
   );
 };
 
-// 5. PulseCare Geometric Emblem (replacing old line-art female face)
+// 5. PulseCare Geometric Emblem
 export const HolographicAIAvatar: React.FC = () => {
   return (
     <div className="relative w-40 h-40 mx-auto flex items-center justify-center">
