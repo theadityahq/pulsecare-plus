@@ -1,0 +1,8 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "name": "PulseCare+",
+  "description": "3D Spatial Health and Emergency Platform",
+  "version": "1.0.0",
+  "url": "http://localhost:3333/",
+  "capabilities": ["emergency_triage", "hospital_locator", "medical_id_pass", "cpr_guidance"]
+}

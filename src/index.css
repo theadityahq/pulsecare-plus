@@ -1,0 +1,88 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --ivory: #F4F0E6;
+    --forest-deep: #0E2720;
+    --forest-surface: #163C32;
+    --forest-elevated: #1D4A3E;
+    --vermilion: #D94736;
+    --champagne: #C7AE7B;
+    --ink: #1D2521;
+    --stone-warm: #23443B;
+  }
+
+  body {
+    background-color: #0E2720;
+    color: #F4F0E6;
+  }
+
+  /* Custom subtle scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #0E2720;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #23493E;
+    border-radius: 9999px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #C7AE7B;
+  }
+}
+
+/* Future Clinic Architectural Panels */
+.clinic-panel {
+  background: rgba(22, 60, 50, 0.72);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(244, 240, 230, 0.08);
+  box-shadow: 0 10px 30px -10px rgba(10, 25, 20, 0.5), 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+.clinic-panel-elevated {
+  background: rgba(29, 74, 62, 0.88);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(199, 174, 123, 0.25);
+  box-shadow: 0 16px 36px -12px rgba(10, 25, 20, 0.6), 0 4px 12px rgba(0, 0, 0, 0.25);
+}
+
+.clinic-panel-ivory {
+  background: #F4F0E6;
+  color: #1D2521;
+  border: 1px solid rgba(199, 174, 123, 0.35);
+  box-shadow: 0 12px 32px -8px rgba(10, 25, 20, 0.4);
+}
+
+/* Restrained emergency vermilion - WCAG AA compliant contrast (> 5.5:1) */
+.btn-vermilion {
+  background-color: #B82E1E;
+  color: #FFFFFF;
+  box-shadow: 0 8px 24px -4px rgba(184, 46, 30, 0.45);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.btn-vermilion:hover {
+  background-color: #9E2517;
+  box-shadow: 0 12px 28px -4px rgba(184, 46, 30, 0.6);
+}
+
+.champagne-border {
+  border-color: rgba(199, 174, 123, 0.3);
+}
+
+.font-editorial {
+  font-family: 'Newsreader', serif;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

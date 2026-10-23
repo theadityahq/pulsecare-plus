@@ -1,0 +1,7 @@
+# PulseCare+ Health & Emergency Platform
+> PulseCare+ is a 3D spatial health and emergency response system.
+
+- Emergency SOS: Automated simulated triage broadcast to trusted contacts.
+- Medical ID: Dual-tier public triage and AES-256-GCM encrypted health vault.
+- Telemetry: 3D urban hospital locator, ER wait times, and live bed tracker.
+- CPR Metronome: Interactive 110 BPM audio-visual compression pulse.
