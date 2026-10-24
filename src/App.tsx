@@ -10,6 +10,11 @@ import {
   Search,
   Sparkles,
   Sun,
+  Cloud,
+  CloudSun,
+  CloudRain,
+  CloudLightning,
+  Snowflake,
   Leaf,
   Phone,
   ArrowRight,
@@ -95,12 +100,18 @@ import {
   queryLocationPermission,
   calculateDistanceKm,
   formatDistance,
-  estimateDriveTime
+  estimateDriveTime,
+  getHospitalsForLocation
 } from './services/locationService';
 import {
   NotificationPermissionStatus,
   getNotificationPermissionStatus
 } from './services/notificationService';
+import {
+  WeatherTelemetry,
+  fetchLiveWeather,
+  getFallbackWeather
+} from './services/weatherService';
 import { getLocalProfile, UserProfile } from './services/db';
 
 export function App() {
@@ -125,11 +136,23 @@ export function App() {
   const [currentLocation, setCurrentLocation] = useState<LocationTelemetry>(DEFAULT_FALLBACK_LOCATION);
   const [isLocationModalOpen, setIsLocationModalOpen] = useState<boolean>(false);
 
+  // Dynamic regional hospitals & live weather telemetry
+  const [activeHospitals, setActiveHospitals] = useState<Hospital[]>(() => {
+    return getHospitalsForLocation(
+      DEFAULT_FALLBACK_LOCATION.lat,
+      DEFAULT_FALLBACK_LOCATION.lng,
+      DEFAULT_FALLBACK_LOCATION.locationName
+    ).hospitals;
+  });
+  const [weather, setWeather] = useState<WeatherTelemetry>(() =>
+    getFallbackWeather(DEFAULT_FALLBACK_LOCATION.lat, DEFAULT_FALLBACK_LOCATION.lng)
+  );
+
   // Notification Permission State (Separated from location)
   const [notificationStatus, setNotificationStatus] = useState<NotificationPermissionStatus>('default');
   const [isNotificationModalOpen, setIsNotificationModalOpen] = useState<boolean>(false);
 
-  const [selectedHospital, setSelectedHospital] = useState<Hospital | null>(HOSPITALS[0]);
+  const [selectedHospital, setSelectedHospital] = useState<Hospital | null>(activeHospitals[0] || HOSPITALS[0]);
   const [sosActive, setSosActive] = useState<boolean>(false);
   const [activeNav, setActiveNav] = useState<string>('Home');
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -152,20 +175,46 @@ export function App() {
     });
   }, [activeAccount]);
 
-  // Compute dynamic hospital distances from active coordinates
-  const hospitalsWithDynamicDistances = HOSPITALS.map((hosp) => {
-    const distKm = calculateDistanceKm(
+  // Dynamically update regional hospitals and live weather whenever location changes
+  useEffect(() => {
+    const { hospitals: newHospitals } = getHospitalsForLocation(
       currentLocation.lat,
       currentLocation.lng,
-      hosp.latLong.lat,
-      hosp.latLong.lng
+      currentLocation.locationName
     );
-    return {
-      ...hosp,
-      dynamicDistance: formatDistance(distKm),
-      dynamicDriveTime: estimateDriveTime(distKm)
+    setActiveHospitals(newHospitals);
+    setSelectedHospital(newHospitals[0]);
+
+    let cancelled = false;
+    fetchLiveWeather(currentLocation.lat, currentLocation.lng).then((res) => {
+      if (!cancelled) {
+        setWeather(res);
+      }
+    });
+
+    return () => {
+      cancelled = true;
     };
-  });
+  }, [currentLocation.lat, currentLocation.lng, currentLocation.locationName]);
+
+  const renderWeatherIcon = (code: number) => {
+    if (code === 0 || code === 1) {
+      return <Sun className="w-3.5 h-3.5 text-amber-500 animate-spin" style={{ animationDuration: '24s' }} />;
+    }
+    if (code === 2 || code === 3) {
+      return <CloudSun className="w-3.5 h-3.5 text-amber-500" />;
+    }
+    if ((code >= 51 && code <= 67) || (code >= 80 && code <= 82)) {
+      return <CloudRain className="w-3.5 h-3.5 text-blue-500" />;
+    }
+    if (code >= 71 && code <= 77) {
+      return <Snowflake className="w-3.5 h-3.5 text-sky-400" />;
+    }
+    if (code >= 95) {
+      return <CloudLightning className="w-3.5 h-3.5 text-amber-500" />;
+    }
+    return <Cloud className="w-3.5 h-3.5 text-[#173E35]/60" />;
+  };
 
   const handleNavClick = (label: string) => {
     setActiveNav(label);
@@ -325,19 +374,27 @@ export function App() {
             <div className="hidden sm:flex items-center space-x-3 bg-white px-4 py-2 rounded-2xl border border-[#C4A66B]/30 shadow-xs">
               <div>
                 <div className="flex items-center space-x-1.5 text-[11px] text-[#173E35]/75 font-medium">
-                  <span className="truncate max-w-[100px]">{currentLocation.locationName.split(' ')[0]}</span>
+                  <span className="truncate max-w-[110px]">
+                    {currentLocation.locationName.replace(/GPS:\s*/i, '').split(',')[0].trim()}
+                  </span>
                   <MapPin className="w-3 h-3 text-[#C4A66B]" />
                 </div>
                 <div className="flex items-center space-x-1.5">
-                  <span className="text-base font-extrabold text-[#173E35]">28°C</span>
-                  <span className="text-xs text-[#173E35]/70">Clear</span>
-                  <Sun className="w-3.5 h-3.5 text-amber-500 animate-spin" style={{ animationDuration: '24s' }} />
+                  <span className="text-base font-extrabold text-[#173E35]">{weather.temperature}°C</span>
+                  <span className="text-xs text-[#173E35]/70">{weather.condition}</span>
+                  {renderWeatherIcon(weather.weatherCode)}
                 </div>
               </div>
               <div className="h-6 w-[1px] bg-[#C4A66B]/30 mx-1" />
-              <div className="flex items-center space-x-1 text-[11px] text-emerald-800 bg-emerald-50 border border-emerald-300/60 px-2 py-1 rounded-xl font-mono font-medium">
+              <div className={`flex items-center space-x-1 text-[11px] px-2 py-1 rounded-xl font-mono font-medium border ${
+                weather.aqi <= 50
+                  ? 'text-emerald-800 bg-emerald-50 border-emerald-300/60'
+                  : weather.aqi <= 100
+                  ? 'text-amber-800 bg-amber-50 border-amber-300/60'
+                  : 'text-[#B82819] bg-red-50 border-[#B82819]/40'
+              }`}>
                 <Leaf className="w-3 h-3 text-emerald-600" />
-                <span>AQI 92 · Moderate</span>
+                <span>AQI {weather.aqi} · {weather.aqiCategory}</span>
               </div>
             </div>
 
@@ -495,6 +552,8 @@ export function App() {
                   selectedHospital={selectedHospital}
                   onSelectHospital={(h) => setSelectedHospital(h)}
                   sosActive={sosActive}
+                  hospitals={activeHospitals}
+                  currentLocation={currentLocation}
                 />
               </Suspense>
             </div>
@@ -532,7 +591,7 @@ export function App() {
 
                 {/* Filterable / Selectable Hospital Cards with Real Dynamic Distances */}
                 <div className="space-y-2.5" role="list">
-                  {hospitalsWithDynamicDistances.slice(0, 4).map((hosp) => {
+                  {activeHospitals.slice(0, 4).map((hosp) => {
                     const isSelected = selectedHospital?.id === hosp.id;
                     return (
                       <div
@@ -562,11 +621,11 @@ export function App() {
                           </p>
                         </div>
                         <div className="text-right shrink-0">
-                          <span className={`text-xs font-mono font-bold block ${isSelected ? 'text-[#F1F0E9]' : 'text-[#CC3B2D]'}`}>
-                            {hosp.dynamicDriveTime}
+                          <span className={`text-xs font-mono font-bold block ${isSelected ? 'text-[#F1F0E9]' : 'text-[#B82819]'}`}>
+                            {hosp.driveTime}
                           </span>
                           <span className={`text-[10px] font-mono ${isSelected ? 'text-[#F1F0E9]/90' : 'text-[#173E35]/85'}`}>
-                            {hosp.dynamicDistance}
+                            {hosp.distance}
                           </span>
                         </div>
                       </div>
@@ -720,6 +779,8 @@ export function App() {
                   selectedHospital={selectedHospital}
                   onSelectHospital={(h) => setSelectedHospital(h)}
                   onClose={() => setActiveNav('Home')}
+                  hospitals={activeHospitals}
+                  currentLocationName={currentLocation.locationName}
                 />
               </div>
             )}

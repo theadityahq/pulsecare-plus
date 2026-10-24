@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState, useCallback } from 'react';
 import * as THREE from 'three';
 import { Hospital } from '../types';
 import { HOSPITALS } from '../data/mockData';
+import { LocationTelemetry } from '../services/locationService';
 import {
   Layers,
   RotateCcw,
@@ -21,22 +22,28 @@ interface Props {
   selectedHospital: Hospital | null;
   onSelectHospital: (hosp: Hospital) => void;
   sosActive: boolean;
+  hospitals?: Hospital[];
+  currentLocation?: LocationTelemetry;
 }
 
 export const SpatialMedicalCity: React.FC<Props> = ({
   selectedHospital,
   onSelectHospital,
-  sosActive
+  sosActive,
+  hospitals,
+  currentLocation
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [is2DMode, setIs2DMode] = useState(false);
   const [hoveredHosp, setHoveredHosp] = useState<Hospital | null>(null);
 
+  const activeHospitals = hospitals && hospitals.length >= 4 ? hospitals : HOSPITALS;
+  const regionId = currentLocation?.regionId || 'delhi';
+
   // Three.js Core Refs
   const sceneRef = useRef<THREE.Scene | null>(null);
   const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
-  const animFrameId = useRef<number | null>(null);
   const isVisibleRef = useRef<boolean>(true);
 
   // Camera Orbit & Target Vectors (Default: Elevated 3/4 Isometric View)
@@ -67,10 +74,10 @@ export const SpatialMedicalCity: React.FC<Props> = ({
     }
 
     const hospPositions: Record<string, { look: [number, number, number]; offset: [number, number, number] }> = {
-      'hosp-1': { look: [-11, 3.5, -11], offset: [28, 26, 28] }, // AIIMS Apex
-      'hosp-2': { look: [12, 3.5, -11], offset: [28, 26, 28] },  // Safdarjung
-      'hosp-3': { look: [-12, 3.5, 12], offset: [28, 26, 28] },  // Max Saket
-      'hosp-4': { look: [13, 3.5, 14], offset: [28, 26, 28] }   // Apollo
+      [activeHospitals[0]?.id || 'hosp-1']: { look: [-11, 3.5, -11], offset: [28, 26, 28] }, // Landmark
+      [activeHospitals[1]?.id || 'hosp-2']: { look: [12, 3.5, -11], offset: [28, 26, 28] },  // Secondary North-East
+      [activeHospitals[2]?.id || 'hosp-3']: { look: [-12, 3.5, 12], offset: [28, 26, 28] },  // South-West
+      [activeHospitals[3]?.id || 'hosp-4']: { look: [13, 3.5, 14], offset: [28, 26, 28] }   // South-East
     };
 
     const target = hospPositions[selectedHospital.id] || { look: [0, 2, 0], offset: [35, 32, 35] };
@@ -81,9 +88,8 @@ export const SpatialMedicalCity: React.FC<Props> = ({
       target.look[2] + target.offset[2]
     );
 
-    // Update spherical radius for zoom consistency
     sphericalCoords.current.radius = targetCameraPos.current.distanceTo(targetLookAt.current);
-  }, [selectedHospital]);
+  }, [selectedHospital, activeHospitals]);
 
   // Handle Zoom In / Out
   const handleZoom = (factor: number) => {
@@ -181,23 +187,39 @@ export const SpatialMedicalCity: React.FC<Props> = ({
       currentScene.add(fillLight);
 
       // ==========================================
-      // PALETTE MATERIALS (Reused for Performance)
+      // PALETTE MATERIALS & REGIONAL ACCENTS
       // ==========================================
       const matIvory = new THREE.MeshStandardMaterial({ color: 0xF4F0E6, roughness: 0.35, metalness: 0.1 });
       const matDeepGreen = new THREE.MeshStandardMaterial({ color: 0x163C32, roughness: 0.45, metalness: 0.2 });
-      const matVermilion = new THREE.MeshStandardMaterial({ color: 0xD94736, roughness: 0.3 });
+      const matVermilion = new THREE.MeshStandardMaterial({ color: 0xB82819, roughness: 0.3 });
       const matChampagne = new THREE.MeshStandardMaterial({ color: 0xC7AE7B, roughness: 0.5, metalness: 0.25 });
       const matCharcoal = new THREE.MeshStandardMaterial({ color: 0x1D2521, roughness: 0.8 });
       const matGlass = new THREE.MeshStandardMaterial({ color: 0x8DB5A6, roughness: 0.1, metalness: 0.8, transparent: true, opacity: 0.85 });
-      const matLawn = new THREE.MeshStandardMaterial({ color: 0x3E7B62, roughness: 0.9 });
+      
+      // Regional landscape color adaptations
+      const lawnColor = regionId === 'bengaluru' ? 0x24634B : regionId === 'geneva' ? 0x32614E : 0x3E7B62;
+      const matLawn = new THREE.MeshStandardMaterial({ color: lawnColor, roughness: 0.9 });
       const matSidewalk = new THREE.MeshStandardMaterial({ color: 0xEDE9DE, roughness: 0.7 });
       const matWhiteMarking = new THREE.MeshBasicMaterial({ color: 0xFFFFFF });
       const matWood = new THREE.MeshStandardMaterial({ color: 0x7A5E3A, roughness: 0.8 });
-      const matTreeLeaves = new THREE.MeshStandardMaterial({ color: 0x2E664E, roughness: 0.85 });
+      const matTreeLeaves = new THREE.MeshStandardMaterial({
+        color: regionId === 'geneva' ? 0x1A4432 : regionId === 'mumbai' ? 0x2A704E : 0x2E664E,
+        roughness: 0.85
+      });
+
+      // Regional building trim material
+      const landmarkTrimColor =
+        regionId === 'london' ? 0x943126 :
+        regionId === 'kolkata' ? 0x8A3324 :
+        regionId === 'bengaluru' ? 0x163C32 :
+        regionId === 'geneva' ? 0xC7AE7B : 0x163C32;
+      const matLandmarkTrim = new THREE.MeshStandardMaterial({ color: landmarkTrimColor, roughness: 0.4, metalness: 0.2 });
 
       // Shared Geometries
       const treeTrunkGeom = new THREE.CylinderGeometry(0.14, 0.18, 1.2, 8);
-      const treeFoliageGeom = new THREE.SphereGeometry(0.85, 12, 12);
+      const treeFoliageGeom = regionId === 'geneva'
+        ? new THREE.ConeGeometry(0.85, 2.0, 8)
+        : new THREE.SphereGeometry(0.85, 12, 12);
       const windowStripGeomH = new THREE.BoxGeometry(1, 0.5, 0.05);
 
       // Helper function to plant a stylized architectural tree
@@ -223,30 +245,25 @@ export const SpatialMedicalCity: React.FC<Props> = ({
         const group = new THREE.Group();
         group.position.set(x, 0.15, z);
 
-        // Main volume
         const bodyGeom = new THREE.BoxGeometry(w, h, d);
         const bodyMesh = new THREE.Mesh(bodyGeom, mainMat);
         bodyMesh.position.y = h / 2;
         group.add(bodyMesh);
 
-        // Base plinth / foundation
         const plinthGeom = new THREE.BoxGeometry(w + 0.4, 0.3, d + 0.4);
         const plinthMesh = new THREE.Mesh(plinthGeom, trimMat);
         plinthMesh.position.y = 0.15;
         group.add(plinthMesh);
 
-        // Roof trim
         const roofTrimGeom = new THREE.BoxGeometry(w + 0.2, 0.4, d + 0.2);
         const roofTrim = new THREE.Mesh(roofTrimGeom, trimMat);
         roofTrim.position.y = h + 0.2;
         group.add(roofTrim);
 
-        // Architectural Ribbon Windows
         const floors = Math.floor(h / 1.8);
         for (let f = 1; f <= floors; f++) {
           const winY = f * 1.6;
           if (winY < h - 0.6) {
-            // Front & Back facade window bands
             const bandF = new THREE.Mesh(windowStripGeomH, matGlass);
             bandF.scale.set(w * 0.85, 0.65, 1);
             bandF.position.set(0, winY, d / 2 + 0.03);
@@ -284,19 +301,16 @@ export const SpatialMedicalCity: React.FC<Props> = ({
       // ==========================================
       const roadGroup = new THREE.Group();
 
-      // Main East-West Avenue (Z = 0)
       const roadEW = new THREE.Mesh(new THREE.PlaneGeometry(64, 5.0), matCharcoal);
       roadEW.rotation.x = -Math.PI / 2;
       roadEW.position.set(0, 0.04, 0);
       roadGroup.add(roadEW);
 
-      // Main North-South Avenue (X = 0)
       const roadNS = new THREE.Mesh(new THREE.PlaneGeometry(5.0, 64), matCharcoal);
       roadNS.rotation.x = -Math.PI / 2;
       roadNS.position.set(0, 0.04, 0);
       roadGroup.add(roadNS);
 
-      // Outer Perimeter Ring Roads
       const ringNorth = new THREE.Mesh(new THREE.PlaneGeometry(64, 3.6), matCharcoal);
       ringNorth.rotation.x = -Math.PI / 2;
       ringNorth.position.set(0, 0.04, -26);
@@ -317,7 +331,7 @@ export const SpatialMedicalCity: React.FC<Props> = ({
       ringEast.position.set(26, 0.04, 0);
       roadGroup.add(ringEast);
 
-      // Dashed Lane Markings (White/Champagne)
+      // Dashed Lane Markings
       for (let x = -30; x <= 30; x += 3.5) {
         if (Math.abs(x) > 3.5) {
           const dash = new THREE.Mesh(new THREE.PlaneGeometry(1.8, 0.22), matWhiteMarking);
@@ -336,7 +350,7 @@ export const SpatialMedicalCity: React.FC<Props> = ({
         }
       }
 
-      // Pedestrian Zebra Crossings at Central Intersection
+      // Pedestrian Zebra Crossings
       const addZebraCrossing = (cx: number, cz: number, isHorizontal: boolean) => {
         for (let i = -1.8; i <= 1.8; i += 0.65) {
           const stripe = new THREE.Mesh(
@@ -370,91 +384,95 @@ export const SpatialMedicalCity: React.FC<Props> = ({
         currentScene.add(lawn);
       };
 
-      // Healing Garden Courtyards
       addLawn(18, 18, -13, -13);
       addLawn(18, 18, 13, -13);
       addLawn(18, 18, -13, 13);
       addLawn(18, 18, 13, 13);
 
       // ==========================================
-      // 8. PRIMARY LANDMARK: AIIMS APEX TRAUMA CENTER
+      // 8. PRIMARY REGIONAL LANDMARK HOSPITAL
       // ==========================================
-      // Central Hospital Campus in North-West (Interconnected modern pavilion)
-      const aiimsGroup = new THREE.Group();
-      aiimsGroup.position.set(-11, 0.15, -11);
+      const landmarkGroup = new THREE.Group();
+      landmarkGroup.position.set(-11, 0.15, -11);
 
       // Main Central Wing
-      const aiimsMain = new THREE.Mesh(new THREE.BoxGeometry(10, 7.5, 8), matIvory);
-      aiimsMain.position.y = 3.75;
-      aiimsGroup.add(aiimsMain);
+      const landmarkMain = new THREE.Mesh(new THREE.BoxGeometry(10, 7.5, 8), matIvory);
+      landmarkMain.position.y = 3.75;
+      landmarkGroup.add(landmarkMain);
+
+      // Plinth and roof trim
+      const landmarkPlinth = new THREE.Mesh(new THREE.BoxGeometry(10.4, 0.35, 8.4), matLandmarkTrim);
+      landmarkPlinth.position.y = 0.175;
+      landmarkGroup.add(landmarkPlinth);
+
+      const landmarkRoofTrim = new THREE.Mesh(new THREE.BoxGeometry(10.2, 0.4, 8.2), matLandmarkTrim);
+      landmarkRoofTrim.position.y = 7.6;
+      landmarkGroup.add(landmarkRoofTrim);
 
       // West Emergency Wing
-      const aiimsWest = new THREE.Mesh(new THREE.BoxGeometry(6, 4.8, 5.5), matIvory);
-      aiimsWest.position.set(-6, 2.4, 0);
-      aiimsGroup.add(aiimsWest);
+      const landmarkWest = new THREE.Mesh(new THREE.BoxGeometry(6, 4.8, 5.5), matIvory);
+      landmarkWest.position.set(-6, 2.4, 0);
+      landmarkGroup.add(landmarkWest);
 
       // East ICU Tower
-      const aiimsEast = new THREE.Mesh(new THREE.BoxGeometry(5.5, 6.2, 5.5), matIvory);
-      aiimsEast.position.set(0, 3.1, -5.5);
-      aiimsGroup.add(aiimsEast);
+      const landmarkEast = new THREE.Mesh(new THREE.BoxGeometry(5.5, 6.2, 5.5), matIvory);
+      landmarkEast.position.set(0, 3.1, -5.5);
+      landmarkGroup.add(landmarkEast);
 
-      // Rooftop Helipad
+      // Rooftop Helipad with Regional Medical Cross
       const helipadPad = new THREE.Mesh(new THREE.CylinderGeometry(3.6, 3.6, 0.35, 24), matLawn);
-      helipadPad.position.set(0, 7.7, 0);
-      aiimsGroup.add(helipadPad);
+      helipadPad.position.set(0, 7.8, 0);
+      landmarkGroup.add(helipadPad);
 
       const helipadRing = new THREE.Mesh(new THREE.RingGeometry(3.0, 3.4, 24), matWhiteMarking);
       helipadRing.rotation.x = -Math.PI / 2;
-      helipadRing.position.set(0, 7.9, 0);
-      aiimsGroup.add(helipadRing);
+      helipadRing.position.set(0, 8.0, 0);
+      landmarkGroup.add(helipadRing);
 
       // Helipad Red Cross / 'H'
       const hBar1 = new THREE.Mesh(new THREE.PlaneGeometry(0.5, 2.2), matVermilion);
       hBar1.rotation.x = -Math.PI / 2;
-      hBar1.position.set(-0.8, 7.92, 0);
-      aiimsGroup.add(hBar1);
+      hBar1.position.set(-0.8, 8.02, 0);
+      landmarkGroup.add(hBar1);
 
       const hBar2 = new THREE.Mesh(new THREE.PlaneGeometry(0.5, 2.2), matVermilion);
       hBar2.rotation.x = -Math.PI / 2;
-      hBar2.position.set(0.8, 7.92, 0);
-      aiimsGroup.add(hBar2);
+      hBar2.position.set(0.8, 8.02, 0);
+      landmarkGroup.add(hBar2);
 
       const hBarCross = new THREE.Mesh(new THREE.PlaneGeometry(1.6, 0.5), matVermilion);
       hBarCross.rotation.x = -Math.PI / 2;
-      hBarCross.position.set(0, 7.92, 0);
-      aiimsGroup.add(hBarCross);
+      hBarCross.position.set(0, 8.02, 0);
+      landmarkGroup.add(hBarCross);
 
-      // Glass bands for AIIMS
+      // Ribbon windows
       for (let y = 1.8; y <= 6; y += 1.8) {
         const band = new THREE.Mesh(windowStripGeomH, matGlass);
         band.scale.set(8.5, 0.7, 1);
         band.position.set(0, y, 4.02);
-        aiimsGroup.add(band);
+        landmarkGroup.add(band);
       }
 
-      currentScene.add(aiimsGroup);
+      currentScene.add(landmarkGroup);
 
       // ==========================================
-      // 9. SECONDARY FACILITIES (HOSPITALS 2, 3, 4)
+      // 9. SECONDARY REGIONAL FACILITIES (HOSPITALS 2, 3, 4)
       // ==========================================
-      // 2. Safdarjung Hospital Pavilion (North-East)
-      const safdarjung = createBuilding(9.5, 6.2, 8, 12, -12, matIvory, matDeepGreen);
-      // Ambulance bay canopy
+      // 2. Secondary Hospital North-East (e.g. Safdarjung / Lilavati / Manipal / King's College)
+      createBuilding(9.5, 6.2, 8, 12, -12, matIvory, matDeepGreen);
       const canopy = new THREE.Mesh(new THREE.BoxGeometry(4.5, 0.3, 3), matDeepGreen);
       canopy.position.set(12, 1.8, -7);
       currentScene.add(canopy);
 
-      // 3. Max Super Speciality Cardiac Hospital (South-West)
-      const maxCardiac = createBuilding(8, 8.5, 7.5, -12, 12, matIvory, matChampagne);
-      // Cardiac wing
-      const maxWing = createBuilding(5.5, 4.5, 5, -17, 12, matIvory, matDeepGreen);
+      // 3. Cardiac Hospital South-West (e.g. Max Saket / Hinduja / Narayana / Barts)
+      createBuilding(8, 8.5, 7.5, -12, 12, matIvory, matChampagne);
+      createBuilding(5.5, 4.5, 5, -17, 12, matIvory, matDeepGreen);
 
-      // 4. Indraprastha Apollo Hospital (South-East)
-      const apollo = createBuilding(9, 6.5, 7.5, 13, 14, matIvory, matDeepGreen);
+      // 4. Multi-Specialty Hospital South-East (e.g. Apollo / Tata Memorial / Fortis / UCLH)
+      createBuilding(9, 6.5, 7.5, 13, 14, matIvory, matDeepGreen);
 
       // 5. 24/7 Verified Emergency Pharmacy & Diagnostic Lab
-      const pharmacy = createBuilding(5.5, 3.6, 5, 5.5, 6.5, matIvory, matDeepGreen);
-      // Green cross on pharmacy roof
+      createBuilding(5.5, 3.6, 5, 5.5, 6.5, matIvory, matDeepGreen);
       const pCross1 = new THREE.Mesh(new THREE.BoxGeometry(1.4, 0.2, 0.45), matLawn);
       pCross1.position.set(5.5, 4.0, 6.5);
       currentScene.add(pCross1);
@@ -468,11 +486,9 @@ export const SpatialMedicalCity: React.FC<Props> = ({
       const garageBase = new THREE.Mesh(new THREE.BoxGeometry(8, 3.2, 6.5), matCharcoal);
       garageBase.position.y = 1.6;
       garageGroup.add(garageBase);
-      // Top deck barrier
       const barrier = new THREE.Mesh(new THREE.BoxGeometry(8.2, 0.4, 6.7), matChampagne);
       barrier.position.y = 3.3;
       garageGroup.add(barrier);
-      // Parking lines
       for (let px = -2.8; px <= 2.8; px += 1.4) {
         const stall = new THREE.Mesh(new THREE.PlaneGeometry(0.12, 2.2), matWhiteMarking);
         stall.rotation.x = -Math.PI / 2;
@@ -484,15 +500,10 @@ export const SpatialMedicalCity: React.FC<Props> = ({
       // ==========================================
       // 10. CAMPUS TREES & LANDSCAPE FLORA
       // ==========================================
-      // Tree rows along avenues & healing courtyards
       const treeCoordinates = [
-        // AIIMS Garden
         [-5.5, -5.5], [-8, -5.5], [-16, -5.5], [-16, -16], [-5.5, -16],
-        // Safdarjung perimeter
         [5.5, -5.5], [7.5, -5.5], [18, -5.5], [18, -17],
-        // Max Cardiac Garden
         [-5.5, 5.5], [-8, 8], [-16, 5.5], [-8, 17],
-        // Apollo & Pharmacy Walkway
         [5.5, 12], [8.5, 12], [18, 5.5], [18, 19]
       ];
 
@@ -501,28 +512,24 @@ export const SpatialMedicalCity: React.FC<Props> = ({
       });
 
       // ==========================================
-      // 11. MOVING MINIATURE AMBULANCES (Visual Telemetry)
+      // 11. MOVING MINIATURE AMBULANCES
       // ==========================================
       const ambGroup = new THREE.Group();
 
       const createMiniAmbulance = () => {
         const amb = new THREE.Group();
-        // White Body
         const body = new THREE.Mesh(new THREE.BoxGeometry(1.6, 1.0, 2.6), matIvory);
         body.position.y = 0.55;
         amb.add(body);
 
-        // Windshield
         const win = new THREE.Mesh(new THREE.BoxGeometry(1.4, 0.4, 0.6), matGlass);
         win.position.set(0, 0.75, 0.7);
         amb.add(win);
 
-        // Red cross stripe
         const stripe = new THREE.Mesh(new THREE.BoxGeometry(1.62, 0.22, 1.4), matVermilion);
         stripe.position.set(0, 0.55, -0.2);
         amb.add(stripe);
 
-        // Vermilion Emergency Siren
         const beacon = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.2, 0.25, 8), matVermilion);
         beacon.position.set(0, 1.15, 0.1);
         amb.add(beacon);
@@ -542,27 +549,27 @@ export const SpatialMedicalCity: React.FC<Props> = ({
       currentScene.add(ambGroup);
 
       // ==========================================
-      // 12. RESTYLED RESTRAINED MEDICAL MARKERS
+      // 12. DYNAMIC REGIONAL FACILITY MARKERS
       // ==========================================
       facilityInteractiveMeshes.current = [];
 
       const hospitalLocations: { hosp: Hospital; pos: [number, number, number] }[] = [
-        { hosp: HOSPITALS[0], pos: [-11, 8.8, -11] }, // AIIMS
-        { hosp: HOSPITALS[1], pos: [12, 7.8, -11] },  // Safdarjung
-        { hosp: HOSPITALS[2], pos: [-12, 10.0, 12] }, // Max Saket
-        { hosp: HOSPITALS[3], pos: [13, 8.0, 14] }   // Apollo
+        { hosp: activeHospitals[0], pos: [-11, 8.8, -11] }, // Landmark
+        { hosp: activeHospitals[1], pos: [12, 7.8, -11] },  // Secondary North-East
+        { hosp: activeHospitals[2], pos: [-12, 10.0, 12] }, // South-West
+        { hosp: activeHospitals[3], pos: [13, 8.0, 14] }   // South-East
       ];
 
       hospitalLocations.forEach(({ hosp, pos }) => {
+        if (!hosp) return;
         const markerGroup = new THREE.Group();
         markerGroup.position.set(pos[0], pos[1], pos[2]);
 
         const isTrauma = hosp.category === 'Trauma Center Level 1';
 
-        // Floating Diamond / Hex Badge
         const badgeGeom = new THREE.CylinderGeometry(1.2, 1.2, 0.35, 6);
         const badgeMat = new THREE.MeshStandardMaterial({
-          color: isTrauma ? 0xD94736 : 0x163C32,
+          color: isTrauma ? 0xB82819 : 0x163C32,
           roughness: 0.2,
           metalness: 0.3
         });
@@ -606,18 +613,15 @@ export const SpatialMedicalCity: React.FC<Props> = ({
         const deltaY = e.clientY - previousMousePosition.current.y;
         previousMousePosition.current = { x: e.clientX, y: e.clientY };
 
-        // Rotate around targetLookAt
         sphericalCoords.current.theta -= deltaX * 0.006;
         sphericalCoords.current.phi -= deltaY * 0.006;
 
-        // Clamp elevation angle (prevent flipping underground or straight zenith)
         sphericalCoords.current.phi = THREE.MathUtils.clamp(
           sphericalCoords.current.phi,
-          Math.PI / 7,    // ~25° elevation
-          Math.PI / 2.3   // ~78° elevation
+          Math.PI / 7,
+          Math.PI / 2.3
         );
 
-        // Update targetCameraPos relative to targetLookAt
         const { radius, theta, phi } = sphericalCoords.current;
         targetCameraPos.current.x = targetLookAt.current.x + radius * Math.sin(phi) * Math.sin(theta);
         targetCameraPos.current.y = targetLookAt.current.y + radius * Math.cos(phi);
@@ -674,7 +678,7 @@ export const SpatialMedicalCity: React.FC<Props> = ({
         }
       };
 
-      // Mobile Touch Handlers (Orbit with 1 finger, Pinch Zoom with 2 fingers)
+      // Mobile Touch Handlers
       onTouchStart = (e: TouchEvent) => {
         if (e.touches.length === 1) {
           isDragging.current = true;
@@ -733,7 +737,6 @@ export const SpatialMedicalCity: React.FC<Props> = ({
       container.addEventListener('mousemove', onPointerHover);
       container.addEventListener('click', onClickSelect);
 
-      // Handle Resize
       onResize = () => {
         if (!containerRef.current || !renderer || !camera) return;
         const w = containerRef.current.clientWidth;
@@ -744,7 +747,6 @@ export const SpatialMedicalCity: React.FC<Props> = ({
       };
       window.addEventListener('resize', onResize);
 
-      // Intersection Observer for performance conservation
       observer = new IntersectionObserver((entries) => {
         isVisibleRef.current = entries[0].isIntersecting;
       }, { threshold: 0.1 });
@@ -758,7 +760,7 @@ export const SpatialMedicalCity: React.FC<Props> = ({
         window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
       let lastTime = 0;
-      const interval = 1000 / 24; // 24 FPS throttled for battery & CPU conservation
+      const interval = 1000 / 24;
 
       const animate = (currentTime: number) => {
         animId = requestAnimationFrame(animate);
@@ -770,13 +772,11 @@ export const SpatialMedicalCity: React.FC<Props> = ({
 
         const time = currentTime * 0.001;
 
-        // Animate ambulances smoothly along roads (respecting reduced motion preference)
         if (!prefersReducedMotion) {
           amb1.position.x = ((time * 7) % 52) - 26;
           amb2.position.z = ((time * 6) % 52) - 26;
         }
 
-        // Smooth camera lerp towards target positions
         currentCameraPos.current.lerp(targetCameraPos.current, 0.07);
         currentLookAt.current.lerp(targetLookAt.current, 0.07);
         camera.position.copy(currentCameraPos.current);
@@ -809,7 +809,7 @@ export const SpatialMedicalCity: React.FC<Props> = ({
       if (renderer) renderer.dispose();
       if (scene) scene.clear();
     };
-  }, [is2DMode, onSelectHospital]);
+  }, [is2DMode, onSelectHospital, regionId, activeHospitals]);
 
   return (
     <div className="relative w-full rounded-3xl bg-[#FAF8F5] border-2 border-[#C7AE7B]/35 overflow-hidden shadow-2xl transition-all duration-300">
@@ -823,14 +823,14 @@ export const SpatialMedicalCity: React.FC<Props> = ({
           <div>
             <div className="flex items-center space-x-2">
               <h3 className="text-xs font-black tracking-wide uppercase font-mono text-[#163C32]">
-                Spatial Medical City 3D
+                Spatial Medical City 3D · {currentLocation?.locationName.replace(/GPS:\s*/i, '').split(',')[0].split('(')[0].trim() || 'Regional Hub'}
               </h3>
               <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-mono bg-[#163C32] text-[#F4F0E6] font-bold border border-[#C7AE7B]/30">
-                Interactive Campus
+                Active Campus
               </span>
             </div>
             <p className="text-[11px] text-[#163C32]/80 font-medium">
-              Miniature regional trauma campus · Click buildings to inspect verified facilities
+              Miniature regional campus · {activeHospitals[0]?.name || 'Apex Trauma Center'} & surrounding facilities
             </p>
           </div>
         </div>
@@ -862,7 +862,7 @@ export const SpatialMedicalCity: React.FC<Props> = ({
         >
           {/* Active SOS Red Border Pulse */}
           {sosActive && (
-            <div className="absolute inset-0 border-4 border-[#D94736] animate-pulse pointer-events-none rounded-3xl" />
+            <div className="absolute inset-0 border-4 border-[#B82819] animate-pulse pointer-events-none rounded-3xl" />
           )}
 
           {/* Interactive Navigation Controls */}
@@ -893,16 +893,16 @@ export const SpatialMedicalCity: React.FC<Props> = ({
             </button>
             <div className="h-4 w-[1px] bg-[#C7AE7B]/30 mx-1" />
             <button
-              onClick={() => onSelectHospital(HOSPITALS[0])}
+              onClick={() => onSelectHospital(activeHospitals[0])}
               className={`px-2.5 py-1.5 rounded-xl text-xs font-mono font-bold transition-all flex items-center space-x-1 ${
-                selectedHospital?.id === 'hosp-1'
+                selectedHospital?.id === activeHospitals[0]?.id
                   ? 'bg-[#163C32] text-[#F4F0E6] shadow-xs'
                   : 'text-[#163C32] hover:bg-[#F4F0E6]'
               }`}
-              title="Focus AIIMS Apex Trauma Center"
+              title={`Focus ${activeHospitals[0]?.name}`}
             >
-              <Crosshair className="w-3.5 h-3.5 text-[#D94736]" />
-              <span>AIIMS</span>
+              <Crosshair className="w-3.5 h-3.5 text-[#B82819]" />
+              <span className="truncate max-w-[85px]">{activeHospitals[0]?.name.split(' ')[0]}</span>
             </button>
           </div>
 
@@ -912,7 +912,7 @@ export const SpatialMedicalCity: React.FC<Props> = ({
               Campus Legend
             </div>
             <div className="flex items-center space-x-2">
-              <div className="w-3 h-3 bg-[#D94736] rounded-xs flex items-center justify-center text-white text-[8px] font-black">
+              <div className="w-3 h-3 bg-[#B82819] rounded-xs flex items-center justify-center text-white text-[8px] font-black">
                 +
               </div>
               <span className="font-medium">Level 1 Trauma Center</span>
@@ -946,15 +946,15 @@ export const SpatialMedicalCity: React.FC<Props> = ({
           <div className="space-y-3">
             <div className="flex items-center justify-between pb-3 border-b border-[#C7AE7B]/25">
               <h4 className="text-sm font-black text-[#163C32]">
-                2D Regional Emergency Grid
+                2D Emergency Grid · {currentLocation?.locationName || 'Active Region'}
               </h4>
               <span className="text-xs font-mono text-[#7A5E2E] font-bold">
-                {HOSPITALS.length} Verified Facilities Active
+                {activeHospitals.length} Verified Facilities Active
               </span>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              {HOSPITALS.map((hosp) => {
+              {activeHospitals.map((hosp) => {
                 const isSelected = selectedHospital?.id === hosp.id;
                 return (
                   <div
@@ -976,6 +976,9 @@ export const SpatialMedicalCity: React.FC<Props> = ({
                     </div>
                     <h5 className="text-xs font-black text-[#163C32] mt-1">{hosp.name}</h5>
                     <p className="text-[11px] text-[#163C32]/80 mt-0.5 line-clamp-1 font-medium">{hosp.address}</p>
+                    <p className="text-[10px] font-mono text-[#7A5E2E] mt-1 font-semibold">
+                      {hosp.distance} · {hosp.driveTime} drive · {hosp.icuBedsAvailable} ICU beds
+                    </p>
                   </div>
                 );
               })}

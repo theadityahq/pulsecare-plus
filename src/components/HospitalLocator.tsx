@@ -7,12 +7,22 @@ interface Props {
   selectedHospital: Hospital | null;
   onSelectHospital: (hosp: Hospital) => void;
   onClose?: () => void;
+  hospitals?: Hospital[];
+  currentLocationName?: string;
 }
 
-export const HospitalLocator: React.FC<Props> = ({ selectedHospital, onSelectHospital, onClose }) => {
+export const HospitalLocator: React.FC<Props> = ({
+  selectedHospital,
+  onSelectHospital,
+  onClose,
+  hospitals,
+  currentLocationName
+}) => {
   const [filterCategory, setFilterCategory] = useState<string>('ALL');
 
-  const filtered = HOSPITALS.filter((h) => {
+  const hospitalList = hospitals && hospitals.length > 0 ? hospitals : HOSPITALS;
+
+  const filtered = hospitalList.filter((h) => {
     if (filterCategory === 'ALL') return true;
     return h.category.toLowerCase().includes(filterCategory.toLowerCase());
   });
@@ -24,7 +34,7 @@ export const HospitalLocator: React.FC<Props> = ({ selectedHospital, onSelectHos
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-[#C4A66B]/25">
         <div>
           <span className="text-[10px] font-mono font-bold text-[#7A5E2E] uppercase tracking-wider block">
-            Emergency Care Directory
+            Emergency Care Directory {currentLocationName ? `· ${currentLocationName}` : ''}
           </span>
           <h3 className="text-lg font-black text-[#173E35] mt-0.5">
             Hospital Locator & Trauma Facilities
