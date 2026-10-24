@@ -126,6 +126,21 @@ npm run preview
 
 ---
 
+## 📋 Clinical Governance & Items Requiring Certified Human Sign-Off
+
+In accordance with medical software safety principles (IEC 62304 / SaMD standards), PulseCare+ enforces strict truthfulness and demarcates automated software functions from certified human clinical decisions:
+
+1. **Clinical Protocol Sign-Off**:
+   - CPR, Choking, Anaphylaxis, Hemorrhage, and Stroke triage sequences strictly cite AHA (2020/2025 updates), ERC (2021), and WHO guidelines. Production deployment in health systems requires formal review and signature from a certified emergency medicine clinical advisory board.
+2. **Institutional Telephone & Trauma Registry Verification**:
+   - The directory in `src/data/hospitals.ts` contains 29 verified medical centers across Delhi, Mumbai, Bengaluru, Kolkata, London, and Geneva with source citations verified as of October 2026. Municipal rollout requires scheduled bi-annual registry audits to verify emergency direct-dial phone routing and licensed bed capacity references.
+3. **National Mental Health Crisis Integration**:
+   - Crisis triage routing to **Tele-MANAS (`14416` / `1800 891 4416`)** adheres to India's National Tele Mental Health Programme guidelines. Regional deployments in other jurisdictions must map and verify local statutory mental health helplines (e.g., 988 in the US/Canada, 111 in the UK).
+4. **Data Privacy & Statutory Medical Records Compliance**:
+   - Client-side IndexedDB encryption (PBKDF2 600,000 iterations + AES-GCM 256-bit) and plaintext lock-screen emergency card operate strictly on zero-knowledge architecture. Enterprise deployment requires formal review under HIPAA (US), GDPR (EU), or DPDP Act (India).
+
+---
+
 ## ⚖️ Legal & Medical Disclaimer
 
-PulseCare+ is an emergency preparedness and health education tool. It does not provide clinical diagnoses, medical treatment plans, or automatic emergency dispatch. In a life-threatening crisis, always place a direct telephone call to **112** (or your local emergency number: 999 in the UK, 911 in the US).
+PulseCare+ is an emergency preparedness, triage guidance, and health education platform. It does not provide clinical diagnoses, prescriptive medical treatment, or automatic emergency dispatch. In any life-threatening crisis, immediately place a direct telephone call to **112** (or your local emergency number: 999 in the UK, 911 in the US).
