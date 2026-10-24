@@ -28,46 +28,47 @@ export const EmergencyPrepModal: React.FC<Props> = ({ isOpen, onClose, onOpenMed
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#0E2721]/80 backdrop-blur-md animate-in fade-in duration-200"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#173E35]/60 backdrop-blur-md animate-in fade-in duration-200"
       role="dialog"
       aria-modal="true"
       aria-labelledby="prep-modal-title"
     >
-      <div className="relative w-full max-w-xl clinic-panel-elevated rounded-3xl p-6 md:p-8 border border-[#C4A66B]/40 max-h-[85vh] overflow-y-auto shadow-2xl">
+      <div className="relative w-full max-w-xl bg-white rounded-3xl p-6 md:p-8 border-2 border-[#C4A66B]/40 max-h-[85vh] overflow-y-auto shadow-2xl text-[#173E35]">
         
         {/* Header Bar */}
-        <div className="flex items-center justify-between pb-4 border-b border-[#F1F0E9]/10">
+        <div className="flex items-center justify-between pb-4 border-b border-[#C4A66B]/25">
           <div className="flex items-center space-x-3">
             <div className="w-10 h-10 rounded-2xl bg-[#173E35] border border-[#C4A66B]/40 flex items-center justify-center text-[#C4A66B]">
-              <ShieldCheck className="w-5 h-5" />
+              <ShieldCheck className="w-5 h-5 text-[#C4A66B]" />
             </div>
             <div>
-              <h3 id="prep-modal-title" className="text-base font-bold text-[#F1F0E9]">
+              <h3 id="prep-modal-title" className="text-base font-black text-[#173E35]">
                 Emergency Readiness Protocol
               </h3>
-              <p className="text-xs text-[#C4A66B] font-mono">
+              <p className="text-xs text-[#7A5E2E] font-mono font-medium">
                 72-Hour Survival Go-Bag & Household Plan
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-2 rounded-xl text-[#F1F0E9]/60 hover:text-[#F1F0E9] hover:bg-[#173E35] transition-colors"
-            aria-label="Close"
+            className="p-2.5 rounded-2xl bg-[#173E35] text-[#F1F0E9] hover:bg-[#CC3B2D] transition-all border border-[#C4A66B]/40 shadow-md flex items-center justify-center group"
+            aria-label="Close dialog"
+            title="Close dialog"
           >
-            <X className="w-5 h-5" />
+            <X className="w-5 h-5 group-hover:rotate-90 transition-transform" />
           </button>
         </div>
 
         {/* Readiness Meter in Warm Ivory & Champagne */}
-        <div className="my-5 p-4 rounded-2xl bg-[#0E2721]/80 border border-[#C4A66B]/25 space-y-2">
+        <div className="my-5 p-4 rounded-2xl bg-[#FAF8F5] border border-[#C4A66B]/30 space-y-2">
           <div className="flex items-center justify-between text-xs">
-            <span className="font-bold text-[#F1F0E9]">Household Preparedness Score</span>
-            <span className="font-mono text-[#C4A66B] font-bold">{progressPercent}% Ready</span>
+            <span className="font-bold text-[#173E35]">Household Preparedness Score</span>
+            <span className="font-mono text-[#7A5E2E] font-bold">{progressPercent}% Ready</span>
           </div>
-          <div className="w-full h-2 rounded-full bg-[#173E35] overflow-hidden border border-[#C4A66B]/20">
+          <div className="w-full h-2 rounded-full bg-[#E8E6DD] overflow-hidden">
             <div
-              className="h-full bg-gradient-to-r from-[#C4A66B] to-[#F1F0E9] transition-all duration-300 rounded-full"
+              className="h-full bg-gradient-to-r from-[#C4A66B] to-[#173E35] transition-all duration-300 rounded-full"
               style={{ width: `${progressPercent}%` }}
             />
           </div>
@@ -79,20 +80,20 @@ export const EmergencyPrepModal: React.FC<Props> = ({ isOpen, onClose, onOpenMed
             <div
               key={item.id}
               onClick={() => toggleCheck(item.id)}
-              className="p-3.5 rounded-2xl bg-[#173E35]/60 border border-[#F1F0E9]/10 hover:border-[#C4A66B]/40 cursor-pointer flex items-center space-x-3 transition-colors"
+              className="p-3.5 rounded-2xl bg-[#FAF8F5] border border-[#C4A66B]/30 hover:border-[#173E35] cursor-pointer flex items-center space-x-3 transition-colors shadow-xs"
               role="checkbox"
               aria-checked={item.done}
               tabIndex={0}
               onKeyDown={(e) => e.key === ' ' && toggleCheck(item.id)}
             >
               {item.done ? (
-                <CheckSquare className="w-5 h-5 text-emerald-400 shrink-0" />
+                <CheckSquare className="w-5 h-5 text-emerald-700 shrink-0" />
               ) : (
-                <Square className="w-5 h-5 text-[#F1F0E9]/40 shrink-0" />
+                <Square className="w-5 h-5 text-[#173E35]/40 shrink-0" />
               )}
               <span
                 className={`text-xs ${
-                  item.done ? 'text-[#F1F0E9]/50 line-through' : 'text-[#F1F0E9] font-medium'
+                  item.done ? 'text-[#173E35]/45 line-through font-normal' : 'text-[#173E35] font-semibold'
                 }`}
               >
                 {item.text}
@@ -102,20 +103,20 @@ export const EmergencyPrepModal: React.FC<Props> = ({ isOpen, onClose, onOpenMed
         </div>
 
         {/* Footer Actions */}
-        <div className="mt-6 pt-4 border-t border-[#F1F0E9]/10 flex items-center justify-between">
+        <div className="mt-6 pt-4 border-t border-[#C4A66B]/25 flex items-center justify-between">
           <button
             onClick={() => {
               onClose();
               onOpenMedicalId();
             }}
-            className="text-xs text-[#C4A66B] hover:underline font-mono flex items-center gap-1"
+            className="text-xs text-[#173E35] hover:text-[#CC3B2D] font-mono font-bold flex items-center gap-1 underline"
           >
             <FileText className="w-3.5 h-3.5" />
             <span>Open Medical ID Pass &rarr;</span>
           </button>
           <button
             onClick={onClose}
-            className="px-4 py-2 rounded-xl bg-[#173E35] border border-[#C4A66B]/30 hover:border-[#C4A66B] text-[#F1F0E9] text-xs font-mono"
+            className="px-4 py-2 rounded-xl bg-[#173E35] text-[#F1F0E9] hover:bg-[#1F4D43] text-xs font-bold transition-all shadow-md"
           >
             Close
           </button>

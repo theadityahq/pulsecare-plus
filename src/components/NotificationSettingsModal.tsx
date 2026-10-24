@@ -59,133 +59,142 @@ export const NotificationSettingsModal: React.FC<Props> = ({ isOpen, onClose }) 
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#0E2721]/80 backdrop-blur-md animate-in fade-in duration-200"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#173E35]/60 backdrop-blur-md animate-in fade-in duration-200"
       role="dialog"
       aria-modal="true"
       aria-labelledby="notif-dialog-title"
     >
-      <div className="relative w-full max-w-lg clinic-panel-elevated rounded-3xl p-6 md:p-8 border border-[#C4A66B]/40 shadow-2xl overflow-hidden">
+      <div className="relative w-full max-w-lg bg-white rounded-3xl p-6 md:p-8 border-2 border-[#C4A66B]/40 shadow-2xl overflow-hidden text-[#173E35]">
         
-        {/* Header */}
-        <div className="flex items-center justify-between pb-4 border-b border-[#F1F0E9]/10">
+        {/* Header with High-Contrast Deep Green Text and Dedicated Close Button */}
+        <div className="flex items-center justify-between pb-4 border-b border-[#C4A66B]/25">
           <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 rounded-2xl bg-[#173E35] border border-[#C4A66B]/40 flex items-center justify-center text-[#C4A66B]">
+            <div className="w-10 h-10 rounded-2xl bg-[#173E35] border border-[#C4A66B]/40 flex items-center justify-center text-[#F1F0E9] shadow-sm">
               <Bell className="w-5 h-5" />
             </div>
             <div>
-              <h3 id="notif-dialog-title" className="text-base font-bold text-[#F1F0E9]">
+              <h3 id="notif-dialog-title" className="text-base sm:text-lg font-black text-[#173E35] tracking-tight">
                 Notification & Reminder Controls
               </h3>
-              <p className="text-xs text-[#C4A66B] font-mono">
+              <p className="text-xs text-[#7A5E2E] font-mono font-semibold">
                 Independent of Geolocation
               </p>
             </div>
           </div>
+
+          {/* Prominent Dedicated Close Button */}
           <button
             onClick={onClose}
-            className="p-2 rounded-xl text-[#F1F0E9]/60 hover:text-[#F1F0E9] hover:bg-[#173E35] transition-colors"
-            aria-label="Close"
+            className="p-2.5 rounded-2xl bg-[#173E35] text-[#F1F0E9] hover:bg-[#CC3B2D] transition-all border border-[#C4A66B]/40 shadow-md flex items-center justify-center group"
+            aria-label="Close notification settings"
+            title="Close dialog"
           >
-            <X className="w-5 h-5" />
+            <X className="w-5 h-5 group-hover:rotate-90 transition-transform" />
           </button>
         </div>
 
         {/* Permission Status Banner */}
-        <div className="my-4 p-4 rounded-2xl bg-[#173E35]/70 border border-[#C4A66B]/25 space-y-2 text-xs">
+        <div className="my-4 p-4 rounded-2xl bg-[#FAF8F5] border border-[#C4A66B]/30 space-y-2.5 text-xs text-[#173E35]">
           <div className="flex items-center justify-between">
-            <span className="font-bold text-[#F1F0E9]">Browser System Permission:</span>
+            <span className="font-bold text-[#173E35]">Browser System Permission:</span>
             <span
-              className={`px-2 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase ${
+              className={`px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase ${
                 permissionStatus === 'granted'
-                  ? 'bg-emerald-950/60 text-emerald-400 border border-emerald-500/30'
+                  ? 'bg-emerald-100 text-emerald-800 border border-emerald-300'
                   : permissionStatus === 'denied'
-                  ? 'bg-red-950/60 text-red-400 border border-red-500/30'
-                  : 'bg-[#0E2721] text-[#C4A66B] border border-[#C4A66B]/30'
+                  ? 'bg-red-100 text-red-800 border border-red-300'
+                  : 'bg-amber-100 text-amber-800 border border-amber-300'
               }`}
             >
               {permissionStatus}
             </span>
           </div>
 
-          <p className="text-[11px] text-[#F1F0E9]/80 leading-relaxed">
+          <p className="text-[11px] text-[#173E35]/80 leading-relaxed">
             PulseCare+ never triggers unsolicited push alerts or marketing broadcasts. Notifications are reserved exclusively for user-selected preparedness drills and medication reviews.
           </p>
 
           {permissionStatus !== 'granted' && permissionStatus !== 'unsupported' && (
             <button
               onClick={handleRequestPermission}
-              className="mt-2 w-full py-2.5 px-3 rounded-xl bg-[#F1F0E9] hover:bg-white text-[#18231F] text-xs font-bold transition-all"
+              className="mt-2 w-full py-2.5 px-3 rounded-xl bg-[#173E35] hover:bg-[#0E2721] text-[#F1F0E9] text-xs font-bold transition-all shadow-xs"
             >
               Enable Browser Notifications
             </button>
           )}
 
           {permissionStatus === 'denied' && (
-            <div className="mt-2 p-2 rounded-lg bg-[#0E2721] border border-[#D44A3C]/50 text-[11px] text-[#F79488]">
+            <div className="mt-2 p-2.5 rounded-xl bg-red-50 border border-[#CC3B2D]/40 text-[11px] text-[#CC3B2D] font-medium">
               Notifications are blocked in your browser settings. To enable them, click the padlock/settings icon beside the URL in your address bar.
             </div>
           )}
         </div>
 
-        {/* Toggles */}
+        {/* Toggles with High-Contrast Text */}
         <div className="space-y-3">
-          <h4 className="text-xs font-mono font-bold uppercase text-[#C4A66B] tracking-wider">
+          <h4 className="text-xs font-mono font-bold uppercase text-[#7A5E2E] tracking-wider">
             Opt-in Channels
           </h4>
 
           <div
             onClick={() => handleTogglePref('preparednessReminders')}
-            className="p-3.5 rounded-2xl bg-[#0E2721]/80 border border-[#F1F0E9]/10 hover:border-[#C4A66B]/40 cursor-pointer flex items-center justify-between transition-colors"
+            className="p-3.5 rounded-2xl bg-[#FAF8F5] border border-[#C4A66B]/30 hover:border-[#173E35] hover:bg-white cursor-pointer flex items-center justify-between transition-all shadow-xs"
           >
             <div className="flex items-center space-x-3">
-              <Clock className="w-4 h-4 text-[#C4A66B]" />
+              <Clock className="w-4 h-4 text-[#7A5E2E]" />
               <div>
-                <p className="text-xs font-bold text-[#F1F0E9]">Quarterly Go-Bag Review</p>
-                <p className="text-[10px] text-[#F1F0E9]/70">Reminder to inspect first-aid supplies & batteries</p>
+                <p className="text-xs font-bold text-[#173E35]">Quarterly Go-Bag Review</p>
+                <p className="text-[10px] text-[#173E35]/70">Reminder to inspect first-aid supplies & batteries</p>
               </div>
             </div>
             <input
               type="checkbox"
               checked={prefs.preparednessReminders}
               readOnly
-              className="w-4 h-4 accent-[#C4A66B] rounded"
+              className="w-4 h-4 accent-[#173E35] rounded"
             />
           </div>
 
           <div
             onClick={() => handleTogglePref('medicationRefills')}
-            className="p-3.5 rounded-2xl bg-[#0E2721]/80 border border-[#F1F0E9]/10 hover:border-[#C4A66B]/40 cursor-pointer flex items-center justify-between transition-colors"
+            className="p-3.5 rounded-2xl bg-[#FAF8F5] border border-[#C4A66B]/30 hover:border-[#173E35] hover:bg-white cursor-pointer flex items-center justify-between transition-all shadow-xs"
           >
             <div className="flex items-center space-x-3">
-              <Pill className="w-4 h-4 text-emerald-400" />
+              <Pill className="w-4 h-4 text-emerald-700" />
               <div>
-                <p className="text-xs font-bold text-[#F1F0E9]">Medication Expiry Alert</p>
-                <p className="text-[10px] text-[#F1F0E9]/70">Annual reminder for inhaler and epinephrine replacements</p>
+                <p className="text-xs font-bold text-[#173E35]">Medication Expiry Alert</p>
+                <p className="text-[10px] text-[#173E35]/70">Annual reminder for inhaler and epinephrine replacements</p>
               </div>
             </div>
             <input
               type="checkbox"
               checked={prefs.medicationRefills}
               readOnly
-              className="w-4 h-4 accent-[#C4A66B] rounded"
+              className="w-4 h-4 accent-[#173E35] rounded"
             />
           </div>
         </div>
 
-        {/* Test Button */}
-        {permissionStatus === 'granted' && (
-          <div className="mt-5 pt-3 border-t border-[#F1F0E9]/10 flex items-center justify-between">
-            <span className="text-[11px] text-[#C4A66B] font-mono">
-              {testSent ? '✓ Notification sent' : 'Verify system banner'}
-            </span>
+        {/* Test Button & Dedicated Bottom Close Button */}
+        <div className="mt-6 pt-4 border-t border-[#C4A66B]/20 flex items-center justify-between">
+          {permissionStatus === 'granted' ? (
             <button
               onClick={handleSendTestNotification}
-              className="px-3 py-1.5 rounded-xl bg-[#173E35] border border-[#C4A66B]/40 hover:border-[#C4A66B] text-xs text-[#F1F0E9] font-mono"
+              className="px-3.5 py-2 rounded-xl bg-[#FAF8F5] border border-[#C4A66B]/40 hover:border-[#173E35] text-xs text-[#173E35] font-mono font-bold transition-all shadow-xs"
             >
-              Send Test Alert
+              {testSent ? '✓ Notification sent' : 'Send Test Alert'}
             </button>
-          </div>
-        )}
+          ) : (
+            <div className="text-[11px] font-mono text-[#173E35]/70">Opt-in disabled</div>
+          )}
+
+          <button
+            onClick={onClose}
+            className="px-5 py-2 rounded-xl bg-[#173E35] text-[#F1F0E9] hover:bg-[#CC3B2D] text-xs font-mono font-bold transition-all shadow-sm"
+          >
+            Close Window
+          </button>
+        </div>
       </div>
     </div>
   );

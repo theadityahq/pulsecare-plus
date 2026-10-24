@@ -148,55 +148,67 @@ export const MedicalIDCard: React.FC<Props> = ({ isOpen, onClose, accountId = 'l
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#0E2721]/80 backdrop-blur-md animate-in fade-in duration-200"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#173E35]/60 backdrop-blur-md animate-in fade-in duration-200"
       role="dialog"
       aria-modal="true"
       aria-labelledby="medical-id-title"
     >
-      <div className="relative w-full max-w-2xl clinic-panel-elevated rounded-3xl p-6 md:p-8 border border-[#C4A66B]/40 max-h-[90vh] overflow-y-auto shadow-2xl">
+      <div className="relative w-full max-w-2xl bg-white rounded-3xl p-6 md:p-8 border-2 border-[#C4A66B]/40 max-h-[90vh] overflow-y-auto shadow-2xl text-[#173E35]">
         
-        {/* Header with Dual-Tier Tab Switcher */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[#F1F0E9]/10">
-          <div>
-            <span className="text-[10px] font-mono font-bold text-[#C4A66B] uppercase tracking-wider block">
-              Dual-Tier Health Passport
-            </span>
-            <h2 id="medical-id-title" className="text-lg font-bold text-[#F1F0E9]">
-              Emergency Medical ID & Encrypted Vault
-            </h2>
+        {/* Header with Title, Close Button, and Dual-Tier Tab Switcher */}
+        <div className="flex flex-col gap-4 pb-4 border-b border-[#C4A66B]/25">
+          <div className="flex items-center justify-between">
+            <div>
+              <span className="text-[10px] font-mono font-bold text-[#7A5E2E] uppercase tracking-wider block">
+                Dual-Tier Health Passport
+              </span>
+              <h2 id="medical-id-title" className="text-base sm:text-lg font-black text-[#173E35] tracking-tight">
+                Emergency Medical ID & Encrypted Vault
+              </h2>
+            </div>
+
+            {/* Dedicated Top-Right Close Button */}
+            <button
+              onClick={onClose}
+              className="p-2.5 rounded-2xl bg-[#173E35] text-[#F1F0E9] hover:bg-[#CC3B2D] transition-all border border-[#C4A66B]/40 shadow-md flex items-center justify-center group"
+              aria-label="Close medical ID dialog"
+              title="Close dialog"
+            >
+              <X className="w-5 h-5 group-hover:rotate-90 transition-transform" />
+            </button>
           </div>
 
-          <div className="flex bg-[#0E2721] p-1 rounded-2xl border border-[#C4A66B]/30 shrink-0">
+          <div className="flex bg-[#FAF8F5] p-1 rounded-2xl border border-[#C4A66B]/30 self-start">
             <button
               onClick={() => setActiveTab('triage')}
-              className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
+              className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all ${
                 activeTab === 'triage'
                   ? 'bg-[#173E35] text-[#F1F0E9] font-bold border border-[#C4A66B]/40 shadow-sm'
-                  : 'text-[#F1F0E9]/70 hover:text-[#F1F0E9]'
+                  : 'text-[#173E35] hover:bg-white'
               }`}
             >
               Public Triage
             </button>
             <button
               onClick={() => setActiveTab('vault')}
-              className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-1.5 ${
+              className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-1.5 ${
                 activeTab === 'vault'
                   ? 'bg-[#173E35] text-[#F1F0E9] font-bold border border-[#C4A66B]/40 shadow-sm'
-                  : 'text-[#F1F0E9]/70 hover:text-[#F1F0E9]'
+                  : 'text-[#173E35] hover:bg-white'
               }`}
             >
-              {vaultUnlocked ? <Unlock className="w-3.5 h-3.5 text-emerald-400" /> : <Lock className="w-3.5 h-3.5 text-[#C4A66B]" />}
+              {vaultUnlocked ? <Unlock className="w-3.5 h-3.5 text-emerald-600" /> : <Lock className="w-3.5 h-3.5 text-[#7A5E2E]" />}
               <span>Encrypted Vault</span>
             </button>
             <button
               onClick={() => setActiveTab('storage')}
-              className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-1.5 ${
+              className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-1.5 ${
                 activeTab === 'storage'
                   ? 'bg-[#173E35] text-[#F1F0E9] font-bold border border-[#C4A66B]/40 shadow-sm'
-                  : 'text-[#F1F0E9]/70 hover:text-[#F1F0E9]'
+                  : 'text-[#173E35] hover:bg-white'
               }`}
             >
-              <HardDrive className="w-3.5 h-3.5 text-[#C4A66B]" />
+              <HardDrive className="w-3.5 h-3.5 text-[#7A5E2E]" />
               <span>Storage</span>
             </button>
           </div>
@@ -204,7 +216,7 @@ export const MedicalIDCard: React.FC<Props> = ({ isOpen, onClose, accountId = 'l
 
         {/* Global Action feedback notice */}
         {backupNotice && (
-          <div className="my-3 p-3 rounded-xl bg-[#173E35] border border-[#C4A66B] text-xs font-mono text-emerald-400">
+          <div className="my-3 p-3 rounded-xl bg-emerald-50 border border-emerald-500/40 text-xs font-mono text-emerald-800 font-bold">
             {backupNotice}
           </div>
         )}
@@ -314,13 +326,13 @@ export const MedicalIDCard: React.FC<Props> = ({ isOpen, onClose, accountId = 'l
         {activeTab === 'vault' && (
           <div className="py-4 space-y-5">
             {!vaultUnlocked ? (
-              <form onSubmit={handleUnlockVault} className="p-6 rounded-2xl bg-[#0E2721]/80 border border-[#C4A66B]/30 text-center max-w-md mx-auto space-y-4">
-                <div className="w-12 h-12 rounded-2xl bg-[#173E35] border border-[#C4A66B]/40 text-[#C4A66B] flex items-center justify-center mx-auto">
+              <form onSubmit={handleUnlockVault} className="p-6 rounded-2xl bg-[#FAF8F5] border border-[#C4A66B]/30 text-center max-w-md mx-auto space-y-4 shadow-sm">
+                <div className="w-12 h-12 rounded-2xl bg-[#173E35] border border-[#C4A66B]/40 text-[#F1F0E9] flex items-center justify-center mx-auto shadow-xs">
                   <Lock className="w-6 h-6" />
                 </div>
                 <div>
-                  <h4 className="text-base font-bold text-[#F1F0E9]">Unlock Encrypted Health Records</h4>
-                  <p className="text-xs text-[#F1F0E9]/70 mt-1">
+                  <h4 className="text-base font-black text-[#173E35]">Unlock Encrypted Health Records</h4>
+                  <p className="text-xs text-[#173E35]/75 mt-1 font-medium">
                     Client-side Web Crypto AES-GCM decryption with PBKDF2 key derivation.
                   </p>
                 </div>
@@ -330,28 +342,28 @@ export const MedicalIDCard: React.FC<Props> = ({ isOpen, onClose, accountId = 'l
                     value={passphrase}
                     onChange={(e) => setPassphrase(e.target.value)}
                     placeholder="Enter vault passphrase (min 4 chars)..."
-                    className="w-full bg-[#173E35] border border-[#C4A66B]/30 rounded-xl p-2.5 text-xs text-[#F1F0E9] focus:outline-none focus:border-[#C4A66B] text-center"
+                    className="w-full bg-white border border-[#C4A66B]/30 rounded-xl p-2.5 text-xs text-[#173E35] focus:outline-none focus:border-[#173E35] text-center shadow-xs"
                   />
                   {passphraseError && (
-                    <p className="text-xs text-[#F79488]">{passphraseError}</p>
+                    <p className="text-xs text-[#CC3B2D] font-bold">{passphraseError}</p>
                   )}
                 </div>
                 <button
                   type="submit"
-                  className="w-full py-2.5 rounded-xl bg-[#F1F0E9] hover:bg-white text-[#18231F] font-bold text-xs shadow"
+                  className="w-full py-2.5 rounded-xl bg-[#173E35] hover:bg-[#0E2721] text-[#F1F0E9] font-bold text-xs shadow-md transition-all"
                 >
                   Decrypt & Unlock Vault
                 </button>
               </form>
             ) : (
               <div className="space-y-4">
-                <div className="flex items-center justify-between pb-2 border-b border-[#F1F0E9]/10">
-                  <span className="text-xs font-mono text-emerald-400 font-bold flex items-center gap-1">
+                <div className="flex items-center justify-between pb-2 border-b border-[#C4A66B]/20">
+                  <span className="text-xs font-mono text-emerald-700 font-bold flex items-center gap-1">
                     <Unlock className="w-3.5 h-3.5" /> Vault Decrypted (AES-GCM 256)
                   </span>
                   <button
                     onClick={() => setVaultUnlocked(false)}
-                    className="text-xs text-[#C4A66B] hover:underline font-mono"
+                    className="text-xs text-[#173E35] hover:text-[#CC3B2D] hover:underline font-mono font-bold"
                   >
                     Lock Vault
                   </button>
@@ -359,16 +371,16 @@ export const MedicalIDCard: React.FC<Props> = ({ isOpen, onClose, accountId = 'l
 
                 <div className="space-y-3">
                   {MEDICAL_RECORDS.map((rec) => (
-                    <div key={rec.id} className="p-4 rounded-2xl bg-[#0E2721]/80 border border-[#C4A66B]/25 space-y-1.5">
+                    <div key={rec.id} className="p-4 rounded-2xl bg-[#FAF8F5] border border-[#C4A66B]/30 space-y-1.5 shadow-xs">
                       <div className="flex items-center justify-between">
-                        <span className="text-[10px] font-mono text-[#C4A66B] font-bold uppercase">
+                        <span className="text-[10px] font-mono text-[#7A5E2E] font-bold uppercase">
                           {rec.category} • {rec.date}
                         </span>
-                        <span className="text-[10px] font-mono text-emerald-400">Zero-Knowledge Validated</span>
+                        <span className="text-[10px] font-mono text-emerald-700 font-semibold">Zero-Knowledge Validated</span>
                       </div>
-                      <h4 className="text-sm font-bold text-[#F1F0E9]">{rec.title}</h4>
-                      <p className="text-xs text-[#F1F0E9]/80">{rec.summary}</p>
-                      <p className="text-[10px] text-[#C4A66B] font-mono pt-1">Physician: {rec.doctor}</p>
+                      <h4 className="text-sm font-bold text-[#173E35]">{rec.title}</h4>
+                      <p className="text-xs text-[#173E35]/80">{rec.summary}</p>
+                      <p className="text-[10px] text-[#7A5E2E] font-mono pt-1">Physician: {rec.doctor}</p>
                     </div>
                   ))}
                 </div>
@@ -380,26 +392,26 @@ export const MedicalIDCard: React.FC<Props> = ({ isOpen, onClose, accountId = 'l
         {/* TAB 3: Local Storage & Backup Management */}
         {activeTab === 'storage' && (
           <div className="py-4 space-y-5">
-            <div className="p-4 rounded-2xl bg-[#0E2721]/80 border border-[#C4A66B]/30 space-y-3">
-              <h4 className="text-xs font-mono font-bold uppercase text-[#C4A66B] tracking-wider">
+            <div className="p-4 rounded-2xl bg-[#FAF8F5] border border-[#C4A66B]/30 space-y-3 shadow-xs">
+              <h4 className="text-xs font-mono font-bold uppercase text-[#173E35] tracking-wider">
                 What is stored on this device?
               </h4>
-              <p className="text-xs text-[#F1F0E9]/80 leading-relaxed">
-                PulseCare+ is a local-first application. Your health records and emergency contacts are stored in your browser's IndexedDB database (<code className="text-[#C4A66B]">pulsecare_local_db</code>). Browser storage is local to this computer and browser profile; clearing site data in browser settings will remove local records unless exported to an encrypted backup.
+              <p className="text-xs text-[#173E35]/80 leading-relaxed">
+                PulseCare+ is a local-first application. Your health records and emergency contacts are stored in your browser's IndexedDB database (<code className="text-[#173E35] font-bold">pulsecare_local_db</code>). Browser storage is local to this computer and browser profile; clearing site data in browser settings will remove local records unless exported to an encrypted backup.
               </p>
               {storageInfo && (
                 <div className="grid grid-cols-3 gap-2 pt-2 text-center text-xs">
-                  <div className="p-2.5 rounded-xl bg-[#173E35]">
-                    <span className="text-[10px] text-[#C4A66B] block font-mono">RECORDS</span>
-                    <span className="font-bold text-[#F1F0E9] text-sm">{storageInfo.recordsCount}</span>
+                  <div className="p-2.5 rounded-xl bg-white border border-[#C4A66B]/30 shadow-xs">
+                    <span className="text-[10px] text-[#7A5E2E] block font-mono font-bold">RECORDS</span>
+                    <span className="font-bold text-[#173E35] text-sm">{storageInfo.recordsCount}</span>
                   </div>
-                  <div className="p-2.5 rounded-xl bg-[#173E35]">
-                    <span className="text-[10px] text-[#C4A66B] block font-mono">CONTACTS</span>
-                    <span className="font-bold text-[#F1F0E9] text-sm">{storageInfo.contactsCount}</span>
+                  <div className="p-2.5 rounded-xl bg-white border border-[#C4A66B]/30 shadow-xs">
+                    <span className="text-[10px] text-[#7A5E2E] block font-mono font-bold">CONTACTS</span>
+                    <span className="font-bold text-[#173E35] text-sm">{storageInfo.contactsCount}</span>
                   </div>
-                  <div className="p-2.5 rounded-xl bg-[#173E35]">
-                    <span className="text-[10px] text-[#C4A66B] block font-mono">DATA SIZE</span>
-                    <span className="font-bold text-[#F1F0E9] text-sm">~{Math.round(storageInfo.estimatedBytes / 1024)} KB</span>
+                  <div className="p-2.5 rounded-xl bg-white border border-[#C4A66B]/30 shadow-xs">
+                    <span className="text-[10px] text-[#7A5E2E] block font-mono font-bold">DATA SIZE</span>
+                    <span className="font-bold text-[#173E35] text-sm">~{Math.round(storageInfo.estimatedBytes / 1024)} KB</span>
                   </div>
                 </div>
               )}
@@ -409,40 +421,40 @@ export const MedicalIDCard: React.FC<Props> = ({ isOpen, onClose, accountId = 'l
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <button
                 onClick={handleExportBackup}
-                className="p-3.5 rounded-2xl bg-[#173E35] hover:bg-[#1F4D43] border border-[#C4A66B]/40 text-left transition-colors flex items-center space-x-3"
+                className="p-3.5 rounded-2xl bg-white hover:bg-[#FAF8F5] border border-[#C4A66B]/30 text-left transition-all flex items-center space-x-3 shadow-xs group"
               >
-                <Download className="w-5 h-5 text-[#C4A66B] shrink-0" />
+                <Download className="w-5 h-5 text-[#173E35] shrink-0" />
                 <div>
-                  <h5 className="text-xs font-bold text-[#F1F0E9]">Export Encrypted Backup</h5>
-                  <p className="text-[10px] text-[#F1F0E9]/70">Password-protected .pcpass file</p>
+                  <h5 className="text-xs font-bold text-[#173E35]">Export Encrypted Backup</h5>
+                  <p className="text-[10px] text-[#173E35]/70">Password-protected .pcpass file</p>
                 </div>
               </button>
 
               <button
                 onClick={handleImportBackup}
-                className="p-3.5 rounded-2xl bg-[#173E35] hover:bg-[#1F4D43] border border-[#C4A66B]/40 text-left transition-colors flex items-center space-x-3"
+                className="p-3.5 rounded-2xl bg-white hover:bg-[#FAF8F5] border border-[#C4A66B]/30 text-left transition-all flex items-center space-x-3 shadow-xs group"
               >
-                <Upload className="w-5 h-5 text-[#C4A66B] shrink-0" />
+                <Upload className="w-5 h-5 text-[#173E35] shrink-0" />
                 <div>
-                  <h5 className="text-xs font-bold text-[#F1F0E9]">Restore from Backup</h5>
-                  <p className="text-[10px] text-[#F1F0E9]/70">Decrypt & restore into IndexedDB</p>
+                  <h5 className="text-xs font-bold text-[#173E35]">Restore from Backup</h5>
+                  <p className="text-[10px] text-[#173E35]/70">Decrypt & restore into IndexedDB</p>
                 </div>
               </button>
             </div>
 
             {/* Confirmed Delete Local Data */}
-            <div className="p-4 rounded-2xl bg-[#0E2721]/80 border border-[#D44A3C]/30 space-y-2">
+            <div className="p-4 rounded-2xl bg-red-50 border border-[#CC3B2D]/30 space-y-2">
               <div className="flex items-center justify-between">
                 <div>
-                  <h5 className="text-xs font-bold text-[#F79488]">Delete All Local Health Data</h5>
-                  <p className="text-[10px] text-[#F1F0E9]/70">
+                  <h5 className="text-xs font-bold text-[#CC3B2D]">Delete All Local Health Data</h5>
+                  <p className="text-[10px] text-[#CC3B2D]/80">
                     Irrevocably deletes profile, vault, and contacts from this browser.
                   </p>
                 </div>
                 {!confirmDelete ? (
                   <button
                     onClick={() => setConfirmDelete(true)}
-                    className="px-3 py-1.5 rounded-xl bg-[#0E2721] border border-[#D44A3C]/60 text-[#F79488] hover:bg-[#BA3B2E] hover:text-white text-xs font-mono transition-colors"
+                    className="px-3.5 py-1.5 rounded-xl bg-white border border-[#CC3B2D]/50 text-[#CC3B2D] hover:bg-[#CC3B2D] hover:text-white text-xs font-mono font-bold transition-all shadow-xs"
                   >
                     Delete Data
                   </button>
@@ -450,13 +462,13 @@ export const MedicalIDCard: React.FC<Props> = ({ isOpen, onClose, accountId = 'l
                   <div className="flex items-center space-x-2">
                     <button
                       onClick={() => setConfirmDelete(false)}
-                      className="px-2.5 py-1 rounded-xl bg-[#173E35] text-xs text-[#F1F0E9]"
+                      className="px-2.5 py-1 rounded-xl bg-white border border-[#173E35]/30 text-xs text-[#173E35] font-bold"
                     >
                       Cancel
                     </button>
                     <button
                       onClick={handleDeleteAll}
-                      className="px-3 py-1 rounded-xl bg-[#BA3B2E] text-white text-xs font-bold font-mono"
+                      className="px-3 py-1 rounded-xl bg-[#CC3B2D] text-white text-xs font-bold font-mono shadow-sm"
                     >
                       Confirm Delete
                     </button>
@@ -467,16 +479,16 @@ export const MedicalIDCard: React.FC<Props> = ({ isOpen, onClose, accountId = 'l
           </div>
         )}
 
-        {/* Footer */}
-        <div className="mt-6 pt-4 border-t border-[#F1F0E9]/10 flex items-center justify-between">
-          <span className="text-[10px] font-mono text-[#C4A66B]">
+        {/* Footer with Dedicated Close Button */}
+        <div className="mt-6 pt-4 border-t border-[#C4A66B]/20 flex items-center justify-between">
+          <span className="text-[10px] font-mono text-[#7A5E2E] font-bold">
             Local-First Zero-Knowledge Architecture
           </span>
           <button
             onClick={onClose}
-            className="px-4 py-2 rounded-xl bg-[#173E35] border border-[#C4A66B]/30 hover:border-[#C4A66B] text-[#F1F0E9] text-xs font-mono"
+            className="px-5 py-2.5 rounded-xl bg-[#173E35] text-[#F1F0E9] hover:bg-[#CC3B2D] text-xs font-mono font-bold transition-all shadow-sm"
           >
-            Close
+            Close Window
           </button>
         </div>
       </div>

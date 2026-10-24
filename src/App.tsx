@@ -32,12 +32,13 @@ import {
   Clock,
   Compass,
   Lock,
-  Download
+  Download,
+  Stethoscope
 } from 'lucide-react';
 
 // Code-split dynamic chunks
-const SpatialHealthGlobe = lazy(() =>
-  import('./components/SpatialHealthGlobe').then((m) => ({ default: m.SpatialHealthGlobe }))
+const SpatialMedicalCity = lazy(() =>
+  import('./components/SpatialMedicalCity').then((m) => ({ default: m.SpatialMedicalCity }))
 );
 const EmergencySOSModal = lazy(() =>
   import('./components/EmergencySOSModal').then((m) => ({ default: m.EmergencySOSModal }))
@@ -76,6 +77,8 @@ const NotificationSettingsModal = lazy(() =>
   import('./components/NotificationSettingsModal').then((m) => ({ default: m.NotificationSettingsModal }))
 );
 
+import { EducationalAnatomyPanel } from './components/EducationalAnatomyPanel';
+import { AIHealthHologram } from './components/AIHealthHologram';
 import {
   HolographicHeart,
   HolographicBrain,
@@ -172,21 +175,21 @@ export function App() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0E2721] text-[#F1F0E9] flex font-['Plus_Jakarta_Sans',sans-serif] overflow-x-hidden selection:bg-[#C4A66B]/30 selection:text-[#F1F0E9]">
+    <div className="min-h-screen bg-[#F1F0E9] text-[#173E35] flex font-['Plus_Jakarta_Sans',sans-serif] overflow-x-hidden selection:bg-[#C4A66B]/30 selection:text-[#173E35]">
       
-      {/* 1. LEFT NAVIGATION RAIL (Future Clinic Architecture) */}
-      <aside className="w-64 shrink-0 bg-[#0E2721]/95 backdrop-blur-xl border-r border-[#C4A66B]/20 p-5 flex flex-col justify-between hidden lg:flex h-screen sticky top-0 z-30 shadow-2xl">
+      {/* 1. LEFT NAVIGATION RAIL (Future Clinic Light Architecture) */}
+      <aside className="w-64 shrink-0 bg-[#FAF8F5] border-r border-[#C4A66B]/25 p-5 flex flex-col justify-between hidden lg:flex h-screen sticky top-0 z-30 shadow-sm">
         <div className="space-y-6">
           {/* Logo & Brand Mark */}
           <div className="flex items-center space-x-3 px-2">
-            <div className="w-9 h-9 rounded-xl bg-[#173E35] border border-[#C4A66B]/40 flex items-center justify-center">
+            <div className="w-9 h-9 rounded-xl bg-[#173E35] border border-[#C4A66B]/40 flex items-center justify-center shadow-xs">
               <PulseCareEmblem size={26} />
             </div>
             <div>
-              <h1 className="text-lg font-black tracking-tight text-[#F1F0E9] flex items-center">
+              <h1 className="text-lg font-black tracking-tight text-[#173E35] flex items-center">
                 PulseCare<span className="text-[#C4A66B] font-serif text-xl ml-0.5">+</span>
               </h1>
-              <span className="text-[10px] font-mono tracking-widest text-[#C4A66B]/80 uppercase block">
+              <span className="text-[10px] font-mono tracking-widest text-[#173E35]/70 uppercase block font-semibold">
                 Emergency Health
               </span>
               <div className="flex items-center space-x-1.5 mt-1.5" title="Palette: Deep Forest Green (#173E35), Vermilion Coral (#D44A3C), Champagne Gold (#C4A66B) on Warm Ivory (#F1F0E9)">
@@ -217,10 +220,10 @@ export function App() {
                   className={`w-full flex items-center space-x-3.5 px-4 py-3 rounded-2xl transition-all duration-200 text-left ${
                     isActive
                       ? 'bg-[#173E35] text-[#F1F0E9] font-bold border border-[#C4A66B]/60 shadow-md ring-1 ring-[#C4A66B]/30'
-                      : 'text-[#F1F0E9]/75 hover:text-[#F1F0E9] hover:bg-[#173E35]/50'
+                      : 'text-[#173E35]/80 hover:text-[#173E35] hover:bg-[#EAE6DC]/60'
                   }`}
                 >
-                  <Icon className={`w-4 h-4 shrink-0 ${isActive ? 'text-[#C4A66B]' : 'text-[#F1F0E9]/60'}`} />
+                  <Icon className={`w-4 h-4 shrink-0 ${isActive ? 'text-[#C4A66B]' : 'text-[#173E35]/70'}`} />
                   <span className="tracking-wide">{item.label}</span>
                 </button>
               );
@@ -231,10 +234,10 @@ export function App() {
         {/* Bottom User Profile & Honest Telemetry Indicator */}
         <div className="space-y-3 pt-4 border-t border-[#C4A66B]/20">
           
-          {/* Honest Location Status Badge (Click to open permission/selection modal) */}
+          {/* Honest Location Status Badge */}
           <button
             onClick={() => setIsLocationModalOpen(true)}
-            className="w-full clinic-panel p-3 rounded-2xl flex items-center justify-between border-[#C4A66B]/20 text-left hover:border-[#C4A66B]/50 transition-colors"
+            className="w-full bg-white p-3 rounded-2xl flex items-center justify-between border border-[#C4A66B]/25 text-left hover:border-[#173E35] transition-all shadow-xs"
             title="Configure Location Source"
           >
             <div className="space-y-0.5 min-w-0 pr-2">
@@ -242,114 +245,116 @@ export function App() {
                 <span
                   className={`w-2 h-2 rounded-full ${
                     currentLocation.source === 'gps'
-                      ? 'bg-emerald-400 animate-pulse'
+                      ? 'bg-emerald-500 animate-pulse'
                       : 'bg-[#C4A66B]'
                   }`}
                 />
-                <span className="text-xs font-bold text-[#F1F0E9] truncate">
+                <span className="text-xs font-bold text-[#173E35] truncate">
                   {currentLocation.source === 'gps' ? 'GPS Active' : 'Manual Location'}
                 </span>
               </div>
-              <p className="text-[10px] text-[#C4A66B] font-mono truncate">
+              <p className="text-[10px] text-[#173E35]/70 font-mono truncate">
                 {currentLocation.locationName}
               </p>
             </div>
-            <div className="p-2 rounded-xl bg-[#173E35] text-[#C4A66B] border border-[#C4A66B]/30 shrink-0">
-              <Compass className="w-4 h-4" />
+            <div className="p-1.5 rounded-xl bg-[#F1F0E9] text-[#173E35] border border-[#C4A66B]/30 shrink-0">
+              <Compass className="w-3.5 h-3.5" />
             </div>
           </button>
 
-          {/* User Profile Card (Click to open Health Profile) */}
-          <div
+          {/* User Profile Summary */}
+          <button
             onClick={() => setIsHealthProfileOpen(true)}
-            className="flex items-center space-x-3 p-2.5 rounded-2xl hover:bg-[#173E35]/60 cursor-pointer transition-colors border border-transparent hover:border-[#C4A66B]/30"
-            role="button"
-            tabIndex={0}
-            onKeyDown={(e) => e.key === 'Enter' && setIsHealthProfileOpen(true)}
-            title="Open Health Profile & Care Directives"
+            className="w-full bg-white p-3 rounded-2xl border border-[#C4A66B]/25 flex items-center justify-between hover:border-[#173E35] transition-all text-left shadow-xs"
+            title="Open Health Profile & Directives"
           >
-            <div className="w-10 h-10 rounded-full bg-[#173E35] border border-[#C4A66B]/50 p-0.5 shrink-0 flex items-center justify-center text-[#C4A66B] font-bold text-xs shadow-inner">
-              AS
+            <div className="flex items-center space-x-3 min-w-0">
+              <div className="w-8 h-8 rounded-full bg-[#173E35] text-[#F1F0E9] flex items-center justify-center font-bold text-xs shrink-0 border border-[#C4A66B]/30">
+                AS
+              </div>
+              <div className="min-w-0">
+                <p className="text-xs font-bold text-[#173E35] truncate">{userProfile.name}</p>
+                <p className="text-[10px] font-mono text-[#CC3B2D] font-bold">
+                  {userProfile.bloodType} • Profile
+                </p>
+              </div>
             </div>
-            <div className="min-w-0 flex-1">
-              <h4 className="text-xs font-bold text-[#F1F0E9] truncate">{userProfile.name}</h4>
-              <p className="text-[10px] text-[#C4A66B] font-mono">{userProfile.bloodType} • Profile</p>
-            </div>
-            <ChevronRight className="w-4 h-4 text-[#C4A66B]/60" />
-          </div>
+            <ChevronRight className="w-4 h-4 text-[#173E35]/50" />
+          </button>
         </div>
       </aside>
 
-      {/* 2. MAIN VIEW CONTAINER */}
-      <div className="flex-1 flex flex-col min-w-0">
+      {/* 2. MAIN VIEWPORT & HEADER */}
+      <div className="flex-1 flex flex-col min-w-0 overflow-y-auto">
         
-        {/* Top Header Bar */}
-        <header className="sticky top-0 z-20 bg-[#0E2721]/90 backdrop-blur-xl border-b border-[#C4A66B]/20 px-4 sm:px-8 py-3.5 flex items-center justify-between gap-4">
+        {/* TOP BAR / HEADER */}
+        <header className="h-20 border-b border-[#C4A66B]/20 px-4 sm:px-8 flex items-center justify-between bg-[#FAF8F5]/90 backdrop-blur-md sticky top-0 z-20 shadow-xs">
           
-          {/* Search Bar with keyboard shortcut */}
-          <div className="relative flex-1 max-w-xl">
-            <Search className="w-4 h-4 text-[#C4A66B] absolute left-3.5 top-3" />
+          {/* Search Input with Clean Architectural Border */}
+          <div className="relative flex-1 max-w-md hidden sm:block">
+            <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-[#173E35]/50" />
             <input
               type="text"
+              placeholder="Search hospitals, symptoms, medications, or first aid..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search hospitals, symptoms, medications, or first aid..."
-              className="w-full bg-[#173E35]/80 border border-[#C4A66B]/30 rounded-2xl py-2 pl-10 pr-12 text-xs text-[#F1F0E9] placeholder-[#F1F0E9]/50 focus:outline-none focus:border-[#C4A66B] shadow-inner font-sans transition-colors"
+              className="w-full bg-white border border-[#C4A66B]/30 rounded-2xl pl-10 pr-10 py-2.5 text-xs text-[#173E35] placeholder-[#173E35]/50 focus:outline-hidden focus:border-[#173E35] focus:ring-1 focus:ring-[#173E35] transition-all shadow-xs"
             />
-            <span className="hidden sm:inline-block absolute right-3.5 top-2.5 text-[10px] font-mono px-1.5 py-0.5 rounded bg-[#0E2721] border border-[#C4A66B]/30 text-[#C4A66B]">
+            <div className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-mono text-[#173E35]/50 bg-[#F1F0E9] px-1.5 py-0.5 rounded border border-[#C4A66B]/30">
               /
-            </span>
+            </div>
           </div>
 
-          {/* Environmental Health & Notification Control Widget */}
-          <div className="flex items-center space-x-3 shrink-0">
-            {/* Separate Notification Setting Button */}
+          {/* Right Header Status Controls */}
+          <div className="flex items-center space-x-3 ml-auto sm:ml-4">
+            
+            {/* Notification Center Trigger */}
             <button
               onClick={() => setIsNotificationModalOpen(true)}
-              className="p-2.5 rounded-2xl clinic-panel border-[#C4A66B]/30 text-[#C4A66B] hover:text-[#F1F0E9] hover:border-[#C4A66B] transition-colors relative"
-              title="Notification Settings (Opt-in)"
+              className="relative p-2.5 rounded-2xl bg-white border border-[#C4A66B]/30 text-[#173E35] hover:bg-[#F1F0E9] transition-colors shadow-xs"
+              title="Notification Settings"
               aria-label="Notification Settings"
             >
               <Bell className="w-4 h-4" />
               {notificationStatus === 'granted' && (
-                <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-emerald-400" />
+                <span className="w-2 h-2 rounded-full bg-emerald-500 absolute top-2 right-2 ring-2 ring-white" />
               )}
             </button>
 
-            {/* Environmental Health Widget */}
-            <div className="hidden sm:flex items-center space-x-3 clinic-panel px-4 py-2 rounded-2xl border-[#C4A66B]/25">
+            {/* Weather & Environmental Telemetry Pill */}
+            <div className="hidden sm:flex items-center space-x-3 bg-white px-4 py-2 rounded-2xl border border-[#C4A66B]/30 shadow-xs">
               <div>
-                <div className="flex items-center space-x-1.5 text-[11px] text-[#F1F0E9]/75 font-medium">
+                <div className="flex items-center space-x-1.5 text-[11px] text-[#173E35]/75 font-medium">
                   <span className="truncate max-w-[100px]">{currentLocation.locationName.split(' ')[0]}</span>
                   <MapPin className="w-3 h-3 text-[#C4A66B]" />
                 </div>
                 <div className="flex items-center space-x-1.5">
-                  <span className="text-base font-extrabold text-[#F1F0E9]">28°C</span>
-                  <span className="text-xs text-[#F1F0E9]/70">Clear</span>
-                  <Sun className="w-3.5 h-3.5 text-amber-300 animate-spin" style={{ animationDuration: '24s' }} />
+                  <span className="text-base font-extrabold text-[#173E35]">28°C</span>
+                  <span className="text-xs text-[#173E35]/70">Clear</span>
+                  <Sun className="w-3.5 h-3.5 text-amber-500 animate-spin" style={{ animationDuration: '24s' }} />
                 </div>
               </div>
               <div className="h-6 w-[1px] bg-[#C4A66B]/30 mx-1" />
-              <div className="flex items-center space-x-1 text-[11px] text-emerald-300 bg-emerald-950/50 border border-emerald-500/30 px-2 py-1 rounded-xl font-mono">
-                <Leaf className="w-3 h-3 text-emerald-400" />
+              <div className="flex items-center space-x-1 text-[11px] text-emerald-800 bg-emerald-50 border border-emerald-300/60 px-2 py-1 rounded-xl font-mono font-medium">
+                <Leaf className="w-3 h-3 text-emerald-600" />
                 <span>AQI 92 · Moderate</span>
               </div>
             </div>
 
             {/* Custom Palette Swatch Indicator */}
-            <div className="hidden xl:flex items-center space-x-2.5 px-3 py-2 rounded-2xl clinic-panel border-[#C4A66B]/25 text-[11px] font-mono shadow-md" title="Site Color Swatch: Deep Forest Green (#173E35), Vermilion Coral (#D44A3C), Champagne Gold (#C4A66B) on Warm Ivory (#F1F0E9)">
+            <div className="hidden xl:flex items-center space-x-2.5 px-3 py-2 rounded-2xl bg-white border border-[#C4A66B]/30 text-[11px] font-mono shadow-xs" title="Site Color Swatch: Deep Forest Green (#173E35), Vermilion Coral (#D44A3C), Champagne Gold (#C4A66B) on Warm Ivory (#F1F0E9)">
               <div className="flex items-center space-x-1.5 px-2 py-1 rounded-full bg-[#F1F0E9] shadow-inner">
                 <span className="w-2.5 h-2.5 rounded-full bg-[#173E35]" />
                 <span className="w-2.5 h-2.5 rounded-full bg-[#D44A3C]" />
                 <span className="w-2.5 h-2.5 rounded-full bg-[#C4A66B]" />
               </div>
-              <span className="text-[#F1F0E9]/90 font-medium tracking-wide">Palette Active</span>
+              <span className="text-[#173E35] font-bold tracking-wide">Palette Active</span>
             </div>
 
             {/* Mobile Emergency SOS Button */}
             <button
               onClick={() => setIsSosModalOpen(true)}
-              className="lg:hidden p-2.5 rounded-xl bg-[#BA3B2E] text-white shadow-lg active:scale-95 transition-transform"
+              className="lg:hidden p-2.5 rounded-xl bg-[#CC3B2D] text-white shadow-lg active:scale-95 transition-transform"
               title="Emergency SOS"
               aria-label="Emergency SOS"
             >
@@ -363,14 +368,14 @@ export function App() {
           
           {/* Active SOS Urgent Banner if triggered */}
           {sosActive && (
-            <div className="bg-[#BA3B2E] text-white p-4 rounded-2xl flex items-center justify-between font-bold text-xs animate-pulse shadow-2xl border border-white/20">
+            <div className="bg-[#CC3B2D] text-white p-4 rounded-2xl flex items-center justify-between font-bold text-xs animate-pulse shadow-xl border border-white/30">
               <div className="flex items-center space-x-2.5">
                 <Radio className="w-5 h-5 animate-ping shrink-0" />
                 <span>[SIMULATION] EMERGENCY SOS ACTIVE • LOCAL RESCUE CIRCLE NOTIFIED WITH GPS COORDINATES</span>
               </div>
               <button
                 onClick={() => setIsSosModalOpen(true)}
-                className="px-3.5 py-1.5 bg-[#0E2721] text-white rounded-xl text-xs font-mono hover:bg-black transition-colors"
+                className="px-3.5 py-1.5 bg-[#173E35] text-white rounded-xl text-xs font-mono hover:bg-[#0E2721] transition-colors"
               >
                 Manage
               </button>
@@ -384,20 +389,20 @@ export function App() {
             <div className="lg:col-span-4 space-y-6">
               
               {/* Trust Badge */}
-              <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-[#173E35] border border-[#C4A66B]/40 text-[11px] font-mono text-[#C4A66B]">
-                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                <span>Always Here For You</span>
+              <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-white border border-[#C4A66B]/40 text-[11px] font-mono text-[#173E35] shadow-xs">
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                <span className="font-bold">Always Here For You</span>
               </div>
 
               {/* Main Editorial Headline */}
               <div className="space-y-1.5">
-                <h2 className="text-3xl sm:text-4xl font-black tracking-tight text-[#F1F0E9] leading-tight font-sans">
+                <h2 className="text-3xl sm:text-4xl font-black tracking-tight text-[#173E35] leading-tight font-sans">
                   Care, clarity,<br />
-                  <span className="font-editorial italic font-normal text-[#C4A66B]">
+                  <span className="font-editorial italic font-normal text-[#7A5E2E]">
                     when it matters.
                   </span>
                 </h2>
-                <p className="text-xs sm:text-sm text-[#F1F0E9]/80 leading-relaxed pt-1">
+                <p className="text-xs sm:text-sm text-[#173E35] leading-relaxed pt-1 font-medium">
                   Trusted health information and a clearer path to help. Fast emergency triage, verified hospital telemetry, and zero-knowledge medical records.
                 </p>
               </div>
@@ -406,7 +411,7 @@ export function App() {
               <div className="pt-1 space-y-2">
                 <a
                   href="tel:112"
-                  className="w-full relative group p-4 rounded-2xl btn-vermilion flex items-center justify-between text-white active:scale-95 transition-all block"
+                  className="w-full relative group p-4 rounded-2xl btn-vermilion flex items-center justify-between text-white active:scale-95 transition-all block shadow-lg"
                 >
                   <div className="flex items-center space-x-3.5">
                     <div className="w-10 h-10 rounded-xl bg-white/20 border border-white/30 flex items-center justify-center text-white shrink-0">
@@ -427,7 +432,7 @@ export function App() {
                 </a>
 
                 {/* Explicit Carrier Call Disclaimer */}
-                <p className="text-[10px] text-[#F1F0E9]/60 leading-tight px-1 font-mono">
+                <p className="text-[10px] text-[#173E35]/85 leading-tight px-1 font-mono font-medium">
                   * Calls place directly through your device's cellular dialer to 112. PulseCare+ does not automatically dispatch vehicles.
                 </p>
               </div>
@@ -436,107 +441,90 @@ export function App() {
               <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-4 gap-2.5 pt-1">
                 <button
                   onClick={() => setActiveNav('Find Help')}
-                  className="clinic-panel p-3 rounded-2xl flex flex-col items-center text-center space-y-2 hover:border-[#C4A66B] hover:scale-105 transition-all shadow-sm group"
+                  className="bg-white p-3 rounded-2xl flex flex-col items-center text-center space-y-2 border border-[#C4A66B]/30 hover:border-[#173E35] hover:scale-105 transition-all shadow-xs group"
                 >
-                  <div className="p-2 rounded-xl bg-[#173E35] text-[#C4A66B] border border-[#C4A66B]/30 group-hover:bg-[#C4A66B] group-hover:text-[#0E2721] transition-colors">
+                  <div className="p-2 rounded-xl bg-[#F1F0E9] text-[#173E35] border border-[#C4A66B]/30 group-hover:bg-[#173E35] group-hover:text-[#F1F0E9] transition-colors">
                     <MapPin className="w-4 h-4" />
                   </div>
-                  <span className="text-[11px] font-bold text-[#F1F0E9]">Find Hospitals</span>
+                  <span className="text-[11px] font-bold text-[#173E35]">Find Hospitals</span>
                 </button>
 
                 <button
                   onClick={() => setActiveNav('First Aid')}
-                  className="clinic-panel p-3 rounded-2xl flex flex-col items-center text-center space-y-2 hover:border-[#C4A66B] hover:scale-105 transition-all shadow-sm group"
+                  className="bg-white p-3 rounded-2xl flex flex-col items-center text-center space-y-2 border border-[#C4A66B]/30 hover:border-[#173E35] hover:scale-105 transition-all shadow-xs group"
                 >
-                  <div className="p-2 rounded-xl bg-[#173E35] text-[#F79488] border border-[#BA3B2E]/40 group-hover:bg-[#BA3B2E] group-hover:text-white transition-colors">
+                  <div className="p-2 rounded-xl bg-[#F1F0E9] text-[#173E35] border border-[#C4A66B]/30 group-hover:bg-[#173E35] group-hover:text-[#F1F0E9] transition-colors">
                     <PlusSquare className="w-4 h-4" />
                   </div>
-                  <span className="text-[11px] font-bold text-[#F1F0E9]">First Aid Guide</span>
+                  <span className="text-[11px] font-bold text-[#173E35]">First Aid Guide</span>
                 </button>
 
                 <button
                   onClick={() => setIsPharmaciesOpen(true)}
-                  className="clinic-panel p-3 rounded-2xl flex flex-col items-center text-center space-y-2 hover:border-[#C4A66B] hover:scale-105 transition-all shadow-sm group"
+                  className="bg-white p-3 rounded-2xl flex flex-col items-center text-center space-y-2 border border-[#C4A66B]/30 hover:border-[#173E35] hover:scale-105 transition-all shadow-xs group"
                 >
-                  <div className="p-2 rounded-xl bg-[#173E35] text-emerald-400 border border-emerald-500/30 group-hover:bg-emerald-500 group-hover:text-[#0E2721] transition-colors">
+                  <div className="p-2 rounded-xl bg-[#F1F0E9] text-[#173E35] border border-[#C4A66B]/30 group-hover:bg-[#173E35] group-hover:text-[#F1F0E9] transition-colors">
                     <Pill className="w-4 h-4" />
                   </div>
-                  <span className="text-[11px] font-bold text-[#F1F0E9]">24/7 Pharmacies</span>
+                  <span className="text-[11px] font-bold text-[#173E35]">24/7 Pharmacies</span>
                 </button>
 
                 <button
                   onClick={() => setIsMedicalIdOpen(true)}
-                  className="clinic-panel p-3 rounded-2xl flex flex-col items-center text-center space-y-2 hover:border-[#C4A66B] hover:scale-105 transition-all shadow-sm group"
+                  className="bg-white p-3 rounded-2xl flex flex-col items-center text-center space-y-2 border border-[#C4A66B]/30 hover:border-[#173E35] hover:scale-105 transition-all shadow-xs group"
                 >
-                  <div className="p-2 rounded-xl bg-[#173E35] text-[#C4A66B] border border-[#C4A66B]/30 group-hover:bg-[#C4A66B] group-hover:text-[#0E2721] transition-colors">
+                  <div className="p-2 rounded-xl bg-[#F1F0E9] text-[#173E35] border border-[#C4A66B]/30 group-hover:bg-[#173E35] group-hover:text-[#F1F0E9] transition-colors">
                     <FileText className="w-4 h-4" />
                   </div>
-                  <span className="text-[11px] font-bold text-[#F1F0E9]">Medical ID Pass</span>
+                  <span className="text-[11px] font-bold text-[#173E35]">Medical ID Pass</span>
                 </button>
               </div>
             </div>
 
-            {/* HERO CENTER COLUMN (Geometric Emblem Dialogue & 3D Spatial Health Globe) - 5 Cols */}
-            <div className="lg:col-span-5 space-y-4 relative flex flex-col items-center">
-              
-              {/* Refined PulseCare Emblem & Conversational Speech Bubble */}
-              <div className="relative w-full flex items-center justify-center">
-                <PulseCareEmblem size={110} />
-
-                {/* Floating Dialogue Bubble in Warm Ivory / Champagne */}
-                <div
-                  onClick={() => setIsAiModalOpen(true)}
-                  className="absolute right-0 sm:right-4 top-2 max-w-[220px] clinic-panel-elevated p-3 rounded-2xl border-[#C4A66B]/40 cursor-pointer hover:scale-105 transition-all shadow-xl flex items-center justify-between space-x-2"
-                  role="button"
-                  tabIndex={0}
-                  onKeyDown={(e) => e.key === 'Enter' && setIsAiModalOpen(true)}
-                >
-                  <div className="space-y-0.5">
-                    <p className="text-xs font-bold text-[#F1F0E9] flex items-center gap-1.5">
-                      PulseCare Assistant
-                      <span className="w-1.5 h-1.5 rounded-full bg-[#C4A66B] animate-ping" />
-                    </p>
-                    <p className="text-[10px] text-[#F1F0E9]/80 leading-tight">
-                      Evidence-based symptom guidance & rapid first-aid steps.
-                    </p>
+            {/* HERO RIGHT COLUMN: INTERACTIVE 3D MEDICAL CITY HERO - 8 Cols */}
+            <div className="lg:col-span-8 space-y-4">
+              <Suspense
+                fallback={
+                  <div className="w-full h-[400px] sm:h-[460px] rounded-3xl bg-white flex flex-col items-center justify-center space-y-3 text-[#173E35] font-mono text-xs border border-[#C4A66B]/30">
+                    <div className="w-8 h-8 rounded-full border-2 border-[#173E35] border-t-transparent animate-spin" />
+                    <span>INITIALIZING 3D SPATIAL MEDICAL CITY...</span>
                   </div>
-                  <div className="p-1.5 rounded-xl bg-[#F1F0E9] text-[#18231F] shrink-0 shadow">
-                    <ArrowRight className="w-3.5 h-3.5" />
-                  </div>
-                </div>
-              </div>
+                }
+              >
+                <SpatialMedicalCity
+                  selectedHospital={selectedHospital}
+                  onSelectHospital={(h) => setSelectedHospital(h)}
+                  sosActive={sosActive}
+                />
+              </Suspense>
+            </div>
+          </section>
 
-              {/* 3D SPATIAL HEALTH GLOBE CENTREPIECE */}
-              <div className="w-full">
-                <Suspense
-                  fallback={
-                    <div className="w-full h-[400px] sm:h-[460px] rounded-3xl clinic-panel flex flex-col items-center justify-center space-y-3 text-[#C4A66B] font-mono text-xs border border-[#C4A66B]/30">
-                      <div className="w-8 h-8 rounded-full border-2 border-[#C4A66B] border-t-transparent animate-spin" />
-                      <span>INITIALIZING SPATIAL HEALTH GLOBE...</span>
-                    </div>
-                  }
-                >
-                  <SpatialHealthGlobe
-                    selectedHospital={selectedHospital}
-                    onSelectHospital={(h) => setSelectedHospital(h)}
-                    sosActive={sosActive}
-                  />
-                </Suspense>
-              </div>
+          {/* SECONDARY PANELS ROW (Educational Anatomy & AI Health Hologram + Nearby Facilities) */}
+          <section className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+            
+            {/* Panel 1: Educational Anatomy (5 Cols) */}
+            <div className="lg:col-span-5">
+              <EducationalAnatomyPanel />
             </div>
 
-            {/* HERO RIGHT COLUMN (Nearby Verified Emergency Facilities with Sync Focus) - 3 Cols */}
-            <div className="lg:col-span-3 space-y-4">
-              <div className="clinic-panel-elevated p-5 rounded-3xl border-[#C4A66B]/25 space-y-4 shadow-xl">
+            {/* Panel 2: AI Health Hologram (3 Cols) */}
+            <div className="lg:col-span-3">
+              <AIHealthHologram onOpenAssistant={() => setIsAiModalOpen(true)} />
+            </div>
+
+            {/* Panel 3: Nearby Facilities Live Feed (4 Cols) */}
+            <div className="lg:col-span-4 space-y-4">
+              <div className="rounded-3xl bg-[#FAF8F5] border border-[#C4A66B]/30 p-5 shadow-xl space-y-4">
                 
                 {/* Header */}
-                <div className="flex items-center space-x-3 pb-3 border-b border-[#F1F0E9]/10">
+                <div className="flex items-center space-x-3 pb-3 border-b border-[#C4A66B]/20">
                   <div className="p-2.5 rounded-2xl bg-[#173E35] text-[#C4A66B] border border-[#C4A66B]/30">
                     <Building2 className="w-5 h-5" />
                   </div>
                   <div>
-                    <h3 className="text-xs font-bold text-[#F1F0E9]">Nearby Facilities</h3>
-                    <p className="text-[10px] text-[#D6B77C] font-mono">
+                    <h3 className="text-xs font-bold text-[#173E35]">Nearby Facilities</h3>
+                    <p className="text-[10px] text-[#173E35]/70 font-mono">
                       Calculated from {currentLocation.source === 'gps' ? 'GPS' : 'Active Region'}
                     </p>
                   </div>
@@ -552,8 +540,8 @@ export function App() {
                         onClick={() => setSelectedHospital(hosp)}
                         className={`p-3 rounded-2xl cursor-pointer flex items-center justify-between transition-all border ${
                           isSelected
-                            ? 'bg-[#173E35] border-[#C4A66B] ring-1 ring-[#C4A66B]/40 shadow-md'
-                            : 'bg-[#0E2721]/80 border-[#F1F0E9]/10 hover:border-[#C4A66B]/50'
+                            ? 'bg-[#173E35] border-[#C4A66B] ring-1 ring-[#C4A66B]/40 shadow-md text-[#F1F0E9]'
+                            : 'bg-white border-[#C4A66B]/20 hover:border-[#173E35] text-[#173E35]'
                         }`}
                         role="listitem"
                         tabIndex={0}
@@ -561,23 +549,23 @@ export function App() {
                       >
                         <div className="space-y-0.5 min-w-0 pr-2">
                           <div className="flex items-center space-x-1.5">
-                            <span className="text-[10px] font-mono font-bold text-[#C4A66B] uppercase">
+                            <span className={`text-[10px] font-mono font-bold uppercase ${isSelected ? 'text-[#F1F0E9]' : 'text-[#7A5E2E]'}`}>
                               {hosp.category === 'Trauma Center Level 1' ? 'Trauma L1' : hosp.category}
                             </span>
                             {isSelected && (
                               <span className="w-1.5 h-1.5 rounded-full bg-[#BA3B2E] animate-pulse" />
                             )}
                           </div>
-                          <h4 className="text-xs font-bold text-[#F1F0E9] truncate">{hosp.name}</h4>
-                          <p className="text-[10px] text-[#F1F0E9]/70 font-mono">
+                          <h4 className={`text-xs font-bold truncate ${isSelected ? 'text-[#F1F0E9]' : 'text-[#173E35]'}`}>{hosp.name}</h4>
+                          <p className={`text-[10px] font-mono ${isSelected ? 'text-[#F1F0E9]/90' : 'text-[#173E35]/85'}`}>
                             {hosp.icuBedsAvailable} ICU beds • {hosp.erWaitTime}
                           </p>
                         </div>
                         <div className="text-right shrink-0">
-                          <span className="text-xs font-mono font-bold text-[#F79488] block">
+                          <span className={`text-xs font-mono font-bold block ${isSelected ? 'text-[#F1F0E9]' : 'text-[#CC3B2D]'}`}>
                             {hosp.dynamicDriveTime}
                           </span>
-                          <span className="text-[10px] text-[#F1F0E9]/80 font-mono">
+                          <span className={`text-[10px] font-mono ${isSelected ? 'text-[#F1F0E9]/90' : 'text-[#173E35]/85'}`}>
                             {hosp.dynamicDistance}
                           </span>
                         </div>
@@ -586,31 +574,31 @@ export function App() {
                   })}
                 </div>
 
-                {/* Demo Data Disclaimer */}
-                <div className="p-3 rounded-2xl bg-[#0E2721]/80 border border-[#C4A66B]/20 text-[10px] text-[#C4A66B] font-mono text-center">
-                  * Demo data — simulated response times & bed occupancy
+                {/* Honest Telemetry Note */}
+                <div className="p-3 rounded-2xl bg-white border border-[#C4A66B]/20 text-[10px] text-[#173E35]/75 font-mono text-center">
+                  * Dynamic distances computed via browser Haversine geodesics
                 </div>
               </div>
             </div>
           </section>
 
-          {/* 3. BOTTOM SPATIAL FEATURE DECK (Truthful, non-fabricated modules) */}
+          {/* LOWER SECTION: 4 ESSENTIAL CLINICAL MODULES (Truthful, non-fabricated) */}
           <section className="space-y-4 pt-2">
-            <div className="flex items-center justify-between px-1">
-              <h3 className="text-xs font-mono uppercase tracking-widest text-[#C4A66B] font-bold">
+            <div className="flex items-center justify-between">
+              <h3 className="text-xs font-mono uppercase tracking-widest text-[#173E35] font-bold">
                 Clinical Modules & Community Safety Network
               </h3>
-              <span className="text-[11px] text-[#F1F0E9]/70 font-mono hidden sm:inline">
+              <span className="text-[11px] text-[#173E35]/70 font-mono hidden sm:inline">
                 Dual-Tier Zero-Knowledge Passports & Offline Responders
               </span>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
               
-              {/* CARD 1: Emergency Health Profile & Care Directives (Truthful feature replacing fake ECG) */}
+              {/* CARD 1: Emergency Health Profile & Care Directives */}
               <div
                 onClick={() => setIsHealthProfileOpen(true)}
-                className="clinic-panel p-5 rounded-3xl border border-[#C4A66B]/30 hover:border-[#C4A66B] hover:scale-[1.02] cursor-pointer transition-all duration-300 shadow-xl flex flex-col justify-between group"
+                className="bg-white p-5 rounded-3xl border border-[#C4A66B]/30 hover:border-[#173E35] hover:scale-[1.02] cursor-pointer transition-all duration-300 shadow-md flex flex-col justify-between group"
                 role="button"
                 tabIndex={0}
                 onKeyDown={(e) => e.key === 'Enter' && setIsHealthProfileOpen(true)}
@@ -618,12 +606,12 @@ export function App() {
                 <div>
                   <HolographicHeart />
                   <div className="mt-3">
-                    <h4 className="text-sm font-bold text-[#F1F0E9]">Health Profile</h4>
-                    <p className="text-xs text-[#F1F0E9]/75 mt-0.5">Critical allergies, blood type & directives</p>
+                    <h4 className="text-sm font-bold text-[#173E35]">Health Profile</h4>
+                    <p className="text-xs text-[#173E35]/75 mt-0.5">Critical allergies, blood type & directives</p>
                   </div>
                 </div>
-                <div className="mt-4 pt-3 border-t border-[#F1F0E9]/10 flex items-center justify-between">
-                  <span className="text-[11px] font-mono text-[#C4A66B] font-semibold">IndexedDB Encrypted</span>
+                <div className="mt-4 pt-3 border-t border-[#C4A66B]/20 flex items-center justify-between">
+                  <span className="text-[11px] font-mono text-[#173E35] font-bold">IndexedDB Encrypted</span>
                   <div className="w-7 h-7 rounded-full bg-[#173E35] text-[#F1F0E9] flex items-center justify-center group-hover:translate-x-1 transition-transform border border-[#C4A66B]/30">
                     <ArrowRight className="w-3.5 h-3.5" />
                   </div>
@@ -633,7 +621,7 @@ export function App() {
               {/* CARD 2: AI Health Information Assistant */}
               <div
                 onClick={() => setIsAiModalOpen(true)}
-                className="clinic-panel p-5 rounded-3xl border border-[#C4A66B]/30 hover:border-[#C4A66B] hover:scale-[1.02] cursor-pointer transition-all duration-300 shadow-xl flex flex-col justify-between group"
+                className="bg-white p-5 rounded-3xl border border-[#C4A66B]/30 hover:border-[#173E35] hover:scale-[1.02] cursor-pointer transition-all duration-300 shadow-md flex flex-col justify-between group"
                 role="button"
                 tabIndex={0}
                 onKeyDown={(e) => e.key === 'Enter' && setIsAiModalOpen(true)}
@@ -641,12 +629,12 @@ export function App() {
                 <div>
                   <HolographicBrain />
                   <div className="mt-3">
-                    <h4 className="text-sm font-bold text-[#F1F0E9]">Symptom Guidance</h4>
-                    <p className="text-xs text-[#F1F0E9]/75 mt-0.5">Evidence-based triage support</p>
+                    <h4 className="text-sm font-bold text-[#173E35]">Symptom Guidance</h4>
+                    <p className="text-xs text-[#173E35]/75 mt-0.5">Evidence-based triage support</p>
                   </div>
                 </div>
-                <div className="mt-4 pt-3 border-t border-[#F1F0E9]/10 flex items-center justify-between">
-                  <span className="text-[11px] font-mono text-[#C4A66B] font-semibold">WHO Protocols</span>
+                <div className="mt-4 pt-3 border-t border-[#C4A66B]/20 flex items-center justify-between">
+                  <span className="text-[11px] font-mono text-[#173E35] font-bold">WHO Protocols</span>
                   <div className="w-7 h-7 rounded-full bg-[#173E35] text-[#F1F0E9] flex items-center justify-center group-hover:translate-x-1 transition-transform border border-[#C4A66B]/30">
                     <ArrowRight className="w-3.5 h-3.5" />
                   </div>
@@ -656,7 +644,7 @@ export function App() {
               {/* CARD 3: Emergency Preparation (Go-Bag & Drills) */}
               <div
                 onClick={() => setIsPrepOpen(true)}
-                className="clinic-panel p-5 rounded-3xl border border-[#C4A66B]/30 hover:border-[#C4A66B] hover:scale-[1.02] cursor-pointer transition-all duration-300 shadow-xl flex flex-col justify-between group"
+                className="bg-white p-5 rounded-3xl border border-[#C4A66B]/30 hover:border-[#173E35] hover:scale-[1.02] cursor-pointer transition-all duration-300 shadow-md flex flex-col justify-between group"
                 role="button"
                 tabIndex={0}
                 onKeyDown={(e) => e.key === 'Enter' && setIsPrepOpen(true)}
@@ -664,12 +652,12 @@ export function App() {
                 <div>
                   <HolographicShield />
                   <div className="mt-3">
-                    <h4 className="text-sm font-bold text-[#F1F0E9]">Crisis Preparation</h4>
-                    <p className="text-xs text-[#F1F0E9]/75 mt-0.5">72-hour survival checklist & plan</p>
+                    <h4 className="text-sm font-bold text-[#173E35]">Crisis Preparation</h4>
+                    <p className="text-xs text-[#173E35]/75 mt-0.5">72-hour survival checklist & plan</p>
                   </div>
                 </div>
-                <div className="mt-4 pt-3 border-t border-[#F1F0E9]/10 flex items-center justify-between">
-                  <span className="text-[11px] font-mono text-[#C4A66B] font-semibold">Protocols</span>
+                <div className="mt-4 pt-3 border-t border-[#C4A66B]/20 flex items-center justify-between">
+                  <span className="text-[11px] font-mono text-[#173E35] font-bold">72h Checklist</span>
                   <div className="w-7 h-7 rounded-full bg-[#173E35] text-[#F1F0E9] flex items-center justify-center group-hover:translate-x-1 transition-transform border border-[#C4A66B]/30">
                     <ArrowRight className="w-3.5 h-3.5" />
                   </div>
@@ -679,7 +667,7 @@ export function App() {
               {/* CARD 4: Community Help (AED Beacons) */}
               <div
                 onClick={() => setActiveNav('Community')}
-                className="clinic-panel p-5 rounded-3xl border border-[#C4A66B]/30 hover:border-[#C4A66B] hover:scale-[1.02] cursor-pointer transition-all duration-300 shadow-xl flex flex-col justify-between group"
+                className="bg-white p-5 rounded-3xl border border-[#C4A66B]/30 hover:border-[#173E35] hover:scale-[1.02] cursor-pointer transition-all duration-300 shadow-md flex flex-col justify-between group"
                 role="button"
                 tabIndex={0}
                 onKeyDown={(e) => e.key === 'Enter' && setActiveNav('Community')}
@@ -687,12 +675,12 @@ export function App() {
                 <div>
                   <HolographicCommunity />
                   <div className="mt-3">
-                    <h4 className="text-sm font-bold text-[#F1F0E9]">Community Help</h4>
-                    <p className="text-xs text-[#F1F0E9]/75 mt-0.5">Public AED beacons & volunteer circle</p>
+                    <h4 className="text-sm font-bold text-[#173E35]">Community Help</h4>
+                    <p className="text-xs text-[#173E35]/75 mt-0.5">Public AED beacons & volunteer circle</p>
                   </div>
                 </div>
-                <div className="mt-4 pt-3 border-t border-[#F1F0E9]/10 flex items-center justify-between">
-                  <span className="text-[11px] font-mono text-[#C4A66B] font-semibold">AED Network</span>
+                <div className="mt-4 pt-3 border-t border-[#C4A66B]/20 flex items-center justify-between">
+                  <span className="text-[11px] font-mono text-[#173E35] font-bold">AED Network</span>
                   <div className="w-7 h-7 rounded-full bg-[#173E35] text-[#F1F0E9] flex items-center justify-center group-hover:translate-x-1 transition-transform border border-[#C4A66B]/30">
                     <ArrowRight className="w-3.5 h-3.5" />
                   </div>
@@ -702,60 +690,81 @@ export function App() {
           </section>
 
           {/* Expanded Navigation Sections */}
-          <Suspense fallback={<div className="p-8 text-center text-xs font-mono text-[#C4A66B]">Loading module...</div>}>
+          {activeNav !== 'Home' && (
+            <div className="pt-6">
+              <div className="p-4 rounded-2xl bg-white border-2 border-[#173E35] flex items-center justify-between shadow-md mb-2">
+                <div className="flex items-center space-x-3">
+                  <span className="w-2.5 h-2.5 rounded-full bg-emerald-600 animate-pulse" />
+                  <span className="text-xs font-mono font-bold text-[#7A5E2E] uppercase">
+                    Active View:
+                  </span>
+                  <span className="text-sm font-black text-[#173E35]">
+                    {activeNav}
+                  </span>
+                </div>
+                <button
+                  onClick={() => setActiveNav('Home')}
+                  className="px-4 py-2 rounded-xl bg-[#173E35] hover:bg-[#CC3B2D] text-[#F1F0E9] text-xs font-bold transition-all shadow-md flex items-center gap-1.5"
+                >
+                  <X className="w-4 h-4" />
+                  <span>Close Tab & Return Home</span>
+                </button>
+              </div>
+            </div>
+          )}
+
+          <Suspense fallback={<div className="p-8 text-center text-xs font-mono text-[#173E35]">Loading module...</div>}>
             {activeNav === 'Find Help' && (
-              <div className="pt-6">
+              <div className="pt-2">
                 <HospitalLocator
                   selectedHospital={selectedHospital}
                   onSelectHospital={(h) => setSelectedHospital(h)}
+                  onClose={() => setActiveNav('Home')}
                 />
               </div>
             )}
 
             {activeNav === 'First Aid' && (
-              <div className="pt-6">
-                <FirstAidLibrary />
+              <div className="pt-2">
+                <FirstAidLibrary onClose={() => setActiveNav('Home')} />
               </div>
             )}
 
             {activeNav === 'Community' && (
-              <div className="pt-6">
-                <CommunityAndContacts />
+              <div className="pt-2">
+                <CommunityAndContacts onClose={() => setActiveNav('Home')} />
               </div>
             )}
           </Suspense>
         </main>
 
-        {/* Footer */}
-        <footer className="border-t border-[#C4A66B]/20 bg-[#0E2721] py-6 px-8 text-xs text-[#F1F0E9]/70 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="space-y-0.5 text-center sm:text-left">
-            <p className="font-bold text-[#F1F0E9]">PulseCare+ Emergency Health Platform</p>
-            <p className="font-mono text-[11px] text-[#C4A66B]">
-              Dual-Tier Zero-Knowledge Architecture • 3D Spatial Health Globe • Local-First IndexedDB
+        {/* FOOTER */}
+        <footer className="border-t border-[#C4A66B]/25 bg-[#FAF8F5] py-6 px-8 text-xs text-[#173E35]/85 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="space-y-1 text-center sm:text-left">
+            <p className="font-bold text-[#173E35]">PulseCare+ Emergency Health Platform</p>
+            <p className="font-mono text-[11px] text-[#173E35]/85 font-medium">
+              Future Clinic Architecture • Zero-Knowledge Private Vault • W3C Web Crypto Standards
             </p>
           </div>
-          <div className="flex items-center space-x-3 font-mono text-[11px] text-[#F1F0E9]/80">
-            <button onClick={() => setIsMedicalIdOpen(true)} className="hover:text-[#C4A66B] transition-colors">
-              Medical ID Pass
+          <div className="flex items-center space-x-3 font-mono text-[11px] text-[#173E35] font-semibold">
+            <button onClick={() => setIsMedicalIdOpen(true)} className="hover:text-[#CC3B2D] hover:underline transition-colors">
+              Medical ID
             </button>
             <span>•</span>
-            <button onClick={() => setIsHealthProfileOpen(true)} className="hover:text-[#C4A66B] transition-colors">
-              Health Profile
+            <button onClick={() => setIsHealthProfileOpen(true)} className="hover:text-[#CC3B2D] hover:underline transition-colors">
+              Directives
             </button>
             <span>•</span>
-            <button onClick={() => setIsAiModalOpen(true)} className="hover:text-[#C4A66B] transition-colors">
-              Assistant
-            </button>
-            <span>•</span>
-            <button onClick={() => setIsSosModalOpen(true)} className="text-[#F79488] hover:underline font-bold">
-              Emergency SOS
+            <button onClick={() => setIsAiModalOpen(true)} className="hover:text-[#CC3B2D] hover:underline transition-colors">
+              AI Triage
             </button>
           </div>
         </footer>
       </div>
 
-      {/* ALL MODALS (Lazy Loaded) */}
+      {/* 3. MODALS (All Encrypted & Truthful) */}
       <Suspense fallback={null}>
+        {/* Emergency SOS Modal */}
         <EmergencySOSModal
           isOpen={isSosModalOpen}
           onClose={() => setIsSosModalOpen(false)}
@@ -764,59 +773,70 @@ export function App() {
           onOpenMedicalId={() => setIsMedicalIdOpen(true)}
         />
 
+        {/* Emergency Medical ID Card & Vault Modal */}
         <MedicalIDCard
           isOpen={isMedicalIdOpen}
           onClose={() => setIsMedicalIdOpen(false)}
           accountId={activeAccount}
         />
 
+        {/* Health Profile & Care Directives Modal */}
         <HealthProfileModal
           isOpen={isHealthProfileOpen}
           onClose={() => setIsHealthProfileOpen(false)}
           accountId={activeAccount}
-          onProfileUpdated={(p) => setUserProfile(p)}
+          onProfileUpdated={(updated: UserProfile) => setUserProfile(updated)}
         />
 
+        {/* AI Health Assistant Modal */}
         <AIAssistantModal
           isOpen={isAiModalOpen}
           onClose={() => setIsAiModalOpen(false)}
           onTriggerSOS={() => {
             setIsSosModalOpen(true);
+            setSosActive(true);
           }}
         />
 
+        {/* 24/7 Pharmacies Modal */}
         <PharmaciesModal
           isOpen={isPharmaciesOpen}
           onClose={() => setIsPharmaciesOpen(false)}
         />
 
+        {/* Emergency Preparedness Modal */}
         <EmergencyPrepModal
           isOpen={isPrepOpen}
           onClose={() => setIsPrepOpen(false)}
           onOpenMedicalId={() => setIsMedicalIdOpen(true)}
         />
 
+        {/* Live Services Tracker Modal */}
+        <LiveServicesTrackerModal
+          isOpen={liveTrackerService !== null}
+          onClose={() => setLiveTrackerService(null)}
+          serviceType={liveTrackerService || ''}
+        />
+
+        {/* Location Permission & Region Selection Modal */}
         <LocationPermissionModal
           isOpen={isLocationModalOpen}
           onClose={() => setIsLocationModalOpen(false)}
           permissionState={locationPermission}
           currentLocation={currentLocation}
-          onLocationUpdated={(loc) => setCurrentLocation(loc)}
+          onLocationUpdated={(loc: LocationTelemetry) => {
+            setCurrentLocation(loc);
+            setLocationPermission('granted');
+          }}
         />
 
+        {/* Notification Preferences Modal */}
         <NotificationSettingsModal
           isOpen={isNotificationModalOpen}
           onClose={() => setIsNotificationModalOpen(false)}
-        />
-
-        <LiveServicesTrackerModal
-          isOpen={Boolean(liveTrackerService)}
-          onClose={() => setLiveTrackerService(null)}
-          serviceType={liveTrackerService || 'Ambulance'}
         />
       </Suspense>
     </div>
   );
 }
-
 export default App;

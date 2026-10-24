@@ -22,8 +22,8 @@
   }
 
   body {
-    background-color: #0E2721;
-    color: #F1F0E9;
+    background-color: #F1F0E9;
+    color: #173E35;
   }
 
   /* Custom subtle scrollbar */
@@ -32,51 +32,57 @@
     height: 6px;
   }
   ::-webkit-scrollbar-track {
-    background: #0E2721;
+    background: #EFECE3;
   }
   ::-webkit-scrollbar-thumb {
-    background: #254E44;
+    background: #C4A66B;
     border-radius: 9999px;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: #C4A66B;
+    background: #173E35;
   }
 }
 
-/* Future Clinic Architectural Panels */
+/* Future Clinic Architectural Panels - Light Theme */
 .clinic-panel {
-  background: rgba(23, 62, 53, 0.74);
+  background: rgba(255, 255, 255, 0.90);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(241, 240, 233, 0.08);
-  box-shadow: 0 10px 30px -10px rgba(10, 25, 20, 0.5), 0 2px 6px rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(196, 166, 107, 0.28);
+  box-shadow: 0 10px 28px -10px rgba(23, 62, 53, 0.08), 0 2px 6px rgba(0, 0, 0, 0.03);
 }
 
 .clinic-panel-elevated {
-  background: rgba(31, 77, 67, 0.90);
+  background: #FFFFFF;
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(196, 166, 107, 0.28);
-  box-shadow: 0 16px 36px -12px rgba(10, 25, 20, 0.6), 0 4px 12px rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(196, 166, 107, 0.35);
+  box-shadow: 0 14px 34px -10px rgba(23, 62, 53, 0.12), 0 4px 12px rgba(0, 0, 0, 0.04);
 }
 
 .clinic-panel-ivory {
-  background: #F1F0E9;
+  background: #FAF8F3;
   color: #173E35;
   border: 1px solid rgba(196, 166, 107, 0.35);
-  box-shadow: 0 12px 32px -8px rgba(10, 25, 20, 0.4);
+  box-shadow: 0 8px 24px -8px rgba(23, 62, 53, 0.08);
+}
+
+.clinic-panel-dark {
+  background: #173E35;
+  color: #F1F0E9;
+  border: 1px solid rgba(196, 166, 107, 0.35);
 }
 
 /* Swatch Vermilion - emergency action with full WCAG AA contrast (> 5.2:1) */
 .btn-vermilion {
   background-color: #CC3B2D;
   color: #FFFFFF;
-  box-shadow: 0 8px 24px -4px rgba(204, 59, 45, 0.45);
+  box-shadow: 0 8px 24px -4px rgba(204, 59, 45, 0.40);
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .btn-vermilion:hover {
   background-color: #B53225;
-  box-shadow: 0 12px 28px -4px rgba(181, 50, 37, 0.6);
+  box-shadow: 0 12px 28px -4px rgba(181, 50, 37, 0.55);
 }
 
 .champagne-border {
