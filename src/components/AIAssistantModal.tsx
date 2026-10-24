@@ -5,13 +5,11 @@ import {
   X,
   Phone,
   ShieldAlert,
-  RotateCcw,
-  CheckCircle2,
-  ExternalLink,
   BookOpen,
-  HelpCircle
+  HeartHandshake
 } from 'lucide-react';
 import { PulseCareEmblem } from './PulseCareEmblem';
+import { evaluateSymptomInput, SymptomGuidanceResult } from '../services/symptomGuidanceService';
 
 interface Props {
   isOpen: boolean;
@@ -23,19 +21,15 @@ interface Message {
   id: string;
   sender: 'ai' | 'user';
   text: string;
-  isEmergencyAlert?: boolean;
-  actionHint?: string;
-  recommendedStep?: string;
-  sourceCitation?: string;
-  followUpQuestions?: string[];
+  result?: SymptomGuidanceResult;
 }
 
 const COMMON_QUERIES = [
-  'I have had a cough for 2 days',
   'Chest pain radiating to my left arm',
-  'Sudden shortness of breath & wheezing',
-  'Bleeding heavily from a deep forearm cut',
-  'Signs of an allergic reaction'
+  'Severe shortness of breath and wheezing',
+  'Bleeding heavily from a deep cut',
+  'Signs of an allergic reaction with throat swelling',
+  'I have had a mild dry cough for 2 days'
 ];
 
 export const AIAssistantModal: React.FC<Props> = ({ isOpen, onClose, onTriggerSOS }) => {
@@ -43,12 +37,10 @@ export const AIAssistantModal: React.FC<Props> = ({ isOpen, onClose, onTriggerSO
     {
       id: 'm-init',
       sender: 'ai',
-      text: 'Hello, I am your Health Information Assistant. I provide evidence-based first-aid protocols and general health guidance. I do not provide clinical diagnosis or prescribe treatments. If you are experiencing a life-threatening crisis, call 112 immediately.',
-      sourceCitation: 'WHO Health Guidelines & NHS First Aid Protocols (Reviewed: 2026)'
+      text: 'PulseCare+ Symptom Guidance is a deterministic, rule-based clinical first-aid decision engine based on published international emergency protocols (AHA, ERC, WHO). It is NOT an AI diagnostic chatbot and cannot replace professional emergency medical evaluation. If you are experiencing a life-threatening crisis, call 112 immediately.'
     }
   ]);
   const [inputValue, setInputValue] = useState('');
-  const [isTyping, setIsTyping] = useState(false);
 
   if (!isOpen) return null;
 
@@ -57,260 +49,209 @@ export const AIAssistantModal: React.FC<Props> = ({ isOpen, onClose, onTriggerSO
     if (!text.trim()) return;
 
     const userMsg: Message = {
-      id: Date.now().toString(),
+      id: `u-${Date.now()}`,
       sender: 'user',
       text
     };
 
-    setMessages((prev) => [...prev, userMsg]);
+    const guidance = evaluateSymptomInput(text);
+    const aiMsg: Message = {
+      id: `g-${Date.now() + 1}`,
+      sender: 'ai',
+      text: guidance.guidanceText,
+      result: guidance
+    };
+
+    setMessages((prev) => [...prev, userMsg, aiMsg]);
     if (!textToSend) setInputValue('');
-    setIsTyping(true);
-
-    setTimeout(() => {
-      let aiText = '';
-      let isEmergency = false;
-      let actionHint = '';
-      let recommendedStep = '';
-      let sourceCitation = '';
-      let followUpQuestions: string[] | undefined = undefined;
-
-      const lower = text.toLowerCase();
-
-      // 1. CRITICAL EMERGENCY RED FLAGS (IMMEDIATE ESCALATION)
-      if (lower.includes('chest pain') || (lower.includes('chest') && lower.includes('arm')) || lower.includes('heart attack')) {
-        isEmergency = true;
-        actionHint = 'Immediate Emergency Escalation — Call 112';
-        recommendedStep = 'Sit comfortably upright on floor or chair, loosen restrictive clothing, and avoid any physical exertion. If instructed by emergency dispatch and not allergic, chew one 300mg adult aspirin.';
-        aiText = 'CRITICAL EMERGENCY RED FLAG: Central chest pressure, tightness, or pain radiating to the left arm, neck, or jaw requires immediate paramedic care to rule out acute myocardial infarction (heart attack). Do not drive yourself to hospital.';
-        sourceCitation = 'American Heart Association & Resuscitation Council UK (STEMI Guidelines)';
-      } else if (lower.includes('short of breath') || lower.includes('cant breathe') || lower.includes('cannot breathe') || lower.includes('struggling to breathe') || (lower.includes('breath') && lower.includes('severe'))) {
-        isEmergency = true;
-        actionHint = 'Acute Respiratory Emergency — Call 112';
-        recommendedStep = 'Sit upright. If diagnosed with asthma, take 2 to 4 puffs of rescue inhaler (Albuterol/Salbutamol) with spacer immediately. Repeat every 2 minutes up to 10 puffs if symptoms do not improve.';
-        aiText = 'URGENT RESPIRATORY PROTOCOL: Severe breathlessness, blue lips/fingertips, or inability to complete a single sentence without gasping indicates acute hypoxia and requires immediate emergency medical evaluation.';
-        sourceCitation = 'Global Initiative for Asthma (GINA) & British Thoracic Society';
-      } else if (lower.includes('allergic') || lower.includes('anaphylaxis') || lower.includes('epipen') || (lower.includes('swelling') && lower.includes('tongue'))) {
-        isEmergency = true;
-        actionHint = 'Anaphylaxis Protocol — Inject EpiPen & Call 112';
-        recommendedStep = 'Inject Epinephrine Auto-Injector (EpiPen) into the outer mid-thigh at a 90-degree angle. Hold firmly for 3 seconds. Massage site for 10 seconds. Keep patient lying flat with legs raised unless breathing is labored.';
-        aiText = 'SEVERE ALLERGIC REACTION: Facial swelling, tongue enlargement, throat tightness, or widespread hives accompanied by dizziness is anaphylaxis, a rapidly progressing medical emergency.';
-        sourceCitation = 'World Allergy Organization (WAO) Anaphylaxis Guidelines';
-      } else if (lower.includes('bleed') || lower.includes('laceration') || lower.includes('spurting') || lower.includes('deep cut')) {
-        isEmergency = true;
-        actionHint = 'Trauma Hemostasis Protocol';
-        recommendedStep = 'Apply hard, direct unyielding pressure with clean cloth or sterile gauze. Do not remove soaked gauze; add more layers on top. Elevate limb above heart level. If blood spurts rhythmically, apply a commercial tourniquet 2-3 inches above wound.';
-        aiText = 'HEMORRHAGE CONTROL: Uncontrolled or spurting bleeding requires immediate hemostasis and emergency care.';
-        sourceCitation = 'Stop the Bleed (American College of Surgeons) & AIIMS Trauma Manual';
-      } else if (lower.includes('stroke') || lower.includes('face droop') || lower.includes('slurred speech') || lower.includes('arm weakness')) {
-        isEmergency = true;
-        actionHint = 'Stroke Emergency Protocol — Call 112 (FAST)';
-        recommendedStep = 'Note the exact time symptoms started. Do not give the person food, water, or medication (no aspirin). Keep them resting comfortably.';
-        aiText = 'STROKE RED FLAG (F.A.S.T.): Facial drooping, Arm weakness, and Speech slurring indicate potential acute ischemic stroke where every minute saved preserves brain tissue.';
-        sourceCitation = 'World Stroke Organization (WSO) Guidelines';
-      }
-
-      // 2. COMMON SYMPTOMS (TARGETED CLINICAL FOLLOW-UPS & CAUTIOUS CARE)
-      else if (lower.includes('cough')) {
-        aiText = 'Cough is a natural reflex to clear airways, but guidance depends on key clinical factors:';
-        followUpQuestions = [
-          'Duration: Has the cough lasted under 3 weeks (acute) or over 3 weeks (persistent)?',
-          'Associated Red Flags: Is there chest pain, high fever (>38.5°C), shortness of breath, or coughing up blood?',
-          'Characteristics: Is it a dry throat tickle or a productive cough with thick green/yellow phlegm?'
-        ];
-        recommendedStep = 'General Supportive Care (Non-Diagnostic): Stay well-hydrated with warm water or herbal tea. Inhaling steam or using a cool-mist humidifier can relieve airway irritation. Adults and children over 1 year can take 1-2 teaspoons of honey to soothe throat irritation (never give honey to infants under 1 year due to botulism risk). If accompanied by breathing difficulty, high fever, or lasting over 3 weeks, consult a physician.';
-        sourceCitation = 'UK NHS Guidelines & WHO Acute Respiratory Illness Protocols';
-      } else if (lower.includes('fever') || lower.includes('temperature')) {
-        aiText = 'Fever is the immune system’s response to infection. Observe these medical boundaries:';
-        followUpQuestions = [
-          'What is the measured oral/ear temperature?',
-          'How many days has the fever been present?',
-          'Are there associated symptoms like stiff neck, persistent vomiting, confusion, or a non-blanching rash?'
-        ];
-        recommendedStep = 'Supportive Measures: Drink plenty of fluids to prevent dehydration. Dress in light clothing and rest. Paracetamol/Acetaminophen may be used for comfort following package instructions if not contraindicated. Seek urgent care if fever exceeds 39.4°C (103°F), fails to respond to antipyretics, or is in an infant under 3 months.';
-        sourceCitation = 'NICE Clinical Knowledge Summaries (Fever in Adults and Children)';
-      } else if (lower.includes('medicine') || lower.includes('dosage') || lower.includes('prescribe') || lower.includes('pill')) {
-        aiText = 'Medication Safety Notice: As a digital health assistant, I cannot prescribe pharmaceuticals, adjust dosages, or verify off-label drug combinations. Please consult your prescribing physician, pharmacist, or refer to the official package insert leaflet for verified dosing instructions.';
-        sourceCitation = 'Good Medical Practice & Digital Health Information Governance';
-      } else {
-        // Fallback with specific guidance rather than generic vague filler
-        aiText = 'I have noted your query. To provide accurate health information, please provide specific context such as the onset, exact bodily location, severity on a scale of 1-10, or associated symptoms.';
-        followUpQuestions = [
-          'When did the symptom begin?',
-          'Does anything make the symptom better or worse?',
-          'Are you currently taking any prescription medications or do you have chronic conditions?'
-        ];
-        recommendedStep = 'If you experience severe pain, difficulty breathing, altered consciousness, or progressive swelling, do not delay seeking immediate medical evaluation.';
-        sourceCitation = 'Evidence-Based Emergency First-Aid Guidelines (AIIMS & WHO)';
-      }
-
-      setMessages((prev) => [
-        ...prev,
-        {
-          id: (Date.now() + 1).toString(),
-          sender: 'ai',
-          text: aiText,
-          isEmergencyAlert: isEmergency,
-          actionHint,
-          recommendedStep,
-          sourceCitation,
-          followUpQuestions
-        }
-      ]);
-      setIsTyping(false);
-    }, 500);
   };
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#173E35]/60 backdrop-blur-md animate-in fade-in duration-200"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#163C32]/65 backdrop-blur-md animate-in fade-in duration-150"
       role="dialog"
       aria-modal="true"
       aria-labelledby="assistant-modal-title"
     >
-      <div className="relative w-full max-w-2xl bg-white rounded-3xl flex flex-col h-[660px] border-2 border-[#C4A66B]/40 overflow-hidden shadow-2xl text-[#173E35]">
+      <div className="relative w-full max-w-2xl bg-[#FAF8F5] rounded-3xl flex flex-col h-[660px] border border-[#C4A66B]/40 overflow-hidden shadow-2xl text-[#1D2521]">
         
-        {/* Header Bar with High-Contrast Deep Green Text and Dedicated Close Button */}
-        <div className="p-4 sm:p-5 border-b border-[#C4A66B]/25 bg-[#FAF8F5] flex items-center justify-between">
+        {/* Header Bar */}
+        <div className="p-4 sm:p-5 border-b border-[#C4A66B]/25 bg-[#F1F0E9] flex items-center justify-between">
           <div className="flex items-center space-x-3.5">
-            <div className="w-10 h-10 rounded-2xl bg-[#173E35] border border-[#C4A66B]/40 flex items-center justify-center shadow-xs">
-              <PulseCareEmblem size={30} />
+            <div className="w-10 h-10 rounded-2xl bg-[#163C32] border border-[#C4A66B]/40 flex items-center justify-center shadow-xs">
+              <PulseCareEmblem size={28} />
             </div>
             <div>
-              <h3 id="assistant-modal-title" className="text-sm sm:text-base font-black text-[#173E35] flex items-center gap-2">
-                PulseCare Health Assistant
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-[#173E35] text-[#F1F0E9] border border-[#C4A66B]/30 font-bold">
-                  Offline Decision Engine
+              <h3 id="assistant-modal-title" className="text-sm sm:text-base font-black text-[#163C32] flex items-center gap-2">
+                Symptom Guidance
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-[#163C32] text-[#F1F0E9] border border-[#C4A66B]/30 font-bold">
+                  Rule-based, not AI
                 </span>
               </h3>
-              <p className="text-[11px] text-[#173E35]/75 font-medium">
-                General health information & verified first-aid guidance • Not a clinical diagnosis
+              <p className="text-[11px] text-[#1D2521]/75 font-medium">
+                Deterministic first-aid protocols & clinical triage guidelines • Zero hallucination
               </p>
             </div>
           </div>
 
-          {/* Prominent Dedicated Close Button */}
           <button
             onClick={onClose}
-            className="p-2.5 rounded-2xl bg-[#173E35] text-[#F1F0E9] hover:bg-[#CC3B2D] transition-all border border-[#C4A66B]/40 shadow-md flex items-center justify-center group"
-            aria-label="Close Assistant"
+            className="p-2.5 rounded-2xl bg-[#163C32] text-[#F1F0E9] hover:bg-[#B82819] transition-all border border-[#C4A66B]/40 shadow-md flex items-center justify-center"
+            aria-label="Close Symptom Guidance"
             title="Close dialog"
           >
-            <X className="w-5 h-5 group-hover:rotate-90 transition-transform" />
+            <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Safety Disclaimer Banner */}
-        <div className="px-5 py-2.5 bg-[#FAF8F5] border-b border-[#C4A66B]/20 flex items-center space-x-2 text-xs text-[#173E35]">
-          <AlertTriangle className="w-4 h-4 text-[#CC3B2D] shrink-0" />
-          <p className="text-[11px] leading-tight text-[#173E35]/85">
-            <strong>Medical Disclaimer:</strong> Provides general health education and first-aid protocols. Not a medical doctor or diagnostic device. In life-threatening emergencies, call 112 immediately.
+        <div className="px-5 py-2.5 bg-amber-50/80 border-b border-[#C4A66B]/25 flex items-center space-x-2 text-xs text-[#1D2521]">
+          <AlertTriangle className="w-4 h-4 text-[#B82819] shrink-0" />
+          <p className="text-[11px] leading-tight text-[#1D2521]/90">
+            <strong>Medical Notice:</strong> Evidence-based triage rules. Never delays emergency escalation. In life-threatening emergencies, dial 112 immediately.
           </p>
         </div>
 
         {/* Message Thread */}
-        <div className="flex-1 p-5 overflow-y-auto space-y-4 bg-white">
-          {messages.map((m) => (
-            <div
-              key={m.id}
-              className={`flex flex-col ${m.sender === 'user' ? 'items-end' : 'items-start'}`}
-            >
+        <div className="flex-1 p-5 overflow-y-auto space-y-4 bg-[#FAF8F5]">
+          {messages.map((m) => {
+            const isUser = m.sender === 'user';
+            const res = m.result;
+            const isEmergency = res?.isEmergency;
+            const isMentalHealth = res?.category === 'MENTAL_HEALTH_CRISIS';
+
+            return (
               <div
-                className={`max-w-[88%] rounded-2xl p-4 text-xs leading-relaxed ${
-                  m.sender === 'user'
-                    ? 'bg-[#173E35] text-[#F1F0E9] font-medium rounded-br-xs shadow-md'
-                    : m.isEmergencyAlert
-                    ? 'bg-red-50 border-2 border-[#CC3B2D] text-[#173E35] rounded-bl-xs shadow-lg'
-                    : 'bg-[#FAF8F5] text-[#173E35] border border-[#C4A66B]/30 rounded-bl-xs shadow-xs'
-                }`}
+                key={m.id}
+                className={`flex flex-col ${isUser ? 'items-end' : 'items-start'}`}
               >
-                {/* Emergency Red Flag Header */}
-                {m.isEmergencyAlert && (
-                  <div className="flex items-center gap-2 text-[#CC3B2D] font-black text-xs uppercase tracking-wide mb-2 pb-1.5 border-b border-[#CC3B2D]/30">
-                    <ShieldAlert className="w-4 h-4 shrink-0 text-[#CC3B2D]" />
-                    <span>Priority Emergency Red Flag Detected</span>
-                  </div>
-                )}
-
-                <p className="whitespace-pre-line font-sans">{m.text}</p>
-
-                {/* Targeted Follow-up Questions for non-emergencies like cough */}
-                {m.followUpQuestions && m.followUpQuestions.length > 0 && (
-                  <div className="mt-3 p-3 rounded-xl bg-[#F1F0E9] border border-[#C4A66B]/40 space-y-1.5">
-                    <span className="text-[10px] font-mono font-bold uppercase text-[#7A5E2E] block">
-                      Key Clinical Context Factors:
-                    </span>
-                    <ul className="list-disc pl-4 space-y-1 text-[11px] text-[#173E35] font-medium">
-                      {m.followUpQuestions.map((q, qIdx) => (
-                        <li key={qIdx}>{q}</li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-
-                {/* Immediate Clinical / First-aid action */}
-                {m.recommendedStep && (
-                  <div className="mt-3 p-3 rounded-xl bg-[#F1F0E9] border border-[#C4A66B]/40 space-y-1">
-                    <span className="text-[10px] font-mono font-bold uppercase text-[#7A5E2E] block">
-                      Recommended Action:
-                    </span>
-                    <p className="text-[11px] text-[#173E35] font-medium leading-relaxed">{m.recommendedStep}</p>
-                  </div>
-                )}
-
-                {/* Emergency Call Button if Red Flag */}
-                {m.actionHint && (
-                  <div className="mt-3 pt-2.5 border-t border-[#CC3B2D]/20 flex items-center justify-between gap-3 flex-wrap">
-                    <span className="text-[11px] font-mono text-[#CC3B2D] font-bold uppercase">
-                      {m.actionHint}
-                    </span>
-                    <div className="flex items-center space-x-2">
-                      <a
-                        href="tel:112"
-                        className="px-3.5 py-1.5 rounded-xl bg-[#CC3B2D] hover:bg-[#B03326] text-white font-bold text-[11px] flex items-center space-x-1.5 shadow"
-                      >
-                        <Phone className="w-3.5 h-3.5" />
-                        <span>Call 112</span>
-                      </a>
-                      <button
-                        onClick={() => {
-                          onClose();
-                          onTriggerSOS();
-                        }}
-                        className="px-3 py-1.5 rounded-xl bg-[#173E35] hover:bg-[#1F4D43] text-[#F1F0E9] font-mono text-[11px] font-bold shadow-xs"
-                      >
-                        SOS Pass
-                      </button>
+                <div
+                  className={`max-w-[90%] rounded-2xl p-4 text-xs leading-relaxed ${
+                    isUser
+                      ? 'bg-[#163C32] text-[#F1F0E9] font-medium rounded-br-xs shadow-md'
+                      : isEmergency
+                      ? 'bg-red-50/90 border-2 border-[#B82819] text-[#1D2521] rounded-bl-xs shadow-lg'
+                      : 'bg-white text-[#1D2521] border border-[#C4A66B]/35 rounded-bl-xs shadow-xs'
+                  }`}
+                >
+                  {/* Emergency Header */}
+                  {res && isEmergency && (
+                    <div className="flex items-center gap-2 text-[#B82819] font-black text-xs uppercase tracking-wide mb-2 pb-1.5 border-b border-[#B82819]/30">
+                      {isMentalHealth ? (
+                        <HeartHandshake className="w-4 h-4 shrink-0 text-[#B82819]" />
+                      ) : (
+                        <ShieldAlert className="w-4 h-4 shrink-0 text-[#B82819]" />
+                      )}
+                      <span>{res.title}</span>
                     </div>
-                  </div>
-                )}
+                  )}
 
-                {/* Sourced Medical Reference Citation */}
-                {m.sourceCitation && (
-                  <div className="mt-3 pt-2 border-t border-[#C4A66B]/20 flex items-center space-x-1.5 text-[10px] font-mono text-[#7A5E2E] font-medium">
-                    <BookOpen className="w-3.5 h-3.5 shrink-0 text-[#7A5E2E]" />
-                    <span>Source: {m.sourceCitation}</span>
-                  </div>
-                )}
+                  <p className="whitespace-pre-line font-sans">{m.text}</p>
+
+                  {/* Mental Health Helpline Links */}
+                  {res?.helplines && res.helplines.length > 0 && (
+                    <div className="mt-3 p-3 rounded-xl bg-red-100/70 border border-[#B82819]/40 space-y-2">
+                      <span className="text-[10px] font-mono font-bold uppercase text-[#B82819] block tracking-wide">
+                        Verified Crisis Helplines (24/7):
+                      </span>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        {res.helplines.map((h, hIdx) => (
+                          <a
+                            key={hIdx}
+                            href={`tel:${h.number}`}
+                            className="p-2 rounded-lg bg-white border border-[#B82819]/30 hover:border-[#B82819] flex items-center justify-between text-xs font-bold text-[#1D2521] transition-all shadow-xs"
+                          >
+                            <div>
+                              <div className="font-extrabold text-[#B82819]">{h.name}</div>
+                              <div className="text-[10px] text-[#1D2521]/70 font-normal">{h.description}</div>
+                            </div>
+                            <span className="px-2 py-1 rounded bg-[#B82819] text-white text-[11px] font-mono shrink-0 ml-2">
+                              {h.number}
+                            </span>
+                          </a>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Recommended Action Steps */}
+                  {res?.recommendedSteps && res.recommendedSteps.length > 0 && (
+                    <div className="mt-3 p-3 rounded-xl bg-[#F1F0E9] border border-[#C4A66B]/40 space-y-1.5">
+                      <span className="text-[10px] font-mono font-bold uppercase text-[#163C32] block">
+                        Action Protocol:
+                      </span>
+                      <ol className="list-decimal pl-4 space-y-1 text-[11px] text-[#1D2521] font-medium">
+                        {res.recommendedSteps.map((step, sIdx) => (
+                          <li key={sIdx}>{step}</li>
+                        ))}
+                      </ol>
+                    </div>
+                  )}
+
+                  {/* Follow-up Questions for Non-Emergencies */}
+                  {res?.followUpQuestions && res.followUpQuestions.length > 0 && (
+                    <div className="mt-3 p-3 rounded-xl bg-amber-50/70 border border-[#C4A66B]/30 space-y-1">
+                      <span className="text-[10px] font-mono font-bold uppercase text-[#7A5E2E] block">
+                        Clinical Context Considerations:
+                      </span>
+                      <ul className="list-disc pl-4 space-y-0.5 text-[11px] text-[#1D2521] font-medium">
+                        {res.followUpQuestions.map((q, qIdx) => (
+                          <li key={qIdx}>{q}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
+                  {/* Emergency Quick Action Callouts */}
+                  {res?.actionHint && (
+                    <div className="mt-3 pt-2.5 border-t border-[#C4A66B]/30 flex items-center justify-between gap-3 flex-wrap">
+                      <span className="text-[11px] font-mono text-[#B82819] font-bold">
+                        {res.actionHint}
+                      </span>
+                      <div className="flex items-center space-x-2">
+                        <a
+                          href="tel:112"
+                          className="px-3.5 py-1.5 rounded-xl bg-[#B82819] hover:bg-[#9E2013] text-white font-bold text-[11px] flex items-center space-x-1.5 shadow"
+                        >
+                          <Phone className="w-3.5 h-3.5" />
+                          <span>Call 112</span>
+                        </a>
+                        <button
+                          onClick={() => {
+                            onClose();
+                            onTriggerSOS();
+                          }}
+                          className="px-3 py-1.5 rounded-xl bg-[#163C32] hover:bg-[#1E4D40] text-[#F1F0E9] font-mono text-[11px] font-bold shadow-xs"
+                        >
+                          SOS Pass
+                        </button>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Clinical Citation */}
+                  {res?.clinicalReference && (
+                    <div className="mt-3 pt-2 border-t border-[#C4A66B]/25 flex items-center space-x-1.5 text-[10px] font-mono text-[#163C32]/80 font-medium">
+                      <BookOpen className="w-3.5 h-3.5 shrink-0 text-[#163C32]" />
+                      <span>
+                        Source: {res.clinicalReference.source} ({res.clinicalReference.guideline}, rev. {res.clinicalReference.reviewedDate})
+                      </span>
+                    </div>
+                  )}
+                </div>
               </div>
-            </div>
-          ))}
-
-          {isTyping && (
-            <div className="flex items-center space-x-2 text-xs text-[#F1F0E9] bg-[#173E35] p-3 rounded-2xl w-36 border border-[#C4A66B]/40 animate-pulse font-mono shadow-sm">
-              <RotateCcw className="w-3.5 h-3.5 animate-spin text-[#C4A66B]" />
-              <span>Analyzing...</span>
-            </div>
-          )}
+            );
+          })}
         </div>
 
         {/* Suggestion Chips */}
-        <div className="p-3 border-t border-[#C4A66B]/25 bg-[#FAF8F5]">
+        <div className="p-3 border-t border-[#C4A66B]/25 bg-[#F1F0E9]">
           <div className="flex flex-wrap gap-1.5 max-h-24 overflow-y-auto">
             {COMMON_QUERIES.map((query, idx) => (
               <button
                 key={idx}
                 onClick={() => handleSend(query)}
-                className="px-2.5 py-1 rounded-xl bg-white hover:bg-[#F1F0E9] border border-[#C4A66B]/40 text-[11px] text-[#173E35] font-semibold transition-colors font-mono text-left focus:outline-none focus:ring-1 focus:ring-[#173E35] shadow-xs"
+                className="px-2.5 py-1 rounded-xl bg-white hover:bg-[#FAF8F5] border border-[#C4A66B]/40 text-[11px] text-[#163C32] font-semibold transition-colors font-mono text-left focus:outline-none focus:ring-1 focus:ring-[#163C32] shadow-xs"
               >
                 {query}
               </button>
@@ -318,19 +259,19 @@ export const AIAssistantModal: React.FC<Props> = ({ isOpen, onClose, onTriggerSO
           </div>
         </div>
 
-        {/* Input Bar & Bottom Dismiss */}
-        <div className="p-3.5 bg-[#FAF8F5] border-t border-[#C4A66B]/25 flex items-center space-x-2.5">
+        {/* Input Bar */}
+        <div className="p-3.5 bg-[#F1F0E9] border-t border-[#C4A66B]/25 flex items-center space-x-2.5">
           <input
             type="text"
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-            placeholder="Describe symptoms, duration, or first-aid query..."
-            className="flex-1 bg-white border border-[#C4A66B]/40 rounded-2xl px-4 py-2.5 text-xs text-[#173E35] placeholder-[#173E35]/50 focus:outline-none focus:border-[#173E35] transition-colors shadow-xs"
+            placeholder="Enter symptom or first-aid query (e.g. chest pain, nosebleed, burn)..."
+            className="flex-1 bg-white border border-[#C4A66B]/40 rounded-2xl px-4 py-2.5 text-xs text-[#1D2521] placeholder-[#1D2521]/50 focus:outline-none focus:border-[#163C32] transition-colors shadow-xs"
           />
           <button
             onClick={() => handleSend()}
-            className="px-4 py-2.5 rounded-2xl bg-[#173E35] hover:bg-[#1F4D43] text-[#F1F0E9] transition-all font-bold shadow-md flex items-center gap-1.5 text-xs"
+            className="px-4 py-2.5 rounded-2xl bg-[#163C32] hover:bg-[#1E4D40] text-[#F1F0E9] transition-all font-bold shadow-md flex items-center gap-1.5 text-xs"
             aria-label="Send Query"
           >
             <span>Ask</span>
@@ -338,7 +279,7 @@ export const AIAssistantModal: React.FC<Props> = ({ isOpen, onClose, onTriggerSO
           </button>
           <button
             onClick={onClose}
-            className="px-3.5 py-2.5 rounded-2xl bg-white border border-[#C4A66B]/40 hover:bg-[#F1F0E9] text-[#173E35] text-xs font-bold transition-all shadow-xs"
+            className="px-3.5 py-2.5 rounded-2xl bg-white border border-[#C4A66B]/40 hover:bg-[#FAF8F5] text-[#163C32] text-xs font-bold transition-all shadow-xs"
           >
             Close
           </button>

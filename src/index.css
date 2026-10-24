@@ -1,29 +1,71 @@
 @import "tailwindcss";
 
+/* ==========================================
+   SELF-HOSTED ZERO-EXTERNAL-LEAK FONTS
+   ========================================== */
+@font-face {
+  font-family: 'Plus Jakarta Sans';
+  font-style: normal;
+  font-weight: 300 800;
+  font-display: swap;
+  src: url('/fonts/plus-jakarta-sans-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Newsreader';
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url('/fonts/newsreader-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url('/fonts/jetbrains-mono-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+/* ==========================================
+   FUTURE CLINIC DESIGN TOKENS
+   ========================================== */
 @theme {
   --color-ivory: #F1F0E9;
+  --color-ivory-warm: #FAF8F5;
+  --color-forest: #163C32;
   --color-forest-deep: #0E2721;
-  --color-forest-surface: #173E35;
-  --color-forest-elevated: #1F4D43;
-  --color-vermilion: #D44A3C;
+  --color-forest-surface: #163C32;
+  --color-forest-elevated: #1E4D40;
+  --color-vermilion: #B82819;
+  --color-vermilion-hover: #9E2013;
   --color-champagne: #C4A66B;
+  --color-champagne-light: #C7AE7B;
+  --color-ink: #1D2521;
 }
 
 @layer base {
   :root {
     --ivory: #F1F0E9;
+    --ivory-warm: #FAF8F5;
+    --forest: #163C32;
     --forest-deep: #0E2721;
-    --forest-surface: #173E35;
-    --forest-elevated: #1F4D43;
-    --vermilion: #D44A3C;
+    --forest-surface: #163C32;
+    --forest-elevated: #1E4D40;
+    --vermilion: #B82819;
+    --vermilion-hover: #9E2013;
     --champagne: #C4A66B;
-    --ink: #173E35;
-    --stone-warm: #254E44;
+    --champagne-light: #C7AE7B;
+    --ink: #1D2521;
   }
 
   body {
     background-color: #F1F0E9;
-    color: #173E35;
+    color: #1D2521;
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
   }
 
   /* Custom subtle scrollbar */
@@ -39,58 +81,58 @@
     border-radius: 9999px;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: #173E35;
+    background: #163C32;
   }
 }
 
-/* Future Clinic Architectural Panels - Light Theme */
+/* Future Clinic Architectural Panels */
 .clinic-panel {
-  background: rgba(255, 255, 255, 0.90);
+  background: rgba(255, 255, 255, 0.94);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(196, 166, 107, 0.28);
-  box-shadow: 0 10px 28px -10px rgba(23, 62, 53, 0.08), 0 2px 6px rgba(0, 0, 0, 0.03);
+  border: 1px solid rgba(196, 166, 107, 0.35);
+  box-shadow: 0 10px 28px -10px rgba(22, 60, 50, 0.08), 0 2px 6px rgba(0, 0, 0, 0.03);
 }
 
 .clinic-panel-elevated {
   background: #FFFFFF;
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(196, 166, 107, 0.35);
-  box-shadow: 0 14px 34px -10px rgba(23, 62, 53, 0.12), 0 4px 12px rgba(0, 0, 0, 0.04);
+  border: 1px solid rgba(196, 166, 107, 0.40);
+  box-shadow: 0 14px 34px -10px rgba(22, 60, 50, 0.12), 0 4px 12px rgba(0, 0, 0, 0.04);
 }
 
 .clinic-panel-ivory {
-  background: #FAF8F3;
-  color: #173E35;
+  background: #FAF8F5;
+  color: #1D2521;
   border: 1px solid rgba(196, 166, 107, 0.35);
-  box-shadow: 0 8px 24px -8px rgba(23, 62, 53, 0.08);
+  box-shadow: 0 8px 24px -8px rgba(22, 60, 50, 0.08);
 }
 
 .clinic-panel-dark {
-  background: #173E35;
+  background: #163C32;
   color: #F1F0E9;
   border: 1px solid rgba(196, 166, 107, 0.35);
 }
 
-/* Swatch Vermilion - emergency action with full WCAG AA contrast (> 5.2:1) */
+/* Swatch Vermilion - Emergency primary actions with strict WCAG AA contrast */
 .btn-vermilion {
-  background-color: #CC3B2D;
+  background-color: #B82819;
   color: #FFFFFF;
-  box-shadow: 0 8px 24px -4px rgba(204, 59, 45, 0.40);
+  box-shadow: 0 8px 24px -4px rgba(184, 40, 25, 0.40);
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .btn-vermilion:hover {
-  background-color: #B53225;
-  box-shadow: 0 12px 28px -4px rgba(181, 50, 37, 0.55);
+  background-color: #9E2013;
+  box-shadow: 0 12px 28px -4px rgba(158, 32, 19, 0.55);
 }
 
 .champagne-border {
-  border-color: rgba(196, 166, 107, 0.3);
+  border-color: rgba(196, 166, 107, 0.35);
 }
 
 .font-editorial {
-  font-family: 'Newsreader', serif;
+  font-family: 'Newsreader', Georgia, serif;
 }
 
 @media (prefers-reduced-motion: reduce) {

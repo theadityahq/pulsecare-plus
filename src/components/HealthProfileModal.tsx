@@ -79,7 +79,7 @@ export const HealthProfileModal: React.FC<Props> = ({
   const removeAllergy = (index: number) => {
     setProfile({
       ...profile,
-      criticalAllergies: profile.criticalAllergies.filter((_, i) => i !== index)
+      criticalAllergies: profile.criticalAllergies.filter((_: string, i: number) => i !== index)
     });
   };
 
@@ -95,7 +95,7 @@ export const HealthProfileModal: React.FC<Props> = ({
   const removeMed = (index: number) => {
     setProfile({
       ...profile,
-      currentMedications: profile.currentMedications.filter((_, i) => i !== index)
+      currentMedications: profile.currentMedications.filter((_: string, i: number) => i !== index)
     });
   };
 
@@ -154,8 +154,8 @@ export const HealthProfileModal: React.FC<Props> = ({
           {/* Blood Type & Donor Status */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="p-4 rounded-2xl bg-[#FAF8F5] border border-[#C4A66B]/30 space-y-1.5">
-              <label className="text-[10px] font-mono font-bold uppercase text-[#173E35] block">
-                Blood Group (Verified)
+              <label className="text-[10px] font-mono font-bold uppercase text-[#163C32] block">
+                Blood Group (Self-Reported)
               </label>
               <select
                 value={profile.bloodType}
@@ -199,7 +199,7 @@ export const HealthProfileModal: React.FC<Props> = ({
             </div>
 
             <div className="flex flex-wrap gap-2">
-              {profile.criticalAllergies.map((allergy, idx) => (
+              {profile.criticalAllergies.map((allergy: string, idx: number) => (
                 <span
                   key={idx}
                   className="px-3 py-1.5 rounded-xl bg-red-50 border border-[#CC3B2D]/40 text-[#CC3B2D] font-bold text-xs flex items-center gap-2"
@@ -248,7 +248,7 @@ export const HealthProfileModal: React.FC<Props> = ({
             </div>
 
             <div className="flex flex-wrap gap-2">
-              {profile.currentMedications.map((med, idx) => (
+              {profile.currentMedications.map((med: string, idx: number) => (
                 <span
                   key={idx}
                   className="px-3 py-1.5 rounded-xl bg-white border border-[#C4A66B]/30 text-[#173E35] font-semibold text-xs flex items-center gap-2 shadow-xs"

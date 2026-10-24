@@ -50,6 +50,12 @@ export const SpatialMedicalCity: React.FC<Props> = ({
 
   const activeHospitals = hospitals && hospitals.length >= 4 ? hospitals : HOSPITALS;
   const regionId = currentLocation?.regionId || 'delhi';
+  const hospitalIdsKey = activeHospitals.map((h) => h.id).join(',');
+
+  const onSelectHospitalRef = useRef(onSelectHospital);
+  useEffect(() => {
+    onSelectHospitalRef.current = onSelectHospital;
+  }, [onSelectHospital]);
 
   // Three.js Core Refs
   const sceneRef = useRef<THREE.Scene | null>(null);
@@ -684,7 +690,7 @@ export const SpatialMedicalCity: React.FC<Props> = ({
         if (intersects.length > 0) {
           const hit = facilityInteractiveMeshes.current.find(f => f.mesh === intersects[0].object);
           if (hit) {
-            onSelectHospital(hit.hosp);
+            onSelectHospitalRef.current(hit.hosp);
           }
         }
       };
@@ -843,10 +849,29 @@ export const SpatialMedicalCity: React.FC<Props> = ({
       if (onClickSelect && containerRef.current) containerRef.current.removeEventListener('click', onClickSelect);
       if (observer) observer.disconnect();
       if (animId) cancelAnimationFrame(animId);
-      if (renderer) renderer.dispose();
-      if (scene) scene.clear();
+      if (scene) {
+        scene.traverse((obj) => {
+          if ((obj as THREE.Mesh).isMesh) {
+            const mesh = obj as THREE.Mesh;
+            if (mesh.geometry) mesh.geometry.dispose();
+            if (Array.isArray(mesh.material)) {
+              mesh.material.forEach((mat) => mat.dispose());
+            } else if (mesh.material) {
+              mesh.material.dispose();
+            }
+          }
+        });
+        scene.clear();
+      }
+      if (renderer) {
+        renderer.dispose();
+        renderer.forceContextLoss();
+        if (renderer.domElement && renderer.domElement.parentNode) {
+          renderer.domElement.parentNode.removeChild(renderer.domElement);
+        }
+      }
     };
-  }, [viewMode, onSelectHospital, regionId, activeHospitals]);
+  }, [viewMode, regionId, hospitalIdsKey]);
 
   return (
     <div className="relative w-full rounded-3xl bg-[#FAF8F5] border-2 border-[#C7AE7B]/35 overflow-hidden shadow-2xl transition-all duration-300">
@@ -956,7 +981,7 @@ export const SpatialMedicalCity: React.FC<Props> = ({
                     {hosp.name}
                   </span>
                   <span className="text-[10px] opacity-75 font-normal">
-                    · {hosp.icuBedsAvailable} ICU
+                    · {hosp.licensedBedsReference ? `${hosp.licensedBedsReference} beds` : hosp.category}
                   </span>
                 </div>
               );
@@ -1033,7 +1058,7 @@ export const SpatialMedicalCity: React.FC<Props> = ({
               </div>
               <h4 className="text-xs font-black text-[#163C32] mt-0.5">{hoveredHosp.name}</h4>
               <p className="text-[10px] text-[#163C32]/85 font-mono mt-1 font-medium">
-                {hoveredHosp.icuBedsAvailable} ICU Beds Available · Click to inspect
+                {hoveredHosp.licensedBedsReference ? `${hoveredHosp.licensedBedsReference} Licensed Beds (Ref)` : hoveredHosp.category} · Click to inspect
               </p>
             </div>
           )}
@@ -1088,13 +1113,13 @@ export const SpatialMedicalCity: React.FC<Props> = ({
                         {hosp.category}
                       </span>
                       <span className="text-xs font-mono font-black text-[#B82819]">
-                        {hosp.erWaitTime}
+                        {hosp.driveTime}
                       </span>
                     </div>
                     <h5 className="text-xs font-black text-[#163C32] mt-1">{hosp.name}</h5>
                     <p className="text-[11px] text-[#163C32]/80 mt-0.5 line-clamp-1 font-medium">{hosp.address}</p>
                     <p className="text-[10px] font-mono text-[#7A5E2E] mt-1 font-semibold">
-                      {hosp.distance} · {hosp.driveTime} drive · {hosp.icuBedsAvailable} ICU beds
+                      {hosp.distance} · {hosp.licensedBedsReference ? `${hosp.licensedBedsReference} beds (ref)` : 'Verified'}
                     </p>
                   </div>
                 );
@@ -1119,7 +1144,7 @@ export const SpatialMedicalCity: React.FC<Props> = ({
                 </span>
               </div>
               <p className="text-[11px] text-[#163C32]/85 font-medium mt-0.5">
-                {selectedHospital.address} · {selectedHospital.icuBedsAvailable} ICU beds free
+                {selectedHospital.address} · {selectedHospital.licensedBedsReference ? `${selectedHospital.licensedBedsReference} licensed beds (ref)` : 'Verified Directory'}
               </p>
             </div>
           </div>

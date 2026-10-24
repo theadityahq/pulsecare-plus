@@ -269,7 +269,7 @@ export const MedicalIDCard: React.FC<Props> = ({ isOpen, onClose, accountId = 'l
                     ORGAN DONOR STATUS
                   </span>
                   <span className="text-sm font-bold text-emerald-800">
-                    {SIMULATED_USER.organDonor ? 'Yes (Verified)' : 'No'}
+                    {SIMULATED_USER.organDonor ? 'Yes (Self-Declared)' : 'No'}
                   </span>
                 </div>
               </div>

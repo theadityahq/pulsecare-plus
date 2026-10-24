@@ -1,0 +1,20 @@
+{
+  "name": "PulseCare+ Emergency Health",
+  "short_name": "PulseCare+",
+  "description": "Evidence-based emergency preparedness, verified hospital directories, and immediate first-aid protocols.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#F1F0E9",
+  "theme_color": "#F1F0E9",
+  "categories": ["medical", "health", "lifestyle"],
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

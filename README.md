@@ -1,85 +1,104 @@
-# PulseCare+ (Future Clinic Emergency Health Platform)
+# PulseCare+ (Emergency Preparedness & Health Triage Platform)
 
 > **"Care, clarity, when it matters."**  
-> An architectural, human-centered spatial emergency health and triage platform built for high-stakes medical preparedness, real-time hospital telemetry, Google Satellite mapping, and zero-knowledge medical passports.
+> An architectural, local-first emergency health and triage platform built for high-stakes medical preparedness, verified hospital directories, Google Satellite mapping, precision resuscitation pacing, and client-side encrypted medical IDs.
 
 ---
 
 ## 🎨 Art Direction: Future Clinic
 
-PulseCare+ avoids generic AI tropes (no purple/magenta gradients, electric blue neon, or cyberpunk noise). Instead, it adopts a dignified, editorial, and tactile **Future Clinic** design language:
+PulseCare+ avoids generic AI tropes (no purple/magenta gradients, electric neon, or cyberpunk noise). Instead, it adopts a dignified, editorial, and tactile **Future Clinic** design language:
 
 - **Warm Ivory (`#F1F0E9` / `#FAF8F5`)**: Architectural warmth and human clinical surfaces.
-- **Deep Forest Green (`#163C32` / `#173E35`)**: Grounding, calm, authoritative medical backdrop.
-- **Restrained Vermilion (`#B82819` / `#D44A3C`)**: Clear, decisive emergency action points and Level 1 Trauma beacons.
+- **Deep Forest Green (`#163C32` / `#0E2721`)**: Grounding, calm, authoritative medical backdrop.
+- **Restrained Vermilion (`#B82819` / `#9E2013` hover)**: Clear, decisive emergency action points and Level 1 Trauma beacons.
 - **Muted Champagne Gold (`#C4A66B` / `#C7AE7B`)**: Navigational rings, graticule lines, and delicate architectural dividers.
-- **Charcoal (`#1D2521`)**: High-contrast, legible typography.
-- **Editorial Typography**: Combined `Newsreader` (humanistic, editorial serif) and `Plus Jakarta Sans` (clean, geometric sans).
+- **Charcoal Ink (`#1D2521`)**: High-contrast, legible typography meeting WCAG 2.2 AA contrast standards.
+- **Self-Hosted Editorial Typography**: `Newsreader` (humanistic serif), `Plus Jakarta Sans` (geometric sans), and `JetBrains Mono` (telemetry mono) bundled locally with zero external network leaks.
 
 ---
 
-## 🏥 Signature Spatial Centrepiece: 3D Campus & Google Satellite Map
+## 🏥 Spatial Telemetry & Mapping
 
 PulseCare+ features a multi-mode spatial medical environment:
+
 1. **Interactive 3D Miniature Medical Campus**:
    - Built with Three.js telephoto isometric projection (`FOV 32°`).
-   - Detailed architectural medical city: Level 1 Trauma Center with helipad, ICU pavilions, landscaped healing courtyards, road networks, and moving ambulances.
-   - **Real-Time 3D-to-2D Screen-Projected HTML Labels**: Dynamic badges float directly above each hospital building showing hospital names, emergency categories, and live available ICU beds without blur or clipping.
-   - Smooth camera lerping and raycasting on click to inspect any facility.
+   - Detailed architectural medical city: Level 1 Trauma Center with helipad, ICU pavilions, landscaped courtyards, road networks, and ambulatory paths.
+   - **Real-Time 3D-to-2D Screen-Projected HTML Labels**: Dynamic badges float directly above campus facilities showing hospital names, emergency categories, and licensed capacity references.
+   - Smooth camera orbits, touch pinch-to-zoom, and raycast facility inspection.
+   - Complete Three.js WebGL GPU resource disposal (`geometry.dispose()`, `material.dispose()`, `forceContextLoss()`).
 2. **Google Satellite Hybrid Mapping (`SatelliteMapView.tsx`)**:
-   - Real-world satellite photography with highway, road, and building overlays via Leaflet and Google Satellite Hybrid tiles (`https://mt1.google.com/vt/lyrs=y...`).
+   - Real-world satellite photography with highway, road, and building overlays via Leaflet and Google Satellite Hybrid tiles.
    - Layer toggles for Google Satellite Hybrid, Pure Satellite, and Street mapping.
-   - Live GPS pulsing user beacon, hospital coordinate markers, and dashed emergency route polylines.
+   - Live GPS user beacon, hospital coordinate markers, and emergency distance indications.
 3. **2D Emergency Schematic Grid**:
-   - High-contrast, keyboard-navigable card layout for accessible and screen-reader compliant triage.
+   - High-contrast, accessible card layout for screen-reader compliant triage.
 
 ---
 
-## ⚡ Core Capabilities
+## ⚡ Core Capabilities & Truthful Architecture
 
 1. **Universal Emergency Live Search**:
-   - Real-time search dropdown in the header matching hospitals, emergency first-aid protocols, user medications/allergies, and a 1-click trigger to ask the PulseCare AI Assistant.
+   - Real-time search dropdown in the header matching verified hospitals, emergency first-aid protocols, user medications, and critical allergies.
 2. **Dedicated Emergency First Aid Responder (`FirstAidModal.tsx`)**:
    - Interactive triage window with instant symptom search ("What happened?").
-   - 8 one-tap emergency chips (CPR, Choking, Bleeding, Burns, Anaphylaxis, Seizure, Fracture, Snakebite).
-   - **Audible & Visual 110 BPM CPR Metronome**: Precision rhythm pacing generated via Web Audio API oscillators with cardiac ring pulsation.
-   - Evidence-based step-by-step guidance following WHO and ILCOR protocols with prominent CAUTION callouts.
-3. **Dynamic Regional Location & Live Weather Telemetry**:
-   - Multi-city hospital database (Delhi NCR, Mumbai, Bengaluru, Kolkata, London, Geneva) + custom GPS reverse-geocoding.
-   - Live weather temperature, condition, and Air Quality Index (AQI) powered by Open-Meteo APIs with offline fallbacks.
-   - Browser Haversine geodesic distance calculations (`calculateDistanceKm`).
-4. **Dual-Tier Emergency Medical Passport (VitalVault)**:
-   - **Tier 1 (Public Triage Mode)**: No password required. Responders scan lockscreen QR code for blood group, lethal drug allergies, and emergency contacts.
-   - **Tier 2 (Zero-Knowledge Encrypted Vault)**: Full medical records and advance directives encrypted client-side in IndexedDB via W3C Web Crypto AES-GCM.
-5. **Direct Emergency Cellular Dialing**:
-   - Prominent Vermilion CTA: `Emergency Help — Call 112` directly launching device cellular dialer.
-   - Transparent disclaimer: Emergency calls are placed by user; no false automatic dispatch claims.
+   - 8 one-tap emergency protocols (CPR, Choking, Bleeding, Burns, Anaphylaxis, Seizure, Fracture, Snakebite).
+   - **Sample-Accurate 110 BPM CPR Metronome**: Precision lookahead audio scheduling via Web Audio API oscillators (zero timer drift, not throttled in background).
+   - **Tactile Pacing & Screen Wake Lock**: Device haptic vibration pulses and Screen Wake Lock API prevent screen timeout during life-saving chest compressions.
+   - **Sticky Call 112 Button**: Mobile-optimized >= 56px sticky dialer button for immediate one-handed emergency escalation.
+   - Clinical provenance citing AHA 2020/2025 updates, ERC 2021, and WHO Guidelines.
+3. **Rule-Based Symptom Guidance (`symptomGuidanceService.ts`)**:
+   - Deterministic, evidence-based triage engine (not an AI chatbot, zero hallucinations).
+   - Immediate escalation for red-flag emergencies (unconscious, arrest, chest pain, stroke F.A.S.T., anaphylaxis, poisoning).
+   - Dedicated suicide and self-harm crisis routing to **Tele-MANAS (14416 / 1800 891 4416)** and **112**.
+   - Clinically distinct routing for heat stroke vs ischemic stroke and nosebleeds vs arterial hemorrhage.
+4. **Verified Multi-Region Hospital Directories (`src/data/hospitals.ts`)**:
+   - 29 verified medical centers across Delhi NCR, Mumbai, Bengaluru, Kolkata, London, and Geneva with official institutional directories and verification dates.
+   - Strict E.164 phone numbers with 1-tap direct dialing (`tel:+911126588500`).
+   - Straight-line distance explicitly labeled ("≈ X km straight-line", "est. at 30 km/h, not routed").
+   - Zero invented hospitals or fabricated live bed availability.
+5. **Dual-Tier Emergency Medical Passport (`db.ts`)**:
+   - **Tier 1 (Public Triage Mode)**: Plaintext lock-screen card with blood group, anaphylaxis risks, and emergency contacts accessible by first responders without a password.
+   - **Tier 2 (Zero-Knowledge Encrypted Vault)**: Full medical records encrypted client-side in IndexedDB via Web Crypto **PBKDF2 (600,000 iterations)** + **AES-GCM 256-bit**.
+   - Strict Zod schema verification on backup import/export.
+6. **Live Environmental & Weather Telemetry (`weatherService.ts`)**:
+   - Queries Open-Meteo REST API for live temperature, weather code, and 6-tier US EPA Air Quality Index (AQI).
+   - Strict truthfulness: returns unavailable state instead of synthesizing fake weather when offline.
 
 ---
 
-## 📊 Lighthouse Audit Compliance
+## 🧪 Automated Test Suite
 
-Built and verified for 100% web standards compliance:
+PulseCare+ includes 66+ automated Vitest tests covering:
 
-| Metric | Score | Status |
-| :--- | :--- | :--- |
-| **Accessibility** | **100 / 100** | ✅ WCAG 2.2 AAA Contrast & ARIA landmarks |
-| **Best Practices** | **100 / 100** | ✅ Modern web standards & strict CSP |
-| **SEO** | **100 / 100** | ✅ Structured semantic markup & canonical meta |
-| **Performance** | **90+ / 100** | ✅ Code-split chunks, WebGL disposal, lazy loading |
+- **Hospital Integrity (`tests/hospitals.test.ts`)**: Proximity, E.164 phone formatting, phone uniqueness, and provenance sources.
+- **Symptom Guidance Triage (`tests/assistant.test.ts`)**: 46 clinical phrases covering crisis routing, stroke vs heat stroke, epistaxis, and negation checks.
+- **Cryptographic Vault (`tests/db.test.ts`)**: 600,000 PBKDF2 iterations, AES-GCM 256-bit encryption/decryption, wrong-passphrase rejection, plaintext lock-screen card, and Zod backup schema enforcement.
+- **Weather & AQI (`tests/weather.test.ts`)**: Full WMO weather code descriptions, 6 EPA categories, and zero-simulation offline behavior.
+- **First Aid Mandates (`tests/firstAid.test.ts`)**: Critical protocol step 1 emergency call mandate, 110 BPM metronome range, and clinical citations.
+
+```bash
+# Run all automated tests
+npx vitest run
+
+# Run hospital verification audit script
+npx tsx scripts/check-hospital-data.ts
+```
 
 ---
 
 ## 🛠️ Tech Stack & Architecture
 
-- **Framework**: React 19 + TypeScript
-- **Bundler**: Vite 8 with manual Rolldown code-splitting
-- **3D Engine**: Three.js
+- **Framework**: React 19 + TypeScript strict
+- **Bundler**: Vite 8 + Tailwind v4
+- **3D Engine**: Three.js (isometric diorama with GPU resource disposal)
 - **Satellite Mapping**: Leaflet (`leaflet` + `@types/leaflet`)
-- **Icons**: Lucide React
-- **Cryptography**: W3C Web Crypto API (AES-GCM 256-bit)
+- **Validation**: Zod
+- **Testing**: Vitest + Fake-IndexedDB
+- **Cryptography**: W3C Web Cryptography API (PBKDF2 600k iters, AES-GCM 256-bit)
 - **Local Storage**: IndexedDB (Zero-knowledge local persistence)
-- **Weather API**: Open-Meteo REST API
+- **Weather API**: Open-Meteo (CORS-friendly, zero auth)
 
 ---
 
@@ -92,15 +111,21 @@ npm install
 # 2. Run development server (runs on port 3333)
 npm run dev
 
-# 3. Build optimized production bundle
+# 3. Run type check
+npx tsc --noEmit
+
+# 4. Run automated test suite
+npx vitest run
+
+# 5. Build optimized production bundle
 npm run build
 
-# 4. Preview production build (runs on port 4173)
+# 6. Preview production build
 npm run preview
 ```
 
 ---
 
-## 📄 License & Medical Disclaimer
+## ⚖️ Legal & Medical Disclaimer
 
-PulseCare+ is developed for rapid medical preparedness, triage guidance, and educational visualization. In an active life-threatening medical emergency, immediately call local emergency services (**112** in India & Europe, **911** in the USA).
+PulseCare+ is an emergency preparedness and health education tool. It does not provide clinical diagnoses, medical treatment plans, or automatic emergency dispatch. In a life-threatening crisis, always place a direct telephone call to **112** (or your local emergency number: 999 in the UK, 911 in the US).

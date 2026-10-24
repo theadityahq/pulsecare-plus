@@ -136,7 +136,7 @@ export const SatelliteMapView: React.FC<Props> = ({
           ">
             <span style="display: inline-block; width: 8px; height: 8px; border-radius: 9999px; background: ${isTrauma ? '#B82819' : '#22C55E'};"></span>
             <span>${hosp.name.split(' ')[0]}</span>
-            <span style="font-size: 9px; opacity: 0.8; font-family: monospace;">(${hosp.icuBedsAvailable} ICU)</span>
+            <span style="font-size: 9px; opacity: 0.8; font-family: monospace;">(${hosp.category === 'Trauma Center Level 1' ? 'Trauma L1' : 'Verified'})</span>
           </div>
           <div style="
             width: 0;

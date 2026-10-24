@@ -71,7 +71,7 @@ const LiveServicesTrackerModal = lazy(() =>
   import('./components/LiveServicesTrackerModal').then((m) => ({ default: m.LiveServicesTrackerModal }))
 );
 const FirstAidLibrary = lazy(() =>
-  import('./components/FirstAidLibrary').then((m) => ({ default: m.FirstAidLibrary }))
+  import('./components/FirstAidModal').then((m) => ({ default: m.FirstAidLibrary }))
 );
 const HospitalLocator = lazy(() =>
   import('./components/HospitalLocator').then((m) => ({ default: m.HospitalLocator }))
@@ -95,7 +95,7 @@ import {
   HolographicCommunity
 } from './components/HolographicVisuals';
 import { PulseCareEmblem } from './components/PulseCareEmblem';
-import { Hospital } from './types';
+import { Hospital, UserProfile } from './types';
 import { HOSPITALS, SIMULATED_USER, FIRST_AID_GUIDES } from './data/mockData';
 import {
   LocationTelemetry,
@@ -114,26 +114,30 @@ import {
 import {
   WeatherTelemetry,
   fetchLiveWeather,
-  getFallbackWeather
+  getCachedWeather
 } from './services/weatherService';
-import { getLocalProfile, UserProfile } from './services/db';
+import { getLocalProfile } from './services/db';
+import { DEMO_USER_PROFILE } from './demo/demoData';
+
+const isDemoMode = typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('demo') === '1';
+
+const DEFAULT_PROFILE: UserProfile = isDemoMode
+  ? { ...DEMO_USER_PROFILE }
+  : {
+      accountId: 'local-default',
+      name: '',
+      bloodType: 'Unknown / Not Set',
+      organDonor: false,
+      criticalAllergies: [],
+      chronicConditions: [],
+      currentMedications: [],
+      emergencyNotes: '',
+      lastUpdated: new Date().toISOString()
+    };
 
 export function App() {
   const [activeAccount, setActiveAccount] = useState<string>('local-default');
-  const [userProfile, setUserProfile] = useState<UserProfile>({
-    accountId: 'local-default',
-    name: SIMULATED_USER.name,
-    age: SIMULATED_USER.age,
-    dob: SIMULATED_USER.dob,
-    bloodType: SIMULATED_USER.bloodType,
-    organDonor: SIMULATED_USER.organDonor,
-    criticalAllergies: [...SIMULATED_USER.criticalAllergies],
-    chronicConditions: [...SIMULATED_USER.chronicConditions],
-    currentMedications: [...SIMULATED_USER.currentMedications],
-    emergencyNotes: SIMULATED_USER.emergencyNotes,
-    insurance: { ...SIMULATED_USER.insurance },
-    lastUpdated: new Date().toISOString()
-  });
+  const [userProfile, setUserProfile] = useState<UserProfile>(DEFAULT_PROFILE);
 
   // Location Telemetry State (Truthful browser state)
   const [locationPermission, setLocationPermission] = useState<LocationPermissionState>('prompt');
@@ -148,8 +152,8 @@ export function App() {
       DEFAULT_FALLBACK_LOCATION.locationName
     ).hospitals;
   });
-  const [weather, setWeather] = useState<WeatherTelemetry>(() =>
-    getFallbackWeather(DEFAULT_FALLBACK_LOCATION.lat, DEFAULT_FALLBACK_LOCATION.lng)
+  const [weather, setWeather] = useState<WeatherTelemetry | null>(() =>
+    getCachedWeather(DEFAULT_FALLBACK_LOCATION.lat, DEFAULT_FALLBACK_LOCATION.lng)
   );
 
   // Notification Permission State (Separated from location)
@@ -194,11 +198,11 @@ export function App() {
       )
     );
 
-    const matchedMeds = (userProfile.currentMedications || []).filter(m =>
+    const matchedMeds = (userProfile.currentMedications || []).filter((m: string) =>
       m.toLowerCase().includes(q)
     );
 
-    const matchedAllergies = (userProfile.criticalAllergies || []).filter(a =>
+    const matchedAllergies = (userProfile.criticalAllergies || []).filter((a: string) =>
       a.toLowerCase().includes(q)
     );
 
@@ -538,7 +542,7 @@ export function App() {
                     <div className="text-[10px] font-mono uppercase tracking-wider text-[#7A5E2E] font-bold px-2 py-1">
                       Medical Records Match
                     </div>
-                    {searchResults.meds.map((med, i) => (
+                    {searchResults.meds.map((med: string, i: number) => (
                       <div
                         key={`med-${i}`}
                         onClick={() => {
@@ -555,7 +559,7 @@ export function App() {
                         <span className="text-[10px] font-mono text-[#7A5E2E]">In Active Directives →</span>
                       </div>
                     ))}
-                    {searchResults.allergies.map((allergy, i) => (
+                    {searchResults.allergies.map((allergy: string, i: number) => (
                       <div
                         key={`allergy-${i}`}
                         onClick={() => {
@@ -661,21 +665,29 @@ export function App() {
                   <MapPin className="w-3 h-3 text-[#C4A66B] group-hover:text-[#BA3B2E] transition-colors" />
                 </div>
                 <div className="flex items-center space-x-1.5">
-                  <span className="text-base font-extrabold text-[#173E35]">{weather.temperature}°C</span>
-                  <span className="text-xs text-[#173E35]/70">{weather.condition}</span>
-                  {renderWeatherIcon(weather.weatherCode)}
+                  <span className="text-base font-extrabold text-[#163C32]">
+                    {weather?.temperature !== null && weather?.temperature !== undefined ? `${weather.temperature}°C` : '--'}
+                  </span>
+                  <span className="text-xs text-[#163C32]/70">{weather?.condition || 'Weather unavailable'}</span>
+                  {renderWeatherIcon(weather?.weatherCode ?? 0)}
                 </div>
               </div>
               <div className="h-6 w-[1px] bg-[#C4A66B]/30 mx-1" />
               <div className={`flex items-center space-x-1 text-[11px] px-2 py-1 rounded-xl font-mono font-medium border ${
-                weather.aqi <= 50
+                !weather || weather.aqi === null
+                  ? 'text-[#163C32]/70 bg-gray-50 border-gray-200'
+                  : weather.aqi <= 50
                   ? 'text-emerald-800 bg-emerald-50 border-emerald-300/60'
                   : weather.aqi <= 100
                   ? 'text-amber-800 bg-amber-50 border-amber-300/60'
                   : 'text-[#B82819] bg-red-50 border-[#B82819]/40'
               }`}>
                 <Leaf className="w-3 h-3 text-emerald-600" />
-                <span>AQI {weather.aqi} · {weather.aqiCategory}</span>
+                <span>
+                  {weather?.aqi !== null && weather?.aqi !== undefined
+                    ? `AQI ${weather.aqi} · ${weather.aqiCategory || ''}`
+                    : 'AQI --'}
+                </span>
               </div>
             </button>
 
@@ -907,9 +919,9 @@ export function App() {
                               <span className="w-1.5 h-1.5 rounded-full bg-[#BA3B2E] animate-pulse" />
                             )}
                           </div>
-                          <h4 className={`text-xs font-bold truncate ${isSelected ? 'text-[#F1F0E9]' : 'text-[#173E35]'}`}>{hosp.name}</h4>
-                          <p className={`text-[10px] font-mono ${isSelected ? 'text-[#F1F0E9]/90' : 'text-[#173E35]/85'}`}>
-                            {hosp.icuBedsAvailable} ICU beds • {hosp.erWaitTime}
+                          <h4 className={`text-xs font-bold truncate ${isSelected ? 'text-[#F1F0E9]' : 'text-[#163C32]'}`}>{hosp.name}</h4>
+                          <p className={`text-[10px] font-mono ${isSelected ? 'text-[#F1F0E9]/90' : 'text-[#163C32]/85'}`}>
+                            {hosp.licensedBedsReference ? `${hosp.licensedBedsReference} licensed beds (ref)` : hosp.category} • Verified
                           </p>
                         </div>
                         <div className="text-right shrink-0">

@@ -693,10 +693,10 @@ export const SpatialHealthGlobe: React.FC<Props> = ({
               </p>
               <div className="mt-2.5 pt-2 border-t border-[#F1F0E9]/10 flex items-center justify-between text-[11px] font-mono">
                 <span className="text-emerald-400 font-bold">
-                  {hoveredHospital.icuBedsAvailable} ICU Beds Avail.
+                  {hoveredHospital.licensedBedsReference ? `${hoveredHospital.licensedBedsReference} Licensed Beds (Ref)` : hoveredHospital.category}
                 </span>
                 <span className="text-[#C4A66B]">
-                  ER: {hoveredHospital.erWaitTime}
+                  Verified: {hoveredHospital.verifiedAt}
                 </span>
               </div>
             </div>
@@ -739,10 +739,10 @@ export const SpatialHealthGlobe: React.FC<Props> = ({
                     <p className="text-xs text-[#F1F0E9]/75 mt-0.5">{hosp.address}</p>
                     <div className="mt-3 pt-2 border-t border-[#F1F0E9]/10 flex items-center justify-between text-xs font-mono">
                       <span className="text-emerald-400 font-semibold">
-                        {hosp.icuBedsAvailable} ICU Beds Available
+                        {hosp.licensedBedsReference ? `${hosp.licensedBedsReference} Licensed Beds (Ref)` : hosp.category}
                       </span>
                       <span className="text-[#F1F0E9]/80 font-bold">
-                        Wait: {hosp.erWaitTime}
+                        Verified: {hosp.verifiedAt}
                       </span>
                     </div>
                   </button>

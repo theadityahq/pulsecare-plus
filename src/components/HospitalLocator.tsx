@@ -123,16 +123,20 @@ export const HospitalLocator: React.FC<Props> = ({
               <div className="mt-4 pt-4 border-t border-[#C4A66B]/25 space-y-3">
                 <div className="grid grid-cols-2 gap-2 text-xs">
                   <div className="bg-[#FAF8F5] p-2 rounded-xl border border-[#C4A66B]/30 flex items-center justify-between">
-                    <span className="text-[#173E35]/80 text-[11px] flex items-center gap-1 font-mono font-medium">
-                      <Clock className="w-3.5 h-3.5 text-[#7A5E2E]" /> ER Wait
+                    <span className="text-[#163C32]/80 text-[11px] flex items-center gap-1 font-mono font-medium">
+                      <Bed className="w-3.5 h-3.5 text-[#7A5E2E]" /> Licensed Capacity
                     </span>
-                    <span className="font-black text-emerald-800 font-mono text-[11px]">{hosp.erWaitTime}</span>
+                    <span className="font-bold text-[#163C32] font-mono text-[11px]">
+                      {hosp.licensedBedsReference ? `${hosp.licensedBedsReference} Beds` : 'General ER'}
+                    </span>
                   </div>
                   <div className="bg-[#FAF8F5] p-2 rounded-xl border border-[#C4A66B]/30 flex items-center justify-between">
-                    <span className="text-[#173E35]/80 text-[11px] flex items-center gap-1 font-mono font-medium">
-                      <Bed className="w-3.5 h-3.5 text-[#7A5E2E]" /> ICU Beds
+                    <span className="text-[#163C32]/80 text-[11px] flex items-center gap-1 font-mono font-medium">
+                      <Clock className="w-3.5 h-3.5 text-[#7A5E2E]" /> Verified
                     </span>
-                    <span className="font-black text-[#173E35] font-mono text-[11px]">{hosp.icuBedsAvailable} Free</span>
+                    <span className="font-bold text-emerald-800 font-mono text-[11px]">
+                      {hosp.verifiedAt}
+                    </span>
                   </div>
                 </div>
 
