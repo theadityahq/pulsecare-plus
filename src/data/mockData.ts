@@ -263,6 +263,106 @@ export const FIRST_AID_GUIDES: FirstAidGuide[] = [
         description: 'Keep patient lying flat with legs elevated unless they are vomiting or having severe breathing difficulty (sit upright if breathing is difficult).'
       }
     ]
+  },
+  {
+    id: 'fa-burn',
+    title: 'Severe Thermal & Chemical Burns',
+    urgency: 'HIGH',
+    iconName: 'Flame',
+    estimatedTime: 'Cool for 20 minutes',
+    steps: [
+      {
+        number: 1,
+        title: 'Cool with Clean Running Water',
+        description: 'Immediately hold burned area under cool running water for at least 20 minutes. Do NOT use ice, butter, or ointments which trap heat.',
+        caution: 'Never apply ice directly to burns; it can cause tissue frostbite damage.'
+      },
+      {
+        number: 2,
+        title: 'Remove Restrictive Items Immediately',
+        description: 'Gently remove rings, bracelets, watches, and non-adherent clothing before swelling begins.'
+      },
+      {
+        number: 3,
+        title: 'Cover Loosely with Sterile Dressing',
+        description: 'Cover area with clean non-stick sterile gauze or clean plastic wrap. Seek emergency medical care for burns larger than patient’s palm or on face/joints.'
+      }
+    ]
+  },
+  {
+    id: 'fa-seizure',
+    title: 'Acute Seizure & Convulsion Safety',
+    urgency: 'CRITICAL',
+    iconName: 'Activity',
+    estimatedTime: 'Protect until seizure ends',
+    steps: [
+      {
+        number: 1,
+        title: 'Protect from Injury (Do NOT Restrain)',
+        description: 'Gently guide person to the floor. Clear sharp objects, furniture, and hard surfaces. Cushion their head with a soft jacket or folded towel.',
+        caution: 'NEVER put anything in their mouth or try to hold down their tongue.'
+      },
+      {
+        number: 2,
+        title: 'Turn Person onto Their Side (Recovery Position)',
+        description: 'As soon as jerking movements subside, turn person onto their side to keep airway clear and prevent aspiration of saliva or vomit.'
+      },
+      {
+        number: 3,
+        title: 'Time the Seizure & Call 112 if > 5 Mins',
+        description: 'Note start time. Call 112 immediately if seizure lasts longer than 5 minutes, if multiple seizures occur, if person is pregnant, or if breathing does not normalize.'
+      }
+    ]
+  },
+  {
+    id: 'fa-fracture',
+    title: 'Suspected Bone Fracture & Immobilization',
+    urgency: 'HIGH',
+    iconName: 'ShieldAlert',
+    estimatedTime: 'Immediate stabilization',
+    steps: [
+      {
+        number: 1,
+        title: 'Immobilize in Position Found',
+        description: 'Do NOT attempt to realign deformed bones or push protruding bone fragments back. Support the injured limb in the exact position found.',
+        caution: 'If bone pierces skin (open fracture), cover with sterile moist dressing; do not press.'
+      },
+      {
+        number: 2,
+        title: 'Apply Rigid Splint & Cold Pack',
+        description: 'Fasten a rigid board, rolled magazine, or sling above and below the injured joint using soft cloth ties. Apply cold pack wrapped in cloth to reduce swelling.'
+      },
+      {
+        number: 3,
+        title: 'Check Circulation Beyond Injury',
+        description: 'Ensure fingers/toes beyond the splint remain warm and have normal color. If numb or pale, loosen ties immediately.'
+      }
+    ]
+  },
+  {
+    id: 'fa-snakebite',
+    title: 'Venomous Snake & Animal Bite Protocol',
+    urgency: 'CRITICAL',
+    iconName: 'AlertTriangle',
+    estimatedTime: 'Urgent transport to ER',
+    steps: [
+      {
+        number: 1,
+        title: 'Keep Patient Calm & Completely Still',
+        description: 'Limit all physical movement. Keep bitten limb immobilized at or below heart level to slow venom circulation. Note snake appearance if safe to do so.',
+        caution: 'Do NOT cut wound, suck venom, or apply tight arterial tourniquet or ice.'
+      },
+      {
+        number: 2,
+        title: 'Apply Broad Pressure Bandage (If Elapid/Neurotoxic)',
+        description: 'Apply firm bandage starting from fingers/toes upward to armpit/groin (firm like a sprained ankle, but with pulse still detectable).'
+      },
+      {
+        number: 3,
+        title: 'Immediate Transport to Trauma Hospital with Antivenom',
+        description: 'Call 112 or transport immediately to the nearest tertiary hospital stocked with polyvalent snake antivenom.'
+      }
+    ]
   }
 ];
 

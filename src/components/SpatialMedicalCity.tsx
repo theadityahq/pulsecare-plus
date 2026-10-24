@@ -3,6 +3,7 @@ import * as THREE from 'three';
 import { Hospital } from '../types';
 import { HOSPITALS } from '../data/mockData';
 import { LocationTelemetry } from '../services/locationService';
+import { SatelliteMapView } from './SatelliteMapView';
 import {
   Layers,
   RotateCcw,
@@ -15,7 +16,8 @@ import {
   Clock,
   Bed,
   CheckCircle2,
-  X
+  X,
+  Globe
 } from 'lucide-react';
 
 interface Props {
@@ -26,6 +28,14 @@ interface Props {
   currentLocation?: LocationTelemetry;
 }
 
+// 3D world coordinates for floating hospital labels
+const HOSPITAL_LABEL_COORDS: [number, number, number][] = [
+  [-11, 9.6, -11], // Landmark (Apex Trauma)
+  [12, 8.4, -11],  // Secondary North-East
+  [-12, 10.6, 12], // South-West (Cardiac)
+  [13, 8.6, 14]    // South-East
+];
+
 export const SpatialMedicalCity: React.FC<Props> = ({
   selectedHospital,
   onSelectHospital,
@@ -34,8 +44,9 @@ export const SpatialMedicalCity: React.FC<Props> = ({
   currentLocation
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [is2DMode, setIs2DMode] = useState(false);
+  const [viewMode, setViewMode] = useState<'3d' | 'satellite' | '2d'>('3d');
   const [hoveredHosp, setHoveredHosp] = useState<Hospital | null>(null);
+  const labelRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   const activeHospitals = hospitals && hospitals.length >= 4 ? hospitals : HOSPITALS;
   const regionId = currentLocation?.regionId || 'delhi';
@@ -111,7 +122,7 @@ export const SpatialMedicalCity: React.FC<Props> = ({
 
   // Main Three.js Scene Setup & Render Loop
   useEffect(() => {
-    if (is2DMode || !containerRef.current) return;
+    if (viewMode !== '3d' || !containerRef.current) return;
 
     let destroyed = false;
     let renderer: THREE.WebGLRenderer | null = null;
@@ -170,7 +181,7 @@ export const SpatialMedicalCity: React.FC<Props> = ({
         rendererRef.current = renderer;
       } catch (err) {
         console.warn('WebGL initialization failed, falling back to 2D view', err);
-        setIs2DMode(true);
+        setViewMode('2d');
         return;
       }
 
@@ -782,6 +793,32 @@ export const SpatialMedicalCity: React.FC<Props> = ({
         camera.position.copy(currentCameraPos.current);
         camera.lookAt(currentLookAt.current);
 
+        // Project 3D hospital coordinates to 2D screen positions for floating HTML badges
+        if (containerRef.current) {
+          const cWidth = containerRef.current.clientWidth;
+          const cHeight = containerRef.current.clientHeight;
+          const projVec = new THREE.Vector3();
+
+          HOSPITAL_LABEL_COORDS.forEach((coord, idx) => {
+            const el = labelRefs.current[idx];
+            if (!el) return;
+            projVec.set(coord[0], coord[1], coord[2]);
+            projVec.project(camera!);
+
+            // Hide if behind camera or far outside view frustum
+            if (projVec.z > 1.0 || projVec.x < -1.15 || projVec.x > 1.15 || projVec.y < -1.15 || projVec.y > 1.15) {
+              el.style.opacity = '0';
+              el.style.pointerEvents = 'none';
+            } else {
+              const sx = (projVec.x * 0.5 + 0.5) * cWidth;
+              const sy = (-(projVec.y * 0.5) + 0.5) * cHeight;
+              el.style.opacity = '1';
+              el.style.pointerEvents = 'auto';
+              el.style.transform = `translate3d(${Math.round(sx)}px, ${Math.round(sy)}px, 0) translate(-50%, -100%)`;
+            }
+          });
+        }
+
         renderer.render(scene, camera);
       };
 
@@ -809,7 +846,7 @@ export const SpatialMedicalCity: React.FC<Props> = ({
       if (renderer) renderer.dispose();
       if (scene) scene.clear();
     };
-  }, [is2DMode, onSelectHospital, regionId, activeHospitals]);
+  }, [viewMode, onSelectHospital, regionId, activeHospitals]);
 
   return (
     <div className="relative w-full rounded-3xl bg-[#FAF8F5] border-2 border-[#C7AE7B]/35 overflow-hidden shadow-2xl transition-all duration-300">
@@ -835,38 +872,99 @@ export const SpatialMedicalCity: React.FC<Props> = ({
           </div>
         </div>
 
-        {/* 2D / 3D Mode Switcher */}
-        <div className="flex items-center space-x-2">
+        {/* 3-Mode View Switcher (3D City / Real Google Satellite Map / 2D Grid) */}
+        <div className="flex items-center space-x-1.5 bg-[#FAF8F5] p-1 rounded-2xl border border-[#C7AE7B]/30 shadow-xs">
           <button
-            onClick={() => setIs2DMode(prev => !prev)}
-            className={`px-3 py-1.5 rounded-xl text-xs font-mono font-bold transition-all flex items-center space-x-1.5 shadow-xs ${
-              is2DMode
-                ? 'bg-[#163C32] text-[#F4F0E6]'
-                : 'bg-white text-[#163C32] border border-[#C7AE7B]/40 hover:bg-[#F4F0E6]'
+            onClick={() => setViewMode('3d')}
+            className={`px-3 py-1.5 rounded-xl text-xs font-mono font-bold transition-all flex items-center space-x-1.5 ${
+              viewMode === '3d'
+                ? 'bg-[#163C32] text-[#F4F0E6] shadow-xs'
+                : 'text-[#163C32] hover:bg-white'
             }`}
-            title="Toggle between 3D Spatial City and 2D Schematic Grid"
+            title="Interactive 3D Miniature Medical Campus with Live Labels"
+          >
+            <Building2 className="w-3.5 h-3.5 text-[#C7AE7B]" />
+            <span>3D City</span>
+          </button>
+          <button
+            onClick={() => setViewMode('satellite')}
+            className={`px-3 py-1.5 rounded-xl text-xs font-mono font-bold transition-all flex items-center space-x-1.5 ${
+              viewMode === 'satellite'
+                ? 'bg-[#163C32] text-[#F4F0E6] shadow-xs'
+                : 'text-[#163C32] hover:bg-white'
+            }`}
+            title="Real Google Satellite Map with Highways, Roads & Buildings"
+          >
+            <Globe className="w-3.5 h-3.5 text-[#C7AE7B]" />
+            <span>Satellite Map</span>
+          </button>
+          <button
+            onClick={() => setViewMode('2d')}
+            className={`px-3 py-1.5 rounded-xl text-xs font-mono font-bold transition-all flex items-center space-x-1.5 ${
+              viewMode === '2d'
+                ? 'bg-[#163C32] text-[#F4F0E6] shadow-xs'
+                : 'text-[#163C32] hover:bg-white'
+            }`}
+            title="2D Emergency Grid Card View"
           >
             <Layers className="w-3.5 h-3.5 text-[#C7AE7B]" />
-            <span>{is2DMode ? '3D City' : '2D Map'}</span>
+            <span>2D Grid</span>
           </button>
         </div>
       </div>
 
-      {/* 3D WebGL Canvas or 2D Schematic Fallback */}
-      {!is2DMode ? (
+      {/* VIEW MODES: 1. 3D WebGL Diorama, 2. Google Satellite Map, 3. 2D Schematic Grid */}
+      {viewMode === '3d' ? (
         <div
           ref={containerRef}
-          className="relative w-full h-[400px] sm:h-[480px] bg-[#F4F0E6] select-none touch-none cursor-grab active:cursor-grabbing"
+          className="relative w-full h-[420px] sm:h-[480px] bg-[#F4F0E6] select-none touch-none cursor-grab active:cursor-grabbing overflow-hidden"
           role="region"
           aria-label="3D Interactive Medical City View"
         >
           {/* Active SOS Red Border Pulse */}
           {sosActive && (
-            <div className="absolute inset-0 border-4 border-[#B82819] animate-pulse pointer-events-none rounded-3xl" />
+            <div className="absolute inset-0 border-4 border-[#B82819] animate-pulse pointer-events-none rounded-3xl z-20" />
           )}
 
+          {/* 3D Screen-Projected Floating Hospital Badges Directly Above Buildings */}
+          <div className="absolute inset-0 pointer-events-none overflow-hidden z-10">
+            {activeHospitals.slice(0, 4).map((hosp, idx) => {
+              const isSelected = selectedHospital?.id === hosp.id;
+              const isTrauma = hosp.category === 'Trauma Center Level 1';
+              return (
+                <div
+                  key={hosp.id}
+                  ref={(el) => { labelRefs.current[idx] = el; }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onSelectHospital(hosp);
+                  }}
+                  className={`pointer-events-auto absolute top-0 left-0 cursor-pointer transition-all duration-150 select-none flex items-center gap-1.5 px-3 py-1.5 rounded-xl shadow-xl font-mono text-[11px] font-bold border backdrop-blur-md ${
+                    isSelected
+                      ? 'bg-[#163C32] text-[#F4F0E6] border-[#C7AE7B] ring-2 ring-[#B82819] shadow-2xl scale-110 z-30'
+                      : 'bg-white/95 text-[#163C32] border-[#C7AE7B]/40 hover:bg-[#F4F0E6] hover:scale-105 z-20 hover:border-[#163C32]'
+                  }`}
+                  style={{ willChange: 'transform, opacity', opacity: 0 }}
+                  title={`Click to focus ${hosp.name}`}
+                >
+                  <span
+                    className={`w-2 h-2 rounded-full shrink-0 ${
+                      isTrauma ? 'bg-[#B82819] animate-pulse' : 'bg-emerald-500'
+                    }`}
+                  />
+                  <span className="font-extrabold tracking-tight max-w-[120px] sm:max-w-[160px] truncate">
+                    {hosp.name}
+                  </span>
+                  <span className="text-[10px] opacity-75 font-normal">
+                    · {hosp.icuBedsAvailable} ICU
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+
           {/* Interactive Navigation Controls */}
-          <div className="absolute left-4 bottom-4 z-10 flex items-center space-x-1.5 p-1.5 rounded-2xl bg-white/95 backdrop-blur-md border border-[#C7AE7B]/40 shadow-xl">
+          <div className="absolute left-4 bottom-4 z-20 flex items-center space-x-1.5 p-1.5 rounded-2xl bg-white/95 backdrop-blur-md border border-[#C7AE7B]/40 shadow-xl">
             <button
               onClick={() => handleZoom(0.85)}
               className="p-2 rounded-xl text-[#163C32] hover:bg-[#F4F0E6] transition-colors"
@@ -907,7 +1005,7 @@ export const SpatialMedicalCity: React.FC<Props> = ({
           </div>
 
           {/* Floating Key / Legend */}
-          <div className="absolute right-4 bottom-4 z-10 hidden sm:flex flex-col space-y-1.5 p-3 rounded-2xl bg-white/95 backdrop-blur-md border border-[#C7AE7B]/40 text-[11px] font-mono shadow-xl text-[#163C32]">
+          <div className="absolute right-4 bottom-4 z-20 hidden sm:flex flex-col space-y-1.5 p-3 rounded-2xl bg-white/95 backdrop-blur-md border border-[#C7AE7B]/40 text-[11px] font-mono shadow-xl text-[#163C32]">
             <div className="text-[10px] text-[#7A5E2E] font-black uppercase tracking-wider mb-0.5">
               Campus Legend
             </div>
@@ -939,6 +1037,25 @@ export const SpatialMedicalCity: React.FC<Props> = ({
               </p>
             </div>
           )}
+        </div>
+      ) : viewMode === 'satellite' ? (
+        /* Real Google Satellite Hybrid Map Mode */
+        <div className="w-full h-[420px] sm:h-[480px] relative">
+          <SatelliteMapView
+            currentLocation={currentLocation || {
+              lat: 28.5672,
+              lng: 77.2100,
+              locationName: 'AIIMS Trauma Center, New Delhi',
+              regionId: 'delhi',
+              accuracyMeters: 10,
+              source: 'manual',
+              lastUpdated: new Date().toISOString(),
+              isStale: false
+            }}
+            hospitals={activeHospitals}
+            selectedHospital={selectedHospital}
+            onSelectHospital={onSelectHospital}
+          />
         </div>
       ) : (
         /* 2D Schematic Plan Fallback */

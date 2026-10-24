@@ -38,7 +38,8 @@ import {
   Compass,
   Lock,
   Download,
-  Stethoscope
+  Stethoscope,
+  AlertTriangle
 } from 'lucide-react';
 
 // Code-split dynamic chunks
@@ -47,6 +48,9 @@ const SpatialMedicalCity = lazy(() =>
 );
 const EmergencySOSModal = lazy(() =>
   import('./components/EmergencySOSModal').then((m) => ({ default: m.EmergencySOSModal }))
+);
+const FirstAidModal = lazy(() =>
+  import('./components/FirstAidModal').then((m) => ({ default: m.FirstAidModal }))
 );
 const MedicalIDCard = lazy(() =>
   import('./components/MedicalIDCard').then((m) => ({ default: m.MedicalIDCard }))
@@ -92,7 +96,7 @@ import {
 } from './components/HolographicVisuals';
 import { PulseCareEmblem } from './components/PulseCareEmblem';
 import { Hospital } from './types';
-import { HOSPITALS, SIMULATED_USER } from './data/mockData';
+import { HOSPITALS, SIMULATED_USER, FIRST_AID_GUIDES } from './data/mockData';
 import {
   LocationTelemetry,
   LocationPermissionState,
@@ -159,12 +163,53 @@ export function App() {
 
   // Modals state
   const [isSosModalOpen, setIsSosModalOpen] = useState<boolean>(false);
+  const [isFirstAidModalOpen, setIsFirstAidModalOpen] = useState<boolean>(false);
+  const [firstAidInitialId, setFirstAidInitialId] = useState<string | null>(null);
+  const [isSearchFocused, setIsSearchFocused] = useState<boolean>(false);
   const [isMedicalIdOpen, setIsMedicalIdOpen] = useState<boolean>(false);
   const [isAiModalOpen, setIsAiModalOpen] = useState<boolean>(false);
   const [isHealthProfileOpen, setIsHealthProfileOpen] = useState<boolean>(false);
   const [isPharmaciesOpen, setIsPharmaciesOpen] = useState<boolean>(false);
   const [isPrepOpen, setIsPrepOpen] = useState<boolean>(false);
   const [liveTrackerService, setLiveTrackerService] = useState<string | null>(null);
+
+  // Universal Emergency Live Search Computation
+  const searchResults = React.useMemo(() => {
+    const q = searchQuery.trim().toLowerCase();
+    if (!q) return null;
+
+    const matchedHospitals = activeHospitals.filter(h =>
+      h.name.toLowerCase().includes(q) ||
+      h.category.toLowerCase().includes(q) ||
+      h.address.toLowerCase().includes(q)
+    );
+
+    const matchedFirstAid = FIRST_AID_GUIDES.filter(g =>
+      g.title.toLowerCase().includes(q) ||
+      g.urgency.toLowerCase().includes(q) ||
+      g.steps.some(s =>
+        s.title.toLowerCase().includes(q) ||
+        s.description.toLowerCase().includes(q) ||
+        (s.caution && s.caution.toLowerCase().includes(q))
+      )
+    );
+
+    const matchedMeds = (userProfile.currentMedications || []).filter(m =>
+      m.toLowerCase().includes(q)
+    );
+
+    const matchedAllergies = (userProfile.criticalAllergies || []).filter(a =>
+      a.toLowerCase().includes(q)
+    );
+
+    return {
+      hospitals: matchedHospitals,
+      firstAid: matchedFirstAid,
+      meds: matchedMeds,
+      allergies: matchedAllergies,
+      total: matchedHospitals.length + matchedFirstAid.length + matchedMeds.length + matchedAllergies.length
+    };
+  }, [searchQuery, activeHospitals, userProfile]);
 
   // Initial load: Query permissions and local profile
   useEffect(() => {
@@ -217,10 +262,32 @@ export function App() {
   };
 
   const handleNavClick = (label: string) => {
+    if (label === 'Emergency') {
+      setIsSosModalOpen(true);
+      return;
+    }
+    if (label === 'AI Health') {
+      setIsAiModalOpen(true);
+      return;
+    }
+    if (label === 'Health Records') {
+      setIsMedicalIdOpen(true);
+      return;
+    }
+    if (label === 'First Aid') {
+      setFirstAidInitialId(null);
+      setIsFirstAidModalOpen(true);
+      return;
+    }
+    if (label === 'Find Help') {
+      setActiveNav('Find Help');
+      setTimeout(() => {
+        const el = document.getElementById('find-help-section');
+        if (el) el.scrollIntoView({ behavior: 'smooth' });
+      }, 60);
+      return;
+    }
     setActiveNav(label);
-    if (label === 'Emergency') setIsSosModalOpen(true);
-    if (label === 'AI Health') setIsAiModalOpen(true);
-    if (label === 'Health Records') setIsMedicalIdOpen(true);
   };
 
   return (
@@ -339,7 +406,7 @@ export function App() {
         {/* TOP BAR / HEADER */}
         <header className="h-20 border-b border-[#C4A66B]/20 px-4 sm:px-8 flex items-center justify-between bg-[#FAF8F5]/90 backdrop-blur-md sticky top-0 z-20 shadow-xs">
           
-          {/* Search Input with Clean Architectural Border */}
+          {/* Search Input with Clean Architectural Border & Universal Emergency Dropdown */}
           <div className="relative flex-1 max-w-md hidden sm:block">
             <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-[#173E35]/50" />
             <input
@@ -347,11 +414,221 @@ export function App() {
               placeholder="Search hospitals, symptoms, medications, or first aid..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
+              onFocus={() => setIsSearchFocused(true)}
               className="w-full bg-white border border-[#C4A66B]/30 rounded-2xl pl-10 pr-10 py-2.5 text-xs text-[#173E35] placeholder-[#173E35]/50 focus:outline-hidden focus:border-[#173E35] focus:ring-1 focus:ring-[#173E35] transition-all shadow-xs"
             />
-            <div className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-mono text-[#173E35]/50 bg-[#F1F0E9] px-1.5 py-0.5 rounded border border-[#C4A66B]/30">
-              /
-            </div>
+            {searchQuery ? (
+              <button
+                onClick={() => setSearchQuery('')}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-[#173E35]/50 hover:text-[#B82819] p-1 transition-colors"
+                title="Clear search"
+                aria-label="Clear search"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            ) : (
+              <div className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-mono text-[#173E35]/50 bg-[#F1F0E9] px-1.5 py-0.5 rounded border border-[#C4A66B]/30 pointer-events-none">
+                /
+              </div>
+            )}
+
+            {/* Universal Search Results Dropdown */}
+            {searchQuery.trim().length > 0 && isSearchFocused && (
+              <div className="absolute left-0 right-0 top-full mt-2 bg-white/98 backdrop-blur-md rounded-2xl border-2 border-[#C4A66B]/50 shadow-2xl z-50 overflow-hidden max-h-[460px] overflow-y-auto animate-in fade-in slide-in-from-top-2 duration-150">
+                <div className="p-3 border-b border-[#C4A66B]/20 flex items-center justify-between bg-[#FAF8F5]">
+                  <span className="text-[11px] font-mono font-bold text-[#7A5E2E] uppercase">
+                    Universal Live Results
+                  </span>
+                  <button
+                    onClick={() => {
+                      setSearchQuery('');
+                      setIsSearchFocused(false);
+                    }}
+                    className="text-[10px] font-mono text-[#173E35]/70 hover:text-[#B82819] flex items-center gap-1 font-bold"
+                  >
+                    <X className="w-3 h-3" />
+                    <span>Close</span>
+                  </button>
+                </div>
+
+                {/* Section 1: Hospitals */}
+                {searchResults && searchResults.hospitals.length > 0 && (
+                  <div className="p-2 border-b border-[#C4A66B]/20">
+                    <div className="text-[10px] font-mono uppercase tracking-wider text-[#7A5E2E] font-bold px-2 py-1">
+                      Hospitals & Trauma Centers ({searchResults.hospitals.length})
+                    </div>
+                    {searchResults.hospitals.map((hosp) => (
+                      <div
+                        key={hosp.id}
+                        onClick={() => {
+                          setSelectedHospital(hosp);
+                          setSearchQuery('');
+                          setIsSearchFocused(false);
+                          window.scrollTo({ top: 120, behavior: 'smooth' });
+                        }}
+                        className="p-2.5 rounded-xl hover:bg-[#F4F0E6] cursor-pointer flex items-center justify-between transition-colors group"
+                      >
+                        <div className="min-w-0 pr-2">
+                          <div className="flex items-center space-x-1.5">
+                            <span className="w-2 h-2 rounded-full bg-emerald-500" />
+                            <h5 className="text-xs font-bold text-[#173E35] group-hover:text-[#BA3B2E] transition-colors truncate">
+                              {hosp.name}
+                            </h5>
+                            <span className="text-[10px] font-mono text-[#7A5E2E] px-1.5 py-0.2 rounded bg-white border border-[#C4A66B]/30">
+                              {hosp.category}
+                            </span>
+                          </div>
+                          <p className="text-[10px] text-[#173E35]/70 truncate mt-0.5">{hosp.address}</p>
+                        </div>
+                        <div className="text-right shrink-0">
+                          <span className="text-xs font-mono font-black text-[#B82819]">{hosp.driveTime}</span>
+                          <span className="text-[10px] font-mono text-[#173E35]/70 block">{hosp.distance}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {/* Section 2: First Aid Protocols */}
+                {searchResults && searchResults.firstAid.length > 0 && (
+                  <div className="p-2 border-b border-[#C4A66B]/20">
+                    <div className="text-[10px] font-mono uppercase tracking-wider text-[#7A5E2E] font-bold px-2 py-1">
+                      Immediate First Aid Protocols ({searchResults.firstAid.length})
+                    </div>
+                    {searchResults.firstAid.map((guide) => (
+                      <div
+                        key={guide.id}
+                        onClick={() => {
+                          setFirstAidInitialId(guide.id);
+                          setIsFirstAidModalOpen(true);
+                          setSearchQuery('');
+                          setIsSearchFocused(false);
+                        }}
+                        className="p-2.5 rounded-xl hover:bg-[#F4F0E6] cursor-pointer flex items-center justify-between transition-colors group"
+                      >
+                        <div className="min-w-0 pr-2">
+                          <div className="flex items-center space-x-1.5">
+                            <PlusSquare className="w-3.5 h-3.5 text-[#B82819]" />
+                            <h5 className="text-xs font-bold text-[#173E35] group-hover:text-[#BA3B2E] transition-colors">
+                              {guide.title}
+                            </h5>
+                            {guide.hasMetronome && (
+                              <span className="text-[9px] font-mono bg-[#173E35] text-[#F1F0E9] px-1.5 py-0.2 rounded font-bold">
+                                110 BPM Metronome
+                              </span>
+                            )}
+                          </div>
+                          {guide.steps.find(s => s.caution)?.caution && (
+                            <p className="text-[10px] text-[#B82819] truncate mt-0.5 font-medium">
+                              ⚠ {guide.steps.find(s => s.caution)?.caution}
+                            </p>
+                          )}
+                        </div>
+                        <span className="text-[10px] font-mono font-bold text-[#173E35] bg-white border border-[#C4A66B]/30 px-2 py-1 rounded-lg shrink-0">
+                          Open Protocol →
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {/* Section 3: User Health Profile & Medications */}
+                {searchResults && (searchResults.meds.length > 0 || searchResults.allergies.length > 0) && (
+                  <div className="p-2 border-b border-[#C4A66B]/20">
+                    <div className="text-[10px] font-mono uppercase tracking-wider text-[#7A5E2E] font-bold px-2 py-1">
+                      Medical Records Match
+                    </div>
+                    {searchResults.meds.map((med, i) => (
+                      <div
+                        key={`med-${i}`}
+                        onClick={() => {
+                          setIsHealthProfileOpen(true);
+                          setSearchQuery('');
+                          setIsSearchFocused(false);
+                        }}
+                        className="p-2 rounded-xl hover:bg-[#F4F0E6] cursor-pointer flex items-center justify-between text-xs"
+                      >
+                        <div className="flex items-center space-x-2">
+                          <Pill className="w-3.5 h-3.5 text-[#173E35]" />
+                          <span className="font-bold text-[#173E35]">Prescription: {med}</span>
+                        </div>
+                        <span className="text-[10px] font-mono text-[#7A5E2E]">In Active Directives →</span>
+                      </div>
+                    ))}
+                    {searchResults.allergies.map((allergy, i) => (
+                      <div
+                        key={`allergy-${i}`}
+                        onClick={() => {
+                          setIsMedicalIdOpen(true);
+                          setSearchQuery('');
+                          setIsSearchFocused(false);
+                        }}
+                        className="p-2 rounded-xl hover:bg-[#F4F0E6] cursor-pointer flex items-center justify-between text-xs"
+                      >
+                        <div className="flex items-center space-x-2">
+                          <AlertTriangle className="w-3.5 h-3.5 text-[#B82819]" />
+                          <span className="font-bold text-[#B82819]">Critical Allergy: {allergy}</span>
+                        </div>
+                        <span className="text-[10px] font-mono text-[#B82819]">In Medical ID Pass →</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {/* Section 4: Ask PulseCare AI */}
+                <div className="p-2">
+                  <div
+                    onClick={() => {
+                      setIsAiModalOpen(true);
+                      setSearchQuery('');
+                      setIsSearchFocused(false);
+                    }}
+                    className="p-2.5 rounded-xl bg-[#173E35] text-[#F1F0E9] hover:bg-[#0E2721] cursor-pointer flex items-center justify-between transition-colors shadow-xs"
+                  >
+                    <div className="flex items-center space-x-2">
+                      <Sparkles className="w-4 h-4 text-[#C4A66B] animate-pulse" />
+                      <span className="text-xs font-bold">
+                        Ask AI Assistant: &ldquo;{searchQuery}&rdquo;
+                      </span>
+                    </div>
+                    <span className="text-[10px] font-mono bg-white/20 px-2 py-0.5 rounded font-bold">
+                      Open Triage →
+                    </span>
+                  </div>
+                </div>
+
+                {/* If zero results */}
+                {searchResults && searchResults.total === 0 && (
+                  <div className="p-6 text-center space-y-2">
+                    <p className="text-xs text-[#173E35]/80 font-medium">
+                      No direct local records for &ldquo;{searchQuery}&rdquo;
+                    </p>
+                    <div className="flex items-center justify-center gap-2 pt-1">
+                      <button
+                        onClick={() => {
+                          setIsFirstAidModalOpen(true);
+                          setSearchQuery('');
+                          setIsSearchFocused(false);
+                        }}
+                        className="px-3 py-1.5 rounded-xl bg-white border border-[#C4A66B]/40 text-[11px] font-bold text-[#173E35] hover:bg-[#F1F0E9]"
+                      >
+                        Search First Aid Guide
+                      </button>
+                      <button
+                        onClick={() => {
+                          setIsAiModalOpen(true);
+                          setSearchQuery('');
+                          setIsSearchFocused(false);
+                        }}
+                        className="px-3 py-1.5 rounded-xl bg-[#173E35] text-white text-[11px] font-bold hover:bg-[#0E2721]"
+                      >
+                        Ask AI Assistant
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
 
           {/* Right Header Status Controls */}
@@ -370,14 +647,18 @@ export function App() {
               )}
             </button>
 
-            {/* Weather & Environmental Telemetry Pill */}
-            <div className="hidden sm:flex items-center space-x-3 bg-white px-4 py-2 rounded-2xl border border-[#C4A66B]/30 shadow-xs">
+            {/* Weather & Environmental Telemetry Pill (Clickable to switch city/GPS) */}
+            <button
+              onClick={() => setIsLocationModalOpen(true)}
+              className="hidden sm:flex items-center space-x-3 bg-white px-4 py-2 rounded-2xl border border-[#C4A66B]/30 shadow-xs hover:border-[#173E35] hover:shadow-md transition-all text-left cursor-pointer group"
+              title="Click to change location or activate GPS"
+            >
               <div>
                 <div className="flex items-center space-x-1.5 text-[11px] text-[#173E35]/75 font-medium">
                   <span className="truncate max-w-[110px]">
                     {currentLocation.locationName.replace(/GPS:\s*/i, '').split(',')[0].trim()}
                   </span>
-                  <MapPin className="w-3 h-3 text-[#C4A66B]" />
+                  <MapPin className="w-3 h-3 text-[#C4A66B] group-hover:text-[#BA3B2E] transition-colors" />
                 </div>
                 <div className="flex items-center space-x-1.5">
                   <span className="text-base font-extrabold text-[#173E35]">{weather.temperature}°C</span>
@@ -396,7 +677,7 @@ export function App() {
                 <Leaf className="w-3 h-3 text-emerald-600" />
                 <span>AQI {weather.aqi} · {weather.aqiCategory}</span>
               </div>
-            </div>
+            </button>
 
             {/* Custom Palette Swatch Indicator */}
             <div className="hidden xl:flex items-center space-x-2.5 px-3 py-2 rounded-2xl bg-white border border-[#C4A66B]/30 text-[11px] font-mono shadow-xs" title="Site Color Swatch: Deep Forest Green (#173E35), Vermilion Coral (#D44A3C), Champagne Gold (#C4A66B) on Warm Ivory (#F1F0E9)">
@@ -497,8 +778,15 @@ export function App() {
               {/* 4 Quick Action Cards (Find Hospitals, First Aid, Pharmacies, Medical ID) */}
               <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-4 gap-2.5 pt-1">
                 <button
-                  onClick={() => setActiveNav('Find Help')}
-                  className="bg-white p-3 rounded-2xl flex flex-col items-center text-center space-y-2 border border-[#C4A66B]/30 hover:border-[#173E35] hover:scale-105 transition-all shadow-xs group"
+                  onClick={() => {
+                    setActiveNav('Find Help');
+                    setTimeout(() => {
+                      const el = document.getElementById('find-help-section');
+                      if (el) el.scrollIntoView({ behavior: 'smooth' });
+                    }, 60);
+                  }}
+                  className="bg-white p-3 rounded-2xl flex flex-col items-center text-center space-y-2 border border-[#C4A66B]/30 hover:border-[#173E35] hover:scale-105 transition-all shadow-xs group cursor-pointer"
+                  title="Find Nearby Hospitals & Emergency Centers"
                 >
                   <div className="p-2 rounded-xl bg-[#F1F0E9] text-[#173E35] border border-[#C4A66B]/30 group-hover:bg-[#173E35] group-hover:text-[#F1F0E9] transition-colors">
                     <MapPin className="w-4 h-4" />
@@ -507,11 +795,15 @@ export function App() {
                 </button>
 
                 <button
-                  onClick={() => setActiveNav('First Aid')}
-                  className="bg-white p-3 rounded-2xl flex flex-col items-center text-center space-y-2 border border-[#C4A66B]/30 hover:border-[#173E35] hover:scale-105 transition-all shadow-xs group"
+                  onClick={() => {
+                    setFirstAidInitialId(null);
+                    setIsFirstAidModalOpen(true);
+                  }}
+                  className="bg-white p-3 rounded-2xl flex flex-col items-center text-center space-y-2 border border-[#C4A66B]/30 hover:border-[#173E35] hover:scale-105 transition-all shadow-xs group cursor-pointer"
+                  title="Open Step-by-Step Emergency First Aid Guide & Triage"
                 >
                   <div className="p-2 rounded-xl bg-[#F1F0E9] text-[#173E35] border border-[#C4A66B]/30 group-hover:bg-[#173E35] group-hover:text-[#F1F0E9] transition-colors">
-                    <PlusSquare className="w-4 h-4" />
+                    <PlusSquare className="w-4 h-4 text-[#BA3B2E]" />
                   </div>
                   <span className="text-[11px] font-bold text-[#173E35]">First Aid Guide</span>
                 </button>
@@ -774,7 +1066,7 @@ export function App() {
 
           <Suspense fallback={<div className="p-8 text-center text-xs font-mono text-[#173E35]">Loading module...</div>}>
             {activeNav === 'Find Help' && (
-              <div className="pt-2">
+              <div className="pt-2" id="find-help-section">
                 <HospitalLocator
                   selectedHospital={selectedHospital}
                   onSelectHospital={(h) => setSelectedHospital(h)}
@@ -832,6 +1124,13 @@ export function App() {
           sosActive={sosActive}
           setSosActive={setSosActive}
           onOpenMedicalId={() => setIsMedicalIdOpen(true)}
+        />
+
+        {/* Interactive First Aid Emergency Guidance Modal with Symptom Triage & CPR Metronome */}
+        <FirstAidModal
+          isOpen={isFirstAidModalOpen}
+          onClose={() => setIsFirstAidModalOpen(false)}
+          initialGuideId={firstAidInitialId}
         />
 
         {/* Emergency Medical ID Card & Vault Modal */}
